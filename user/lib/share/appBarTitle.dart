@@ -19,7 +19,7 @@ class AppBarTitle extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(title),
             ),
-            Image.asset("./assets/images/logo.jpg", height: 120, width: 120),
+             Image.asset("./assets/images/logo.jpg", height: 120, width: 120),
           ],
         );
       },

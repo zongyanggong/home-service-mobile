@@ -42,7 +42,8 @@ class CategoriesPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
-                                  "./assets/images/${categories[index]}.png",height: 80,width: 80,),
+                                   "./assets/images/${categories[index]}.png",height: 80,width: 80,),
+
                               Text(categories[index])
                             ],
                           ),
