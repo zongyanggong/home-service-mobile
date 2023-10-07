@@ -2,18 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../services/service.dart';
+import 'package:user/account/account.dart';
+import 'package:user/categories/categories.dart';
+import 'package:user/notifications/notifications.dart';
+import 'package:user/requests/requests.dart';
+import 'package:user/service/appbar_titles.dart';
+import 'package:user/share/appBarTitle.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 2;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  late final List<Widget> _tabPages =[
+    const RequestsPage(),
+    const NotificationsPage(),
+    const CategoriesPage(),
+    const AccountPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
+        // title: Text(appBarTitles[_selectedIndex]),
+        title: AppBarTitle(title: appBarTitles[_selectedIndex],),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout),
@@ -21,11 +40,34 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text("Home1"),
-      ),
+      body: ListView(children: [_tabPages[_selectedIndex]],),
+        bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(
+          Icons.free_cancellation,
+        ),label: "Requests"),
+        BottomNavigationBarItem(icon: Icon(
+          Icons.notifications,
+        ),label: "Notifications"),
+        BottomNavigationBarItem(icon: Icon(
+          Icons.more_horiz,
+        ),label: "Categories"),
+        BottomNavigationBarItem(icon: Icon(
+          Icons.account_box,
+        ),label: "Account"),
+      ],
+      type: BottomNavigationBarType.fixed,
+      onTap: (int index){
+          setState(() {
+            _selectedIndex=index;
+          });
+      },
+    ),
     );
   }
+
+
 
   Future<void> _signOut(BuildContext context) async {
     try {
@@ -45,4 +87,6 @@ class HomeScreen extends StatelessWidget {
       throw 'Unable to logout: $e';
     }
   }
+
 }
+
