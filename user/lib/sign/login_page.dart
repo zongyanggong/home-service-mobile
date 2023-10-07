@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:user/home/home.dart';
-import 'auth_service.dart'; // Replace with the actual path
+import '../services/auth_service.dart'; // Replace with the actual path
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -20,15 +20,12 @@ class LoginPage extends StatelessWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 30.0),
-              child: FaIcon(
-                FontAwesomeIcons.handHoldingHeart,
-                size: 140,
-                color: Colors.blue,
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 30.0),
+              child: Image.asset("./assets/images/logo.jpg"),
             ),
-            Center(
+            SizedBox(
+              width: 300,
               child: ElevatedButton(
                 onPressed: () async {
                   try {
@@ -51,7 +48,7 @@ class LoginPage extends StatelessWidget {
                     final User? user = authResult.user;
                     // ignore: use_build_context_synchronously
                     Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                        MaterialPageRoute(builder: (context) => const HomeScreen()));
                   } on FirebaseAuthException catch (e) {
                     throw e.message!;
                   } on FormatException catch (e) {
@@ -94,7 +91,9 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-            Center(
+            const Divider(height: 20,),
+            SizedBox(
+              width: 300,
               child: ElevatedButton(
                 onPressed: () async {
                   // Sign in anonymously

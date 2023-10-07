@@ -13,39 +13,6 @@ Future main() async {
   runApp(HomeServiceApp());
 }
 
-// class HomeServiceApp extends StatelessWidget {
-//   HomeServiceApp({super.key});
-//
-//   final AuthService _auth = AuthService();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ChangeNotifierProvider(
-//         create: (BuildContext context) => Info(),
-//         child: MaterialApp(
-//           debugShowCheckedModeBanner: false,
-//           title: "Home service",
-//           home: FutureBuilder(
-//             future: _auth.isUserSignedIn(),
-//             builder: (context, snapshot) {
-//               if (snapshot.connectionState == ConnectionState.done) {
-//                 bool isUserSignedIn = snapshot.data as bool;
-//                 return isUserSignedIn ? HomeScreen() : LoginPage();
-//               }
-//               return const CircularProgressIndicator();
-//             },
-//           ),
-//           routes: {
-//             '/login': (context) => LoginPage(),
-//             '/home': (context) => HomeScreen(),
-//           },
-//           theme: ThemeData(
-//             primarySwatch: Colors.blue,
-//           ),
-//         ));
-//   }
-// }
-
 class HomeServiceApp extends StatelessWidget {
   HomeServiceApp({super.key});
 
@@ -55,10 +22,26 @@ class HomeServiceApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (BuildContext context) => Info(),
-        child: const MaterialApp(
+        child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: "Home service",
-          home: HomeScreen()
+          home: FutureBuilder(
+            future: _auth.isUserSignedIn(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                bool isUserSignedIn = snapshot.data as bool;
+                return isUserSignedIn ? HomeScreen() : LoginPage();
+              }
+              return const CircularProgressIndicator();
+            },
+          ),
+          routes: {
+            '/login': (context) => LoginPage(),
+            '/home': (context) => HomeScreen(),
+          },
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
         ));
   }
 }

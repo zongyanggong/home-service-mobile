@@ -1,4 +1,4 @@
 export 'auth_service.dart';
 export 'info_state.dart';
-export 'login_page.dart';
+export '../sign/login_page.dart';
 
