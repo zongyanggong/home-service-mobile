@@ -1,21 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:user/home/home.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import './services/service.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const HomeServiceApp());
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(HomeServiceApp());
 }
 
 class HomeServiceApp extends StatelessWidget {
-  const HomeServiceApp({super.key});
+  HomeServiceApp({super.key});
+
+  final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Home service",
-      home: HomeScreen(),
-    );
+    return ChangeNotifierProvider(
+        create: (BuildContext context) => Info(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Home service",
+          home: FutureBuilder(
+            future: _auth.isUserSignedIn(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                bool isUserSignedIn = snapshot.data as bool;
+                return isUserSignedIn ? HomeScreen() : LoginPage();
+              }
+              return const CircularProgressIndicator();
+            },
+          ),
+          routes: {
+            '/login': (context) => LoginPage(),
+            '/home': (context) => HomeScreen(),
+          },
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+        ));
   }
 }
-
-
