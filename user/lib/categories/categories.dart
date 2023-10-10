@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:user/categories/provider_list.dart';
 import 'package:user/service/appbar_titles.dart';
