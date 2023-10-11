@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:user/services/user.dart';
 import '../services/service.dart';
 import 'package:user/account/account.dart';
 import 'package:user/categories/categories.dart';
@@ -28,42 +30,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // title: Text(appBarTitles[_selectedIndex]),
-        title: AppBarTitle(title: appBarTitles[_selectedIndex],),
-        automaticallyImplyLeading: false,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _signOut(context),
-          ),
+    return ChangeNotifierProvider<CurrentUser>(
+      create: (BuildContext context) => CurrentUser(),
+      child: Scaffold(
+        appBar: AppBar(
+          // title: Text(appBarTitles[_selectedIndex]),
+          title: AppBarTitle(title: appBarTitles[_selectedIndex],),
+          automaticallyImplyLeading: false,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () => _signOut(context),
+            ),
+          ],
+        ),
+        body: ListView(children: [_tabPages[_selectedIndex]],),
+          bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(
+            Icons.free_cancellation,
+          ),label: "Requests"),
+          BottomNavigationBarItem(icon: Icon(
+            Icons.notifications,
+          ),label: "Notifications"),
+          BottomNavigationBarItem(icon: Icon(
+            Icons.more_horiz,
+          ),label: "Categories"),
+          BottomNavigationBarItem(icon: Icon(
+            Icons.account_box,
+          ),label: "Account"),
         ],
+        type: BottomNavigationBarType.fixed,
+        onTap: (int index){
+            setState(() {
+              _selectedIndex=index;
+            });
+        },
       ),
-      body: ListView(children: [_tabPages[_selectedIndex]],),
-        bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(
-          Icons.free_cancellation,
-        ),label: "Requests"),
-        BottomNavigationBarItem(icon: Icon(
-          Icons.notifications,
-        ),label: "Notifications"),
-        BottomNavigationBarItem(icon: Icon(
-          Icons.more_horiz,
-        ),label: "Categories"),
-        BottomNavigationBarItem(icon: Icon(
-          Icons.account_box,
-        ),label: "Account"),
-      ],
-      type: BottomNavigationBarType.fixed,
-      onTap: (int index){
-          setState(() {
-            _selectedIndex=index;
-          });
-      },
-    ),
+      ),
     );
   }
 
