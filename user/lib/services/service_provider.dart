@@ -4,9 +4,15 @@ import 'package:user/services/service_category.dart';
 class ServiceProvider{
   late int _pid;
   int get pid => _pid;
+  set pid(int value){
+    _pid = value;
+  }
 
   late String _name;
   String get name => _name;
+  set name(String value){
+    _name = value;
+  }
 
   late String _email;
   String get email => _email;
@@ -22,6 +28,15 @@ class ServiceProvider{
 
   late String _imgPath;
   String get imgPath => _imgPath;
+  set imgPath(String value){
+    _imgPath = value;
+  }
+
+  late int _price;
+  int get price => _price;
+  set price(int value){
+    _price = value;
+  }
 
   late String _description;
   String get description => _description;

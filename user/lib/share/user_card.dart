@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:user/services/service_provider.dart';
 
 class UserCard extends StatelessWidget {
-  const UserCard({super.key});
+  UserCard({super.key,required this.serviceProvider});
+  ServiceProvider serviceProvider;
 
   @override
   Widget build(BuildContext context) {
-    double rating = 3.45;
-    int starCount = rating.floor();
+    int starCount = serviceProvider.score.floor();
     return ListTile(
-      leading: CircleAvatar(
-        radius: 30,
-        child: ClipOval(
-          child: Image.asset(  
-            'assets/images/face1.jpg', // 你需要指定正确的图像路径
-            width: 60,
-            height: 60,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
             fit: BoxFit.cover,
+            image: AssetImage(serviceProvider.imgPath),
           ),
         ),
       ),
-      title: const Text("Dev, stack",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
-      subtitle: const Text("CAD 20/Hour",style: TextStyle(fontSize: 16,fontWeight: FontWeight.normal),),
+      title: Text(serviceProvider.name,style: const TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
+      subtitle: Text("CAD ${serviceProvider.price}/Hour",style: const TextStyle(fontSize: 16,fontWeight: FontWeight.normal),),
       trailing: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            rating.toStringAsFixed(2),
+            serviceProvider.score.toStringAsFixed(2),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Row(
@@ -43,8 +44,6 @@ class UserCard extends StatelessWidget {
                   size: 15,
                 ),],
           )
-
-
         ],
       ),
     );

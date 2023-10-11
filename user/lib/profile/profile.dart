@@ -45,62 +45,64 @@ class BodyContent extends StatelessWidget {
     _telephoneController.text = currentUser.phone;
     TextEditingController _emailController = TextEditingController();
     _emailController.text = currentUser.email;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: AccountCard(
-                name: currentUser.name,
-                imgPath: currentUser.imgPath,
-                isEdit: true,
-                onViewProfile: () {},
-                onTakePicture: () {},
+    return ListView(
+      children: [Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: AccountCard(
+                  name: currentUser.name,
+                  imgPath: currentUser.imgPath,
+                  isEdit: true,
+                  onViewProfile: () {},
+                  onTakePicture: () {},
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-              child: AccountInput(
-                  iconData: Icons.location_on,
-                  hintText: "Address",
-                  controller: _addressController,
-                  onChange: (value) {
-                    currentUser.address=value;
-                  }),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-              child: AccountInput(
-                  iconData: Icons.phone,
-                  hintText: "Telephone",
-                  controller: _telephoneController,
-                  onChange: (value) {
-                    currentUser.phone=value;
-                  }),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-              child: AccountInput(
-                  iconData: Icons.email,
-                  hintText: "Email",
-                  controller: _emailController,
-                  onChange: (value) {
-                    currentUser.email=value;
-                  }),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: ElevatedButton(
-                onPressed: () {
-                },
-                child: const Text("Update"),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
+                child: AccountInput(
+                    iconData: Icons.location_on,
+                    hintText: "Address",
+                    controller: _addressController,
+                    onChange: (value) {
+                      currentUser.address=value;
+                    }),
               ),
-            ),
-          ],
-        ),
-      ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
+                child: AccountInput(
+                    iconData: Icons.phone,
+                    hintText: "Telephone",
+                    controller: _telephoneController,
+                    onChange: (value) {
+                      currentUser.phone=value;
+                    }),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
+                child: AccountInput(
+                    iconData: Icons.email,
+                    hintText: "Email",
+                    controller: _emailController,
+                    onChange: (value) {
+                      currentUser.email=value;
+                    }),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: ElevatedButton(
+                  onPressed: () {
+                  },
+                  child: const Text("Update"),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),]
     );
   }
 }
