@@ -19,25 +19,25 @@ class UserCard extends StatelessWidget {
           ),
         ),
       ),
-      title: Text("Dev, stack",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
-      subtitle: Text("CAD 20/Hour",style: TextStyle(fontSize: 16,fontWeight: FontWeight.normal),),
+      title: const Text("Dev, stack",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
+      subtitle: const Text("CAD 20/Hour",style: TextStyle(fontSize: 16,fontWeight: FontWeight.normal),),
       trailing: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
             rating.toStringAsFixed(2),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [for (int i = 0; i < starCount; i++)
-              Icon(
+              const Icon(
                 Icons.star,
                 color: Colors.green,
                 size: 15,
               ),
               for (int i = starCount; i < 5; i++)
-                Icon(
+                const Icon(
                   Icons.star_border,
                   color: Colors.green,
                   size: 15,
