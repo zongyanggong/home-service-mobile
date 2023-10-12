@@ -13,7 +13,7 @@ class AppBarTitle extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Stack(
-          alignment: Alignment.center,  // 使图片在整个AppBar中居中
+          alignment: Alignment.center,  //
           children: [
             Align(
               alignment: Alignment.centerLeft,

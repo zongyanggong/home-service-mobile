@@ -1,4 +1,7 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
+import 'package:user/categories/provider_list.dart';
 import 'package:user/service/appbar_titles.dart';
 import 'dart:math';
 
@@ -32,11 +35,11 @@ class CategoriesPage extends StatelessWidget {
                       child: Card(
                         child: InkWell(
                           onTap: () {
-                            // Future.delayed(const Duration(milliseconds: 350), () {
-                            //   Navigator.of(context).push(MaterialPageRoute(
-                            //       builder: (context) => DetailedScreen(
-                            //           name: name, path: path, description: description)));
-                            //}))
+                            Future.delayed(const Duration(milliseconds: 350), () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ProviderList(
+                                      cid: index,)));
+                            });
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -22,7 +22,7 @@ class LoginPage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30.0),
-              child: Image.asset("./assets/images/logo.jpg"),
+              child: Image.asset("./assets/images/logo.jpg",width: 250,height: 250,),
             ),
             SizedBox(
               width: 300,
