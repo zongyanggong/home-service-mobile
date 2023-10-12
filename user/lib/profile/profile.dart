@@ -3,6 +3,7 @@ import 'package:user/services/user.dart';
 import 'package:user/share/account_card.dart';
 import 'package:user/share/account_input.dart';
 import 'package:user/share/appBarTitle.dart';
+import 'package:user/share/input_field.dart';
 
 class ProfileSceen extends StatelessWidget {
   const ProfileSceen({super.key});
@@ -57,39 +58,35 @@ class BodyContent extends StatelessWidget {
                   name: currentUser.name,
                   imgPath: currentUser.imgPath,
                   isEdit: true,
-                  onViewProfile: () {},
                   onTakePicture: () {},
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-                child: AccountInput(
-                    iconData: Icons.location_on,
-                    hintText: "Address",
-                    controller: _addressController,
-                    onChange: (value) {
-                      currentUser.address=value;
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-                child: AccountInput(
-                    iconData: Icons.phone,
-                    hintText: "Telephone",
-                    controller: _telephoneController,
-                    onChange: (value) {
-                      currentUser.phone=value;
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 9),
-                child: AccountInput(
-                    iconData: Icons.email,
-                    hintText: "Email",
-                    controller: _emailController,
-                    onChange: (value) {
-                      currentUser.email=value;
-                    }),
+              Container(
+                margin: const EdgeInsets.only(left: 18,right: 18,bottom: 18),
+                padding: const EdgeInsets.only(left: 12,right: 12,bottom: 18),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[50], // Background color
+                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                ),
+                child: Column(
+                  children: [
+                    InputField(
+                      title: "Address",
+                      hint: "Please input your address",
+                      controller: _addressController,
+                    ),
+                    InputField(
+                      title: "Telephone",
+                      hint: "Please input your telephone",
+                      controller: _telephoneController,
+                    ),
+                    InputField(
+                      title: "Email",
+                      hint: "Please input your email",
+                      controller: _emailController,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,

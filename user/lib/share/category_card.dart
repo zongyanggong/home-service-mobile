@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:user/services/service_provider.dart';
+import 'package:user/share/score_with_stars.dart';
 
 
-class AccountCard extends StatelessWidget {
-  const AccountCard({
+class ProviderDetail extends StatelessWidget {
+  const ProviderDetail({
     super.key,
-    required this.name,
-    required this.imgPath,
-    this.isEdit = false,
-    this.onViewProfile, // <-- Added a callback function for "View profile" tap event
-    this.onTakePicture
-
+    required this.serviceProvider,
   });
 
-  final String name;
-  final String imgPath;
-  final bool isEdit;
-  final VoidCallback? onViewProfile;  // <-- Added a callback function type for "View profile" tap event
-  final VoidCallback? onTakePicture;
+  final ServiceProvider serviceProvider;
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +33,10 @@ class AccountCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(imgPath),
+                      image: AssetImage(serviceProvider.imgPath),
                     ),
                   ),
                 ),
-                // Display camera icon only when isEdit is true
-                if (isEdit)
-                  const Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Icon(Icons.camera_alt, color: Colors.blue),
-                  ),
               ],
             ),
             const SizedBox(width: 20), // spacing between image and text
@@ -59,21 +46,20 @@ class AccountCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center, // Centers vertically within the Column
                 children: [
                   Text(
-                    name,
+                    serviceProvider.name,
                     style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                   ),
-                  // Display "View profile" text only when isEdit is false
-                  if (!isEdit)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
-                      child: GestureDetector(  // <-- Wrapped with a GestureDetector to handle tap events
-                        onTap: onViewProfile,  // <-- Assigning the passed function to the onTap handler
-                        child: const Text(
-                          "View profile",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "CAD \$${serviceProvider.price}/Hour",
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                       ),
-                    ),
+                      ScoreWithStars(score: serviceProvider.score,),
+                    ],
+                  )
                 ],
               ),
             ),
