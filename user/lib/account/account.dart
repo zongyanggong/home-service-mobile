@@ -1,12 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user/profile/profile.dart';
 import 'package:user/services/service.dart';
-import 'package:user/services/user.dart';
+import 'package:user/services/user_provider.dart';
 import 'package:user/share/account_button.dart';
 import 'package:user/share/account_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../services/firestore.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class AccountPage extends StatelessWidget {
   AccountPage({super.key});
@@ -16,11 +21,14 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var currentUser = Provider.of<CurrentUser>(context,listen: false);
+    var info = Provider.of<Info>(context, listen: false);
 
     CurrentUser currentUser = CurrentUser();
-    currentUser.name = "Mark";
-    currentUser.imgPath = 'assets/images/face1.jpg';
+
+    currentUser.name = _auth.currentUser?.displayName ?? "Guest";
+    currentUser.imgPath =
+        _auth.currentUser?.photoURL ?? 'https://via.placeholder.com/150';
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
