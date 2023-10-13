@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:user/services/info_state.dart';
 
 class AccountCard extends StatelessWidget {
   const AccountCard(
@@ -18,6 +20,8 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var info = Provider.of<Info>(context, listen: false);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
@@ -36,10 +40,16 @@ class AccountCard extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(imgPath),
-                    ),
+                    image: imgPath.isNotEmpty
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(imgPath) // Use network image,
+                            )
+                        : const DecorationImage(
+                            fit: BoxFit.cover,
+                            image: AssetImage(
+                                'assets/images/anonymousUserImg.png'),
+                          ),
                   ),
                 ),
                 // Display camera icon only when isEdit is true
@@ -65,7 +75,7 @@ class AccountCard extends StatelessWidget {
                         fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   // Display "View profile" text only when isEdit is false
-                  if (!isEdit)
+                  if (info.currentUser != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 8),

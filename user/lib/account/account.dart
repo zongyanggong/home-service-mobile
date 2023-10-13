@@ -23,11 +23,11 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: false);
 
-    CurrentUser currentUser = CurrentUser();
+    // CurrentUser currentUser = CurrentUser();
 
-    currentUser.name = _auth.currentUser?.displayName ?? "Guest";
-    currentUser.imgPath =
-        _auth.currentUser?.photoURL ?? 'https://via.placeholder.com/150';
+    var name = info.currentUser?.name ?? "Guest";
+
+    var imgPath = info.currentUser?.imgPath ?? '';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,8 +37,8 @@ class AccountPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: AccountCard(
-                name: currentUser.name,
-                imgPath: currentUser.imgPath,
+                name: name,
+                imgPath: imgPath,
                 onViewProfile: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ProfileSceen()));
@@ -81,10 +81,13 @@ class AccountPage extends StatelessWidget {
   }
 
   Future<void> _signOut(BuildContext context) async {
+    var info = Provider.of<Info>(context, listen: false);
+
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
       await _googleSignIn.signOut();
+      info.setUser(null);
       // You can navigate to the login screen or any other screen after logout.
       // Example:
       // ignore: use_build_context_synchronously

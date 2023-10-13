@@ -36,11 +36,11 @@ class BodyContent extends StatelessWidget {
     var info = Provider.of<Info>(context, listen: false);
 
     TextEditingController addressController = TextEditingController();
-    addressController.text = info.currentUser.address!;
+    addressController.text = info.currentUser!.address!;
     TextEditingController telephoneController = TextEditingController();
-    telephoneController.text = info.currentUser.phone!;
+    telephoneController.text = info.currentUser!.phone!;
     TextEditingController emailController = TextEditingController();
-    emailController.text = info.currentUser.email!;
+    emailController.text = info.currentUser!.email!;
     return ListView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,8 +50,8 @@ class BodyContent extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: AccountCard(
-                  name: info.currentUser.name!,
-                  imgPath: info.currentUser.imgPath!,
+                  name: info.currentUser!.name!,
+                  imgPath: info.currentUser!.imgPath!,
                   isEdit: true,
                   onTakePicture: () {},
                 ),
@@ -87,12 +87,12 @@ class BodyContent extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () => {
-                    info.currentUser.address = addressController.text,
-                    info.currentUser.phone = telephoneController.text,
-                    info.currentUser.email = emailController.text,
+                    info.currentUser?.address = addressController.text,
+                    info.currentUser?.phone = telephoneController.text,
+                    info.currentUser?.email = emailController.text,
 
                     // Update user in firestore
-                    _firestoreService.updateUserById(info.currentUser),
+                    _firestoreService.updateUserById(info.currentUser!),
                     Navigator.pop(context),
                   },
                   child: const Text("Update"),
