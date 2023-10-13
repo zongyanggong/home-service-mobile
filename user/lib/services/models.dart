@@ -3,8 +3,8 @@ part 'models.g.dart';
 
 @JsonSerializable()
 class User {
-  final String uid;
-  final String? name;
+  String? uid;
+  String? name;
   String? email;
   String? address;
   String? phone;
@@ -25,11 +25,11 @@ class User {
 
 @JsonSerializable()
 class Service {
-  final int sid;
+  final String sid;
   final String name;
 
   Service({
-    this.sid = 0,
+    this.sid = "",
     this.name = "",
   });
 
@@ -49,24 +49,30 @@ enum RecordStatus {
 
 @JsonSerializable()
 class ServiceRecord {
-  final int rid;
-  final int uid;
-  final int sid;
-  final int pid;
+  final String rid;
+  final String uid;
+  final String sid;
+  final String pid;
   final RecordStatus status;
   final int createdTime;
-  final int startTime;
-  final int endTime;
+  final int acceptedTime;
+  final int actualStartTime;
+  final int actualEndTime;
+  final int bookingStartTime;
+  final int bookingEndTime;
 
   ServiceRecord({
-    this.rid = 0,
-    this.uid = 0,
-    this.sid = 0,
-    this.pid = 0,
+    this.rid = "",
+    this.uid = "",
+    this.sid = "",
+    this.pid = "",
     this.status = RecordStatus.pending,
     this.createdTime = 0,
-    this.startTime = 0,
-    this.endTime = 0,
+    this.acceptedTime = 0,
+    this.actualStartTime = 0,
+    this.actualEndTime = 0,
+    this.bookingStartTime = 0,
+    this.bookingEndTime = 0,
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>
@@ -76,22 +82,22 @@ class ServiceRecord {
 
 @JsonSerializable()
 class Provider {
-  final int pid;
+  final String pid;
   final String name;
   final String email;
   final String address;
   final String phone;
-  final int sid; //service he can prodive, only one service for now
+  final String sid; //service he can prodive, only one service for now
   final double price;
   final String description;
 
   Provider({
-    this.pid = 0,
+    this.pid = "",
     this.name = "",
     this.email = "",
     this.address = "",
     this.phone = "",
-    this.sid = 0,
+    this.sid = "",
     this.price = 0,
     this.description = "",
   });
