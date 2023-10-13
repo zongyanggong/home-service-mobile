@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:user/services/info_state.dart';
-import 'package:user/services/user_provider.dart';
 import 'package:user/share/account_card.dart';
 import 'package:user/share/account_input.dart';
 import 'package:user/share/appBarTitle.dart';
@@ -87,12 +86,12 @@ class BodyContent extends StatelessWidget {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () => {
-                    info.currentUser?.address = addressController.text,
-                    info.currentUser?.phone = telephoneController.text,
-                    info.currentUser?.email = emailController.text,
+                    info.currentUser.address = addressController.text,
+                    info.currentUser.phone = telephoneController.text,
+                    info.currentUser.email = emailController.text,
 
                     // Update user in firestore
-                    _firestoreService.updateUserById(info.currentUser!),
+                    _firestoreService.updateUserById(info.currentUser),
                     Navigator.pop(context),
                   },
                   child: const Text("Update"),

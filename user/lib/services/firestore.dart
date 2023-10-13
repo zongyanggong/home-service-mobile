@@ -152,6 +152,7 @@ class FirestoreService {
       "actualEndTime": serviceRecord.actualEndTime,
       "bookingStartTime": serviceRecord.bookingStartTime,
       "bookingEndTime": serviceRecord.bookingEndTime,
+      "appointmentNotes": serviceRecord.appointmentNotes,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
