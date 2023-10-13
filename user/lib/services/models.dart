@@ -60,6 +60,7 @@ class ServiceRecord {
   final int actualEndTime;
   final int bookingStartTime;
   final int bookingEndTime;
+  final String appointmentNotes;
 
   ServiceRecord({
     this.rid = "",
@@ -73,6 +74,7 @@ class ServiceRecord {
     this.actualEndTime = 0,
     this.bookingStartTime = 0,
     this.bookingEndTime = 0,
+    this.appointmentNotes = "",
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>

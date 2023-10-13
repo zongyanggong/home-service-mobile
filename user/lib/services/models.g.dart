@@ -48,6 +48,7 @@ ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
       actualEndTime: json['actualEndTime'] as int? ?? 0,
       bookingStartTime: json['bookingStartTime'] as int? ?? 0,
       bookingEndTime: json['bookingEndTime'] as int? ?? 0,
+      appointmentNotes: json['appointmentNotes'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
@@ -63,6 +64,7 @@ Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
       'actualEndTime': instance.actualEndTime,
       'bookingStartTime': instance.bookingStartTime,
       'bookingEndTime': instance.bookingEndTime,
+      'appointmentNotes': instance.appointmentNotes,
     };
 
 const _$RecordStatusEnumMap = {
