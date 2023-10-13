@@ -2,15 +2,30 @@ import 'package:flutter/material.dart';
 import './models.dart';
 
 class Info extends ChangeNotifier {
-  User? _currentUser;
-  User? get currentUser => _currentUser;
+  User _currentUser = User(
+    uid: "",
+    name: "",
+    email: "",
+    address: '',
+    phone: '',
+    imgPath: "",
+  );
 
-  setUser(User? value) {
+  User get currentUser => _currentUser;
+
+  setUser(User value) {
     _currentUser = value;
     notifyListeners();
   }
 
-  resetInfo() {
-    // sleepValue = 3;
+  resetUser() {
+    _currentUser = User(
+      uid: "",
+      name: "",
+      email: "",
+      address: '',
+      phone: '',
+      imgPath: "",
+    );
   }
 }

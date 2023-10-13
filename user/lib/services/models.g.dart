@@ -25,7 +25,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
     };
 
 Service _$ServiceFromJson(Map<String, dynamic> json) => Service(
-      sid: json['sid'] as int? ?? 0,
+      sid: json['sid'] as String? ?? "",
       name: json['name'] as String? ?? "",
     );
 
@@ -36,15 +36,18 @@ Map<String, dynamic> _$ServiceToJson(Service instance) => <String, dynamic>{
 
 ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
     ServiceRecord(
-      rid: json['rid'] as int? ?? 0,
-      uid: json['uid'] as int? ?? 0,
-      sid: json['sid'] as int? ?? 0,
-      pid: json['pid'] as int? ?? 0,
+      rid: json['rid'] as String? ?? "",
+      uid: json['uid'] as String? ?? "",
+      sid: json['sid'] as String? ?? "",
+      pid: json['pid'] as String? ?? "",
       status: $enumDecodeNullable(_$RecordStatusEnumMap, json['status']) ??
           RecordStatus.pending,
       createdTime: json['createdTime'] as int? ?? 0,
-      startTime: json['startTime'] as int? ?? 0,
-      endTime: json['endTime'] as int? ?? 0,
+      acceptedTime: json['acceptedTime'] as int? ?? 0,
+      actualStartTime: json['actualStartTime'] as int? ?? 0,
+      actualEndTime: json['actualEndTime'] as int? ?? 0,
+      bookingStartTime: json['bookingStartTime'] as int? ?? 0,
+      bookingEndTime: json['bookingEndTime'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
@@ -55,8 +58,11 @@ Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
       'pid': instance.pid,
       'status': _$RecordStatusEnumMap[instance.status]!,
       'createdTime': instance.createdTime,
-      'startTime': instance.startTime,
-      'endTime': instance.endTime,
+      'acceptedTime': instance.acceptedTime,
+      'actualStartTime': instance.actualStartTime,
+      'actualEndTime': instance.actualEndTime,
+      'bookingStartTime': instance.bookingStartTime,
+      'bookingEndTime': instance.bookingEndTime,
     };
 
 const _$RecordStatusEnumMap = {
@@ -69,12 +75,12 @@ const _$RecordStatusEnumMap = {
 };
 
 Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
-      pid: json['pid'] as int? ?? 0,
+      pid: json['pid'] as String? ?? "",
       name: json['name'] as String? ?? "",
       email: json['email'] as String? ?? "",
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
-      sid: json['sid'] as int? ?? 0,
+      sid: json['sid'] as String? ?? "",
       price: (json['price'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String? ?? "",
     );

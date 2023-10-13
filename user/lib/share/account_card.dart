@@ -40,7 +40,7 @@ class AccountCard extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: imgPath.isNotEmpty
+                    image: imgPath != ""
                         ? DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(imgPath) // Use network image,
@@ -75,7 +75,7 @@ class AccountCard extends StatelessWidget {
                         fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   // Display "View profile" text only when isEdit is false
-                  if (info.currentUser != null)
+                  if (info.currentUser.uid != "")
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 8),
