@@ -20,7 +20,14 @@ class FirestoreService {
     var snapshot = await reference.get();
     var data = snapshot.data();
     if (data == null) {
-      return Future<User>.value(null);
+      return Future<User>.value(User(
+        uid: "",
+        name: "",
+        email: "",
+        address: '',
+        phone: '',
+        imgPath: "",
+      ));
     } else {
       return User.fromJson(data);
     }
@@ -89,8 +96,7 @@ class FirestoreService {
   }
 
   Future<void> updateServiceById(Service service) async {
-    var reference =
-        _database.collection("services").doc(service.sid.toString());
+    var reference = _database.collection("services").doc(service.sid);
     var newData = {
       "name": service.name,
     };
@@ -98,8 +104,7 @@ class FirestoreService {
   }
 
   Future<void> deleteServiceById(Service service) async {
-    var reference =
-        _database.collection("services").doc(service.sid.toString());
+    var reference = _database.collection("services").doc(service.sid);
 
     return reference.delete();
   }
@@ -128,31 +133,32 @@ class FirestoreService {
   Future<void> createServiceRecord(ServiceRecord serviceRecord) async {
     var reference = _database
         .collection("serviceRecords")
-        .doc(serviceRecord.rid.toString())
+        .doc(serviceRecord.rid)
         .set(serviceRecord.toJson());
     await reference;
   }
 
   Future<void> updateServiceRecordById(ServiceRecord serviceRecord) async {
-    var reference = _database
-        .collection("serviceRecords")
-        .doc(serviceRecord.rid.toString());
+    var reference =
+        _database.collection("serviceRecords").doc(serviceRecord.rid);
     var newData = {
       "uid": serviceRecord.uid,
       "sid": serviceRecord.sid,
       "pid": serviceRecord.pid,
       "status": serviceRecord.status,
       "createdTime": serviceRecord.createdTime,
-      "startTime": serviceRecord.startTime,
-      "endTime": serviceRecord.endTime,
+      "acceptedTime": serviceRecord.acceptedTime,
+      "actualStartTime": serviceRecord.actualStartTime,
+      "actualEndTime": serviceRecord.actualEndTime,
+      "bookingStartTime": serviceRecord.bookingStartTime,
+      "bookingEndTime": serviceRecord.bookingEndTime,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
 
   Future<void> deleteServiceRecordById(ServiceRecord serviceRecord) async {
-    var reference = _database
-        .collection("serviceRecords")
-        .doc(serviceRecord.rid.toString());
+    var reference =
+        _database.collection("serviceRecords").doc(serviceRecord.rid);
 
     return reference.delete();
   }
@@ -186,8 +192,7 @@ class FirestoreService {
   }
 
   Future<void> updateProviderById(Provider provider) async {
-    var reference =
-        _database.collection("providers").doc(provider.pid.toString());
+    var reference = _database.collection("providers").doc(provider.pid);
     var newData = {
       "name": provider.name,
       "email": provider.email,
@@ -199,8 +204,7 @@ class FirestoreService {
   }
 
   Future<void> deleteProviderById(Provider provider) async {
-    var reference =
-        _database.collection("providers").doc(provider.pid.toString());
+    var reference = _database.collection("providers").doc(provider.pid);
 
     return reference.delete();
   }

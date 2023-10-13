@@ -63,7 +63,7 @@ class LoginPage extends StatelessWidget {
                       model.User existUser =
                           await _firestoreService.getUserByUid(user!.uid);
 
-                      if (existUser != null) {
+                      if (existUser.uid == user.uid) {
                         //User already exist in firestore
                       } else {
                         //New user

@@ -50,8 +50,8 @@ class BodyContent extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: AccountCard(
-                  name: info.currentUser!.name!,
-                  imgPath: info.currentUser!.imgPath!,
+                  name: info.currentUser.name!,
+                  imgPath: info.currentUser.imgPath!,
                   isEdit: true,
                   onTakePicture: () {},
                 ),

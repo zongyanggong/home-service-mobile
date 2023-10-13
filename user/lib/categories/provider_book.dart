@@ -3,10 +3,17 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:user/categories/provider_detail.dart';
 import 'package:user/services/service_provider.dart';
-import 'package:user/services/user_provider.dart';
+
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/input_field.dart';
 import 'package:user/share/user_card.dart';
+import '../services/firestore.dart';
+import '../services/models.dart';
+import 'package:uuid/uuid.dart';
+import '../services/info_state.dart';
+import 'package:provider/provider.dart' as provider;
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class ProviderBookScreen extends StatefulWidget {
   ProviderBookScreen({super.key, required this.serviceProvider});
@@ -38,8 +45,8 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //var user = Provider.of<CurrentUser>(context);
-    // _addressController.text = user.address;
+    var info = provider.Provider.of<Info>(context,
+        listen: false); // _addressController.text = user.address;
 
     return Scaffold(
       appBar: AppBar(
@@ -112,7 +119,7 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                         )),
                       ],
                     ),
-                    InputField(
+                    const InputField(
                       title: "Full Address",
                       hint: "Please input address",
                     ),
@@ -128,6 +135,42 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
                   onPressed: () {
+                    // TODO: add service record
+
+                    try {
+                      //
+                      const uuid = Uuid();
+
+                      //Create booking time
+                      DateTime startTime = DateTime.parse(
+                          "${_selectedDate.toString().split(" ")[0]} ${_startTime.toString().split(" ")[0]}:00.000 ${_startTime.toString().split(" ")[1]}");
+                      DateTime endTime = DateTime.parse(
+                          "${_selectedDate.toString().split(" ")[0]} ${_endTime.toString().split(" ")[0]}:00.000 ${_endTime.toString().split(" ")[1]}");
+
+                      //New user
+                      _firestoreService.createServiceRecord(
+                        ServiceRecord(
+                          rid: uuid.v1(),
+                          uid: info.currentUser!.uid!,
+                          sid: "1",
+                          pid: '1',
+                          status: RecordStatus.pending,
+                          createdTime:
+                              DateTime.now().toUtc().millisecondsSinceEpoch,
+                          acceptedTime: 0,
+                          actualStartTime: 0,
+                          actualEndTime: 0,
+                          bookingStartTime: startTime.millisecondsSinceEpoch,
+                          bookingEndTime: endTime.millisecondsSinceEpoch,
+                        ),
+                      );
+
+                      // User creation was successful, you can add your logic here
+                    } catch (e) {
+                      // Handle any errors that occurred during user creation
+                      print('Error creating service record: $e');
+                    }
+
                     Navigator.pushNamed(context, "/");
                   },
                   child: const Text("Confirm"),

@@ -30,7 +30,7 @@ class ProviderDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),
               child: Container(
-                  height: 450,
+                  height: 350,
                   decoration: BoxDecoration(
                     color: Colors.blueGrey[50], // Background color
                     borderRadius:
@@ -60,8 +60,11 @@ class ProviderDetailScreen extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 2,
               child: ElevatedButton(
-                onPressed: () {Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => ProviderBookScreen(serviceProvider: serviceProvider)));},
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => ProviderBookScreen(
+                          serviceProvider: serviceProvider)));
+                },
                 child: const Text("Book Now"),
               ),
             ),
