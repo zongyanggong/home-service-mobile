@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:user/services/user.dart';
+import 'package:user/services/user_provider.dart';
 import 'package:user/account/account.dart';
 import 'package:user/categories/categories.dart';
 import 'package:user/notifications/notifications.dart';
@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 2;
-  late final List<Widget> _tabPages =[
+  late final List<Widget> _tabPages = [
     const RequestsPage(),
     const NotificationsPage(),
     const CategoriesPage(),
@@ -29,37 +29,46 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (BuildContext context) => CurrentUser(),
       child: Scaffold(
         appBar: AppBar(
-          title: AppBarTitle(title: appBarTitles[_selectedIndex],),
+          title: AppBarTitle(
+            title: appBarTitles[_selectedIndex],
+          ),
           automaticallyImplyLeading: false,
         ),
-        body: ListView(children: [_tabPages[_selectedIndex]],),
-          bottomNavigationBar: BottomNavigationBar(
+        body: ListView(
+          children: [_tabPages[_selectedIndex]],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(
-            Icons.free_cancellation,
-          ),label: "Requests"),
-          BottomNavigationBarItem(icon: Icon(
-            Icons.notifications,
-          ),label: "Notifications"),
-          BottomNavigationBarItem(icon: Icon(
-            Icons.more_horiz,
-          ),label: "Categories"),
-          BottomNavigationBarItem(icon: Icon(
-            Icons.account_box,
-          ),label: "Account"),
-        ],
-        type: BottomNavigationBarType.fixed,
-        onTap: (int index){
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.free_cancellation,
+                ),
+                label: "Requests"),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.notifications,
+                ),
+                label: "Notifications"),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.more_horiz,
+                ),
+                label: "Categories"),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.account_box,
+                ),
+                label: "Account"),
+          ],
+          type: BottomNavigationBarType.fixed,
+          onTap: (int index) {
             setState(() {
-              _selectedIndex=index;
+              _selectedIndex = index;
             });
-        },
-      ),
+          },
+        ),
       ),
     );
   }
-
-
 }
-

@@ -15,6 +15,17 @@ class FirestoreService {
     return user.toList();
   }
 
+  Future<User> getUserByUid(String uid) async {
+    var reference = _database.collection("users").doc(uid);
+    var snapshot = await reference.get();
+    var data = snapshot.data();
+    if (data == null) {
+      return Future<User>.value(null);
+    } else {
+      return User.fromJson(data);
+    }
+  }
+
   Future<User> getUserByName(String name) async {
     var reference = _database.collection("users").doc(name);
     var snapshot = await reference.get();
@@ -28,14 +39,14 @@ class FirestoreService {
 
   Future<void> createUser(User user) async {
     var reference =
-        _database.collection("users").doc(user.name).set(user.toJson());
+        _database.collection("users").doc(user.uid).set(user.toJson());
     await reference;
   }
 
   Future<void> updateUserById(User user) async {
-    var reference = _database.collection("users").doc(user.uid.toString());
+    var reference = _database.collection("users").doc(user.uid);
     var newData = {
-      "name": user.name,
+      // "name": user.name,
       "email": user.email,
       "address": user.address,
       "phone": user.phone,
@@ -44,7 +55,7 @@ class FirestoreService {
   }
 
   Future<void> deleteUserById(User user) async {
-    var reference = _database.collection("users").doc(user.uid.toString());
+    var reference = _database.collection("users").doc(user.uid);
 
     return reference.delete();
   }
@@ -82,8 +93,6 @@ class FirestoreService {
         _database.collection("services").doc(service.sid.toString());
     var newData = {
       "name": service.name,
-      "category": service.category,
-      "description": service.description,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
@@ -184,6 +193,7 @@ class FirestoreService {
       "email": provider.email,
       "address": provider.address,
       "phone": provider.phone,
+      "description": provider.description,
     };
     return reference.set(newData, SetOptions(merge: true));
   }

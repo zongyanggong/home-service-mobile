@@ -4,14 +4,21 @@ import 'package:user/home/home.dart';
 import '../services/auth_service.dart'; // Replace with the actual path
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/firestore.dart';
+import '../services/models.dart' as model;
+import '../services/info_state.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   final AuthService _auth = AuthService();
+  final FirestoreService _firestoreService = FirestoreService();
 
   LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var info = Provider.of<Info>(context, listen: true);
+
     return Scaffold(
         appBar: AppBar(
             title: const Center(
@@ -22,7 +29,11 @@ class LoginPage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30.0),
-              child: Image.asset("./assets/images/logo.jpg",width: 250,height: 250,),
+              child: Image.asset(
+                "./assets/images/logo.jpg",
+                width: 250,
+                height: 250,
+              ),
             ),
             SizedBox(
               width: 300,
@@ -46,9 +57,39 @@ class LoginPage extends StatelessWidget {
                         .instance
                         .signInWithCredential(credential);
                     final User? user = authResult.user;
+                    print(user);
+                    //Save User to Firestore
+                    try {
+                      model.User existUser =
+                          await _firestoreService.getUserByUid(user!.uid);
+
+                      if (existUser != null) {
+                        //User already exist in firestore
+                      } else {
+                        //New user
+                        await _firestoreService.createUser(
+                          model.User(
+                            uid: user!.uid,
+                            name: user.displayName,
+                            email: user.email,
+                            address: '',
+                            phone: '',
+                            imgPath: user.photoURL,
+                          ),
+                        );
+                      }
+                      // User creation was successful, you can add your logic here
+                    } catch (e) {
+                      // Handle any errors that occurred during user creation
+                      print('Error creating user: $e');
+                    }
+
+                    //Save User to Provider
+                    info.setUser(
+                        await _firestoreService.getUserByUid(user!.uid));
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const HomeScreen()));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const HomeScreen()));
                   } on FirebaseAuthException catch (e) {
                     throw e.message!;
                   } on FormatException catch (e) {
@@ -91,7 +132,9 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(height: 20,),
+            const Divider(
+              height: 20,
+            ),
             SizedBox(
               width: 300,
               child: ElevatedButton(
@@ -99,6 +142,7 @@ class LoginPage extends StatelessWidget {
                   // Sign in anonymously
                   dynamic result = await _auth.signInAnonymously();
                   if (result != null) {
+                    print(result);
                     // Successfully signed in, navigate to the home page
                     // ignore: use_build_context_synchronously
                     Navigator.pushReplacementNamed(context, '/home');

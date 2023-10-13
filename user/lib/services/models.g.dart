@@ -7,11 +7,12 @@ part of 'models.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-      uid: json['uid'] as int? ?? 0,
+      uid: json['uid'] as String? ?? "",
       name: json['name'] as String? ?? "",
       email: json['email'] as String? ?? "",
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
+      imgPath: json['imgPath'] as String? ?? "",
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -20,20 +21,17 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'email': instance.email,
       'address': instance.address,
       'phone': instance.phone,
+      'imgPath': instance.imgPath,
     };
 
 Service _$ServiceFromJson(Map<String, dynamic> json) => Service(
       sid: json['sid'] as int? ?? 0,
       name: json['name'] as String? ?? "",
-      category: json['category'] as String? ?? "",
-      description: json['description'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ServiceToJson(Service instance) => <String, dynamic>{
       'sid': instance.sid,
       'name': instance.name,
-      'category': instance.category,
-      'description': instance.description,
     };
 
 ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
@@ -77,6 +75,8 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
       sid: json['sid'] as int? ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      description: json['description'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
@@ -86,4 +86,6 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'address': instance.address,
       'phone': instance.phone,
       'sid': instance.sid,
+      'price': instance.price,
+      'description': instance.description,
     };

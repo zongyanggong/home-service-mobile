@@ -3,18 +3,20 @@ part 'models.g.dart';
 
 @JsonSerializable()
 class User {
-  final int uid;
-  final String name;
-  final String email;
-  final String address;
-  final String phone;
+  final String uid;
+  final String? name;
+  String? email;
+  String? address;
+  String? phone;
+  String? imgPath;
 
   User({
-    this.uid = 0,
+    this.uid = "",
     this.name = "",
     this.email = "",
     this.address = "",
     this.phone = "",
+    this.imgPath = "",
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -25,14 +27,10 @@ class User {
 class Service {
   final int sid;
   final String name;
-  final String category;
-  final String description;
 
   Service({
     this.sid = 0,
     this.name = "",
-    this.category = "",
-    this.description = "",
   });
 
   factory Service.fromJson(Map<String, dynamic> json) =>
@@ -84,6 +82,8 @@ class Provider {
   final String address;
   final String phone;
   final int sid; //service he can prodive, only one service for now
+  final double price;
+  final String description;
 
   Provider({
     this.pid = 0,
@@ -92,6 +92,8 @@ class Provider {
     this.address = "",
     this.phone = "",
     this.sid = 0,
+    this.price = 0,
+    this.description = "",
   });
 
   factory Provider.fromJson(Map<String, dynamic> json) =>
