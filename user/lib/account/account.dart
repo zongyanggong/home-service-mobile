@@ -1,12 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:user/profile/profile.dart';
 import 'package:user/services/service.dart';
-import 'package:user/services/user.dart';
+import 'package:user/services/user_provider.dart';
 import 'package:user/share/account_button.dart';
 import 'package:user/share/account_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../services/firestore.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class AccountPage extends StatelessWidget {
   AccountPage({super.key});
@@ -16,11 +21,14 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var currentUser = Provider.of<CurrentUser>(context,listen: false);
+    var info = Provider.of<Info>(context, listen: false);
 
-    CurrentUser currentUser = CurrentUser();
-    currentUser.name = "Mark";
-    currentUser.imgPath = 'assets/images/face1.jpg';
+    // CurrentUser currentUser = CurrentUser();
+
+    var name = info.currentUser?.name ?? "Guest";
+
+    var imgPath = info.currentUser?.imgPath ?? '';
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -29,8 +37,8 @@ class AccountPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: AccountCard(
-                name: currentUser.name,
-                imgPath: currentUser.imgPath,
+                name: name,
+                imgPath: imgPath,
                 onViewProfile: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ProfileSceen()));
@@ -73,10 +81,13 @@ class AccountPage extends StatelessWidget {
   }
 
   Future<void> _signOut(BuildContext context) async {
+    var info = Provider.of<Info>(context, listen: false);
+
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
       await _googleSignIn.signOut();
+      info.setUser(null);
       // You can navigate to the login screen or any other screen after logout.
       // Example:
       // ignore: use_build_context_synchronously
