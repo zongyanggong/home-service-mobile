@@ -35,11 +35,11 @@ class BodyContent extends StatelessWidget {
     var info = Provider.of<Info>(context, listen: false);
 
     TextEditingController addressController = TextEditingController();
-    addressController.text = info.currentUser!.address!;
+    addressController.text = info.currentUser.address!;
     TextEditingController telephoneController = TextEditingController();
-    telephoneController.text = info.currentUser!.phone!;
+    telephoneController.text = info.currentUser.phone!;
     TextEditingController emailController = TextEditingController();
-    emailController.text = info.currentUser!.email!;
+    emailController.text = info.currentUser.email!;
     return ListView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
