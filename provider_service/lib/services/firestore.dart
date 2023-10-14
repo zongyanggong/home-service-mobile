@@ -90,13 +90,14 @@ class FirestoreService {
   Future<void> createService(Service service) async {
     var reference = _database
         .collection("services")
-        .doc(service.name)
+        .doc(service.sid.toString())
         .set(service.toJson());
     await reference;
   }
 
   Future<void> updateServiceById(Service service) async {
-    var reference = _database.collection("services").doc(service.sid);
+    var reference =
+        _database.collection("services").doc(service.sid.toString());
     var newData = {
       "name": service.name,
     };
@@ -104,7 +105,8 @@ class FirestoreService {
   }
 
   Future<void> deleteServiceById(Service service) async {
-    var reference = _database.collection("services").doc(service.sid);
+    var reference =
+        _database.collection("services").doc(service.sid.toString());
 
     return reference.delete();
   }
@@ -184,10 +186,30 @@ class FirestoreService {
     }
   }
 
+  Future<Provider> getProviderByPid(String pid) async {
+    var reference = _database.collection("providers").doc(pid);
+    var snapshot = await reference.get();
+    var data = snapshot.data();
+    if (data == null) {
+      return Future<Provider>.value(Provider(
+        pid: "",
+        name: "",
+        email: "",
+        phone: '',
+        sid: 0,
+        price: 0.0,
+        description: "",
+        imgPath: "",
+      ));
+    } else {
+      return Provider.fromJson(data);
+    }
+  }
+
   Future<void> createProvider(Provider provider) async {
     var reference = _database
         .collection("providers")
-        .doc(provider.name)
+        .doc(provider.pid)
         .set(provider.toJson());
     await reference;
   }
@@ -197,9 +219,10 @@ class FirestoreService {
     var newData = {
       "name": provider.name,
       "email": provider.email,
-      "address": provider.address,
       "phone": provider.phone,
+      "price": provider.price,
       "description": provider.description,
+      "sid": provider.sid,
     };
     return reference.set(newData, SetOptions(merge: true));
   }

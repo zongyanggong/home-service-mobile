@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:user/service/appbar_titles.dart';
+import 'package:user/services/models.dart';
 import 'package:user/services/service_provider.dart';
-import 'package:user/services/user.dart';
 import 'package:user/share/account_card.dart';
 import 'package:user/share/account_input.dart';
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/dropdown_field.dart';
 import 'package:user/share/input_field.dart';
+import 'package:provider/provider.dart' as provider;
+import '../services/firestore.dart';
+import '../services/info_state.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class ProfileSceen extends StatelessWidget {
   const ProfileSceen({super.key});
@@ -34,24 +39,20 @@ class BodyContent extends StatefulWidget {
 }
 
 class _BodyContentState extends State<BodyContent> {
-  int _cid = 1;
-
   @override
   Widget build(BuildContext context) {
-    // var currentUser = Provider.of<CurrentUser>(context,listen: false);
-    ServiceProvider serviceProvider = ServiceProvider();
-    serviceProvider.name = "Mark";
-    serviceProvider.imgPath = 'assets/images/face1.jpg';
-    serviceProvider.phone = "123456789";
-    serviceProvider.email = "test@gmail.com";
-    serviceProvider.price = 200;
+    var info = provider.Provider.of<Info>(context, listen: false);
 
-    TextEditingController _telephoneController = TextEditingController();
-    _telephoneController.text = serviceProvider.phone;
-    TextEditingController _emailController = TextEditingController();
-    _emailController.text = serviceProvider.email;
-    TextEditingController _priceController = TextEditingController();
-    _priceController.text = serviceProvider.price.toString();
+    List<String> categories = info.getService();
+
+    TextEditingController telephoneController = TextEditingController();
+    telephoneController.text = info.currentUser.phone!;
+    TextEditingController emailController = TextEditingController();
+    emailController.text = info.currentUser.email!;
+    TextEditingController priceController = TextEditingController();
+    priceController.text = info.currentUser.price.toString();
+    TextEditingController descController = TextEditingController();
+    descController.text = info.currentUser.description!;
 
     return ListView(children: [
       Column(
@@ -62,8 +63,8 @@ class _BodyContentState extends State<BodyContent> {
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: AccountCard(
-                  name: serviceProvider.name,
-                  imgPath: serviceProvider.imgPath,
+                  name: info.currentUser.name!,
+                  imgPath: info.currentUser.imgPath!,
                   isEdit: true,
                   onTakePicture: () {},
                 ),
@@ -80,29 +81,29 @@ class _BodyContentState extends State<BodyContent> {
                     InputField(
                       title: "Telephone",
                       hint: "Please input your telephone",
-                      controller: _telephoneController,
+                      controller: telephoneController,
                     ),
                     InputField(
                       title: "Email",
                       hint: "Please input your email",
-                      controller: _emailController,
+                      controller: emailController,
                     ),
                     Row(
                       children: [
+                        //1. Fixed array from file
                         Expanded(
                           child: DropdownField(
                             title: "Category",
                             array: categories,
-                            index: _cid,
+                            index: info.currentUser.sid!,
                             onValueChanged: (value) {
                               setState(() {
-                                debugPrint("$value");
-                                _cid = value;
-                                debugPrint("$_cid");
+                                info.currentUser.sid = value;
                               });
                             },
                           ),
                         ),
+
                         const SizedBox(
                           width: 12,
                         ),
@@ -110,15 +111,16 @@ class _BodyContentState extends State<BodyContent> {
                           child: InputField(
                             title: "Charge /hour",
                             hint: "/hour",
-                            controller: _priceController,
+                            controller: priceController,
                           ),
                         ),
                       ],
                     ),
-                    const InputField(
+                    InputField(
                       title: "About",
                       hint: "Experience",
                       maxLines: 5,
+                      controller: descController,
                     )
                   ],
                 ),
@@ -126,7 +128,15 @@ class _BodyContentState extends State<BodyContent> {
               SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => {
+                    info.currentUser.price = double.parse(priceController.text),
+                    info.currentUser.phone = telephoneController.text,
+                    info.currentUser.email = emailController.text,
+                    info.currentUser.description = descController.text,
+
+                    // Update user in firestore
+                    _firestoreService.updateProviderById(info.currentUser),
+                  },
                   child: const Text("Update"),
                 ),
               ),

@@ -25,7 +25,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
     };
 
 Service _$ServiceFromJson(Map<String, dynamic> json) => Service(
-      sid: json['sid'] as String? ?? "",
+      sid: json['sid'] as int? ?? 0,
       name: json['name'] as String? ?? "",
     );
 
@@ -80,7 +80,6 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       pid: json['pid'] as String? ?? "",
       name: json['name'] as String? ?? "",
       email: json['email'] as String? ?? "",
-      address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
       sid: json['sid'] as int? ?? 0,
       price: (json['price'] as num?)?.toDouble() ?? 0,
@@ -92,7 +91,6 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'pid': instance.pid,
       'name': instance.name,
       'email': instance.email,
-      'address': instance.address,
       'phone': instance.phone,
       'sid': instance.sid,
       'price': instance.price,

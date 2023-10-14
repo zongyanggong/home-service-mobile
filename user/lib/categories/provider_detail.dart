@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:user/categories/provider_book.dart';
 import 'package:user/service/appbar_titles.dart';
-import 'package:user/services/service_provider.dart';
+
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/category_card.dart';
 import 'package:user/share/user_card.dart';
+import '../services/models.dart' as model;
 
 class ProviderDetailScreen extends StatelessWidget {
   const ProviderDetailScreen({super.key, required this.serviceProvider});
-  final ServiceProvider serviceProvider;
+  final model.Provider serviceProvider;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: AppBarTitle(
-          title: "",
+          title: "Profile",
         ),
       ),
       body: ListView(children: [
@@ -31,6 +32,7 @@ class ProviderDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),
               child: Container(
                   height: 350,
+                  width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     color: Colors.blueGrey[50], // Background color
                     borderRadius:
@@ -48,7 +50,8 @@ class ProviderDetailScreen extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 16),
                         child: Text(serviceProvider.description,
                             style: const TextStyle(
                               fontSize: 16,

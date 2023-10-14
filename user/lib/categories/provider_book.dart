@@ -12,12 +12,13 @@ import '../services/models.dart';
 import 'package:uuid/uuid.dart';
 import '../services/info_state.dart';
 import 'package:provider/provider.dart' as provider;
+import '../services/models.dart' as model;
 
 final FirestoreService _firestoreService = FirestoreService();
 
 class ProviderBookScreen extends StatefulWidget {
   ProviderBookScreen({super.key, required this.serviceProvider});
-  ServiceProvider serviceProvider;
+  model.Provider serviceProvider;
 
   @override
   State<ProviderBookScreen> createState() => _ProviderBookScreenState();
@@ -48,6 +49,12 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
     var info = provider.Provider.of<Info>(context,
         listen: false); // _addressController.text = user.address;
 
+    var hint = info.currentUser.address != ""
+        ? info.currentUser.address!
+        : "Please update your address in Account page";
+
+    TextEditingController notesController = TextEditingController();
+    notesController.text = "";
     return Scaffold(
       appBar: AppBar(
         title: AppBarTitle(
@@ -119,14 +126,15 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                         )),
                       ],
                     ),
-                    const InputField(
+                    InputField(
                       title: "Full Address",
-                      hint: "Please input address",
+                      hint: hint,
                     ),
-                    const InputField(
+                    InputField(
                       title: "Appointment notes",
                       hint: "Please input notes",
                       maxLines: 8,
+                      controller: notesController,
                     )
                   ],
                 ),
@@ -141,12 +149,6 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                       //
                       const uuid = Uuid();
 
-                      //Create booking time
-                      DateTime startTime = DateTime.parse(
-                          "${_selectedDate.toString().split(" ")[0]} ${_startTime.toString().split(" ")[0]}:00.000 ${_startTime.toString().split(" ")[1]}");
-                      DateTime endTime = DateTime.parse(
-                          "${_selectedDate.toString().split(" ")[0]} ${_endTime.toString().split(" ")[0]}:00.000 ${_endTime.toString().split(" ")[1]}");
-
                       //New user
                       _firestoreService.createServiceRecord(
                         ServiceRecord(
@@ -160,8 +162,12 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                           acceptedTime: 0,
                           actualStartTime: 0,
                           actualEndTime: 0,
-                          bookingStartTime: startTime.millisecondsSinceEpoch,
-                          bookingEndTime: endTime.millisecondsSinceEpoch,
+                          bookingStartTime:
+                              _convertTimeTomillisecondsSinceEpoch(
+                                  _selectedDate, _startTime),
+                          bookingEndTime: _convertTimeTomillisecondsSinceEpoch(
+                              _selectedDate, _endTime),
+                          appointmentNotes: notesController.text,
                         ),
                       );
 
@@ -181,6 +187,26 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
         ),
       ),
     );
+  }
+
+  _convertTimeTomillisecondsSinceEpoch(selectedDate, startTime) {
+    int hour = int.parse(startTime.split(":")[0]);
+    int minute = int.parse(startTime.split(":")[1].split(" ")[0]);
+    bool isPM = startTime.split(":")[1].split(" ")[1] == "PM";
+
+    if (isPM && hour < 12) {
+      hour += 12;
+    } else if (!isPM && hour == 12) {
+      hour = 0;
+    }
+
+    String time24Hour =
+        "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
+
+    DateTime fullStartTime =
+        DateTime.parse("${_selectedDate.toString().split(" ")[0]} $time24Hour");
+
+    return fullStartTime.millisecondsSinceEpoch;
   }
 
   _getDateFromUser() async {

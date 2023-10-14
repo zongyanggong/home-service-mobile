@@ -25,11 +25,11 @@ class User {
 
 @JsonSerializable()
 class Service {
-  final String sid;
+  final int sid;
   final String name;
 
   Service({
-    this.sid = "",
+    this.sid = 0,
     this.name = "",
   });
 
@@ -84,21 +84,19 @@ class ServiceRecord {
 
 @JsonSerializable()
 class Provider {
-  final String pid;
-  final String name;
-  final String email;
-  final String address;
-  final String phone;
-  final int sid; //service he can prodive, only one service for now
-  final double price;
-  final String description;
-  final String imgPath;
+  String? pid;
+  String? name;
+  String? email;
+  String? phone;
+  int? sid; //service he can prodive, only one service for now
+  double? price;
+  String? description;
+  String? imgPath;
 
   Provider({
     this.pid = "",
     this.name = "",
     this.email = "",
-    this.address = "",
     this.phone = "",
     this.sid = 0,
     this.price = 0,
