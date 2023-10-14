@@ -75,7 +75,7 @@ class AccountCard extends StatelessWidget {
                         fontSize: 30, fontWeight: FontWeight.w600),
                   ),
                   // Display "View profile" text only when isEdit is false
-                  if (info.currentUser.uid != "")
+                  if (!isEdit)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 8),

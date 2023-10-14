@@ -12,12 +12,13 @@ import '../services/models.dart';
 import 'package:uuid/uuid.dart';
 import '../services/info_state.dart';
 import 'package:provider/provider.dart' as provider;
+import '../services/models.dart' as model;
 
 final FirestoreService _firestoreService = FirestoreService();
 
 class ProviderBookScreen extends StatefulWidget {
   ProviderBookScreen({super.key, required this.serviceProvider});
-  ServiceProvider serviceProvider;
+  model.Provider serviceProvider;
 
   @override
   State<ProviderBookScreen> createState() => _ProviderBookScreenState();
