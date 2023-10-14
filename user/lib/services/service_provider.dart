@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, unnecessary_getters_setters
+
 import 'package:flutter/material.dart';
 import 'package:user/services/service_category.dart';
 

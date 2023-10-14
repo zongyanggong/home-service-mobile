@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, must_be_immutable, prefer_final_fields, unused_field, no_leading_underscores_for_local_identifiers, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -112,7 +114,7 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                         )),
                       ],
                     ),
-                    InputField(
+                    const InputField(
                       title: "Full Address",
                       hint: "Please input address",
                     ),
