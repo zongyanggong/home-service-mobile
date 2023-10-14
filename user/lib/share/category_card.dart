@@ -27,13 +27,13 @@ class ProviderDetail extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  width: 120,
-                  height: 120,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(serviceProvider.imgPath),
+                      image: NetworkImage(serviceProvider.imgPath),
                     ),
                   ),
                 ),
