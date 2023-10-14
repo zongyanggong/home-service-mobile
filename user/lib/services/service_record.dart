@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:user/services/models.dart';
 import 'package:user/services/service_category.dart';
 
-class ServiceRecord{
+class TempServiceRecord{
   late int rid;
+  late String name;
+  late String imgPath;
+  late double price;
+  late RecordStatus status;
   late int uid;
   late int sid;
   late int pid;
-  late int status;
   late DateTime createTime;
-  late DateTime startTime;
-  late DateTime endTime;
+  late DateTime expectedDate;
+  late DateTime actualDate;
+  late DateTime expectedStartTime;
+  late DateTime expectedEndTime;
+  late DateTime actualStartTime;
+  late DateTime actualEndTime;
   late String review;
   late double score;
 }

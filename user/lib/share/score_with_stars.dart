@@ -6,7 +6,6 @@ class ScoreWithStars extends StatelessWidget {
     required this.score,
   });
   final double score;
-
   @override
   Widget build(BuildContext context) {
     int starCount = score.floor();
