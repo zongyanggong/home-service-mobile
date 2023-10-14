@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:user/categories/provider_book.dart';
 import 'package:user/service/appbar_titles.dart';
-import 'package:user/services/service_provider.dart';
+
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/category_card.dart';
 import 'package:user/share/user_card.dart';
+import '../services/models.dart' as model;
 
 class ProviderDetailScreen extends StatelessWidget {
   const ProviderDetailScreen({super.key, required this.serviceProvider});
-  final ServiceProvider serviceProvider;
+  final model.Provider serviceProvider;
 
   @override
   Widget build(BuildContext context) {

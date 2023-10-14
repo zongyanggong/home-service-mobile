@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:user/services/service_provider.dart';
 import 'package:user/share/score_with_stars.dart';
+import '../services/models.dart' as model;
 
 class UserCard extends StatelessWidget {
-  UserCard({super.key, required this.serviceProvider,this.onTap});
-  ServiceProvider serviceProvider;
+  UserCard({super.key, required this.serviceProvider, this.onTap});
+  model.Provider serviceProvider;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
@@ -24,7 +24,7 @@ class UserCard extends StatelessWidget {
             shape: BoxShape.circle,
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage(serviceProvider.imgPath),
+              image: NetworkImage(serviceProvider.imgPath),
             ),
           ),
         ),
@@ -36,10 +36,10 @@ class UserCard extends StatelessWidget {
           "CAD \$${serviceProvider.price}/Hour",
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
-        trailing: ScoreWithStars(score: serviceProvider.score,),
+        trailing: const ScoreWithStars(
+          score: 4.4,
+        ),
       ),
     );
   }
 }
-
-

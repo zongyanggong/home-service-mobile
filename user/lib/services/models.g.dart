@@ -82,9 +82,10 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       email: json['email'] as String? ?? "",
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
-      sid: json['sid'] as String? ?? "",
+      sid: json['sid'] as int? ?? 0,
       price: (json['price'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String? ?? "",
+      imgPath: json['imgPath'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
@@ -96,4 +97,5 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'sid': instance.sid,
       'price': instance.price,
       'description': instance.description,
+      'imgPath': instance.imgPath,
     };

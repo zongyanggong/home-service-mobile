@@ -9,9 +9,6 @@ import 'package:user/share/account_button.dart';
 import 'package:user/share/account_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../services/firestore.dart';
-
-final FirestoreService _firestoreService = FirestoreService();
 
 class AccountPage extends StatelessWidget {
   AccountPage({super.key});
@@ -40,6 +37,9 @@ class AccountPage extends StatelessWidget {
               child: AccountCard(
                 name: name,
                 imgPath: info.currentUser.imgPath!,
+                isEdit: info.currentUser.uid == ""
+                    ? true
+                    : false, // false : show view profile
                 onViewProfile: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ProfileSceen()));

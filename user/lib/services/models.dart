@@ -89,9 +89,10 @@ class Provider {
   final String email;
   final String address;
   final String phone;
-  final String sid; //service he can prodive, only one service for now
+  final int sid; //service he can prodive, only one service for now
   final double price;
   final String description;
+  final String imgPath;
 
   Provider({
     this.pid = "",
@@ -99,9 +100,10 @@ class Provider {
     this.email = "",
     this.address = "",
     this.phone = "",
-    this.sid = "",
+    this.sid = 0,
     this.price = 0,
     this.description = "",
+    this.imgPath = "",
   });
 
   factory Provider.fromJson(Map<String, dynamic> json) =>
