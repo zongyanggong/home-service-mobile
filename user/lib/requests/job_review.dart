@@ -98,6 +98,8 @@ class _JobViewScreenState extends State<JobViewScreen> {
             ),
             RatingBar.builder(
                 initialRating: initScore,
+                minRating: 1,
+                maxRating: 5,
                 allowHalfRating: true,
                 itemBuilder: (context, _) => const Icon(
                       Icons.star,
