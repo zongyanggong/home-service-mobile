@@ -88,9 +88,7 @@ class RequestCompletedCard extends StatelessWidget {
                 ),
               ),
             if (tempServiceRecord.score == null &&
-                tempServiceRecord.status == RecordStatus.completed ||
-                tempServiceRecord.status == RecordStatus.canceled ||
-                tempServiceRecord.status == RecordStatus.rejected)
+                tempServiceRecord.status == RecordStatus.completed)
               Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Row(
