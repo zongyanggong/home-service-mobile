@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ScoreWithStars extends StatelessWidget {
   const ScoreWithStars({
@@ -16,23 +17,17 @@ class ScoreWithStars extends StatelessWidget {
           score.toStringAsFixed(2),
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (int i = 0; i < starCount; i++)
-              const Icon(
-                Icons.star,
-                color: Colors.green,
-                size: 15,
-              ),
-            for (int i = starCount; i < 5; i++)
-              const Icon(
-                Icons.star_border,
-                color: Colors.green,
-                size: 15,
-              ),
-          ],
-        )
+        RatingBar.builder(
+            ignoreGestures: true,
+            initialRating: score,
+            maxRating: 5,
+            allowHalfRating: true,
+            itemSize: 16,
+            itemBuilder: (context, _) => const Icon(
+              Icons.star,
+              color: Colors.green,
+            ),
+            onRatingUpdate: (rating) {}),
       ],
     );
   }

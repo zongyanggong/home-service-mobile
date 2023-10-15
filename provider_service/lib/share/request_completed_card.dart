@@ -47,7 +47,7 @@ class RequestCompletedCard extends StatelessWidget {
             Text(
               "${DateFormat.yMd().format(tempServiceRecord.actualDate)} ${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualStartTime!.hour, minute: tempServiceRecord.actualStartTime!.minute))}-${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualEndTime!.hour, minute: tempServiceRecord.actualEndTime!.minute))}",
               style:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
             if (tempServiceRecord.score != null &&
                 tempServiceRecord.status == RecordStatus.completed)
@@ -79,7 +79,7 @@ class RequestCompletedCard extends StatelessWidget {
                 ),
               ),
             if (tempServiceRecord.score == null &&
-                tempServiceRecord.status == RecordStatus.completed)
+                    tempServiceRecord.status == RecordStatus.completed)
               Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Row(

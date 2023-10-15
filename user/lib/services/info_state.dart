@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user/services/record_status.dart';
 import './models.dart';
 
 class Info extends ChangeNotifier {

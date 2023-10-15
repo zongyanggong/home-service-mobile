@@ -61,7 +61,7 @@ class ProviderDetail extends StatelessWidget {
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w400),
                       ),
-                      ScoreWithStars(
+                      const ScoreWithStars(
                         score: 3.8,
                       ),
                     ],

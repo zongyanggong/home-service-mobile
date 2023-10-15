@@ -64,7 +64,7 @@ class ProviderDetailScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 2,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ProviderBookScreen(
                           serviceProvider: serviceProvider)));
                 },

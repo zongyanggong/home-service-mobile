@@ -1,15 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:user/services/service_category.dart';
 
-class ServiceRecord{
+import 'package:user/services/record_status.dart';
+
+class TempServiceRecord{
   late int rid;
+  late String name;
+  late String imgPath;
+  late String address;
+  late double price;
+  late RecordStatus status;
   late int uid;
   late int sid;
   late int pid;
-  late int status;
   late DateTime createTime;
-  late DateTime startTime;
-  late DateTime endTime;
-  late String review;
-  late double score;
+  late DateTime? acceptedTime;
+  late DateTime expectedDate;
+  late DateTime actualDate;
+  late int bookingStartTime;
+  late int bookingEndTime;
+  late DateTime? actualStartTime;
+  late DateTime? actualEndTime;
+  late String? review;
+  late double? score;
 }

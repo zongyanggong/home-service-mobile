@@ -55,7 +55,7 @@ class RequestUpcomingCard extends StatelessWidget {
           children: <Widget>[
             Text(
               "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).minute))}",
-              style:
+               style:
               const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
             Padding(

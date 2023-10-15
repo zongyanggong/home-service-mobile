@@ -1,69 +1,56 @@
 import 'package:flutter/material.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../services/firestore.dart';
 import '../services/models.dart' as model;
 import '../services/info_state.dart';
 import 'package:provider/provider.dart';
 import '../share/notification_card.dart';
+import 'package:user/share/notification_field.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
-class NotificationsPage extends StatefulWidget {
-  NotificationsPage({super.key});
-  @override
-  State<StatefulWidget> createState() => _NotificationsPageState();
-}
+final List<Notifiscation> notifcations = [
+  Notifiscation()
+    ..title = "New Appointment"
+    ..date = "20 Dec 2023"
+    ..message = "You have received new appointment for service",
+  Notifiscation()
+    ..title = "Service started"
+    ..date = "22 Dec 2023"
+    ..message = "The service is started",
+];
 
-class _NotificationsPageState extends State<NotificationsPage> {
+class NotificationsPage extends StatelessWidget {
+  const NotificationsPage({super.key});
   @override
   Widget build(BuildContext context) {
-    var info = Provider.of<Info>(context, listen: true);
-    //get notificaiton data from firebase
-    getNotifications() async {
-      List<model.Notification> list =
-          await _firestoreService.getNotifications();
-      return list
-          .where((element) => element.uid == info.currentUser.uid)
-          .toList();
-    }
-
-    return Container(
-        // height: 300, // Set a specific height
-        child: FutureBuilder<List<model.Notification>>(
-            future: getNotifications(),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<model.Notification>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // Data is still loading
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                // Data loading has encountered an error
-                return Text('Error: ${snapshot.error}');
-              } else {
-                // Data has been loaded successfully
-                final notifications = snapshot.data;
-
-                return Padding(
-                  padding: const EdgeInsets.only(top: 9),
-                  child: ListView.builder(
-                    itemCount: notifications!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 9),
-                        child: NotificationCard(
-                          notification: notifications[index],
-                          onTap: () {
-                            // Navigator.of(context).push(MaterialPageRoute(
-                            //     builder: (context) => ProviderDetailScreen(
-                            //         serviceProvider: serviceProviders[index])));
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }
-            }));
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: notifcations.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+              child: NotificationField(
+                title: notifcations[index].title,
+                date: notifcations[index].date,
+                message: notifcations[index].message,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    ;
   }
+}
+
+class Notifiscation {
+  late String title;
+  late String date;
+  late String message;
 }

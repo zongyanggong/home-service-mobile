@@ -30,7 +30,8 @@ class HomeServiceApp extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 bool isUserSignedIn = snapshot.data as bool;
-                return isUserSignedIn ? const HomeScreen() : LoginPage();
+                // return isUserSignedIn ? const HomeScreen() : LoginPage();
+                return LoginPage();
               }
               return const CircularProgressIndicator();
             },

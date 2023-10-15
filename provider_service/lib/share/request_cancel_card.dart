@@ -5,25 +5,15 @@ import 'package:user/services/record_status.dart';
 import 'package:user/services/service_provider.dart';
 import 'package:user/services/service_record.dart';
 import 'package:user/share/score_with_stars.dart';
-import '../services/firestore.dart';
-import '../services/models.dart' as model;
 
-final FirestoreService _firestoreService = FirestoreService();
-
-class RequestUpcomingCard extends StatelessWidget {
-  RequestUpcomingCard({super.key, required this.tempServiceRecord, this.onTap});
+class RequestCancelCard extends StatelessWidget {
+  RequestCancelCard(
+      {super.key, required this.tempServiceRecord, this.onTap});
   TempServiceRecord tempServiceRecord;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    getProvider() async {
-      List<model.Provider> list = await _firestoreService.getProvider();
-      return list
-          .where((element) => element.pid == tempServiceRecord.pid)
-          .toList();
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
@@ -58,16 +48,26 @@ class RequestUpcomingCard extends StatelessWidget {
               style:
               const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                tempServiceRecord.status==RecordStatus.pending?"View Order":tempServiceRecord.status.toString().split('.').last,
-                style: const TextStyle(
-                    color: Colors.blueAccent,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400),
-              ),
-            )
+            if (tempServiceRecord.status == RecordStatus.canceled ||
+                tempServiceRecord.status == RecordStatus.rejected)
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Text(
+                        tempServiceRecord.status.toString().split('.').last,
+                        style: const TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ],
+                ),
+              )
           ],
         ),
       ),
