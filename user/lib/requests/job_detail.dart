@@ -225,27 +225,17 @@ class _JobDetailState extends State<JobDetail> {
                                 fontSize: 16, fontWeight: FontWeight.normal),
                           ),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            for (int i = 0;
-                                i < widget.serviceRecord.score!.floor();
-                                i++)
-                              const Icon(
-                                Icons.star,
-                                color: Colors.green,
-                                size: 15,
-                              ),
-                            for (int i = widget.serviceRecord.score!.floor();
-                                i < 5;
-                                i++)
-                              const Icon(
-                                Icons.star_border,
-                                color: Colors.green,
-                                size: 15,
-                              ),
-                          ],
-                        )
+                        RatingBar.builder(
+                            ignoreGestures: true,
+                            initialRating: widget.serviceRecord.score!,
+                            maxRating: 5,
+                            allowHalfRating: true,
+                            itemSize: 16,
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.green,
+                            ),
+                            onRatingUpdate: (rating) {}),
                       ],
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:user/service/appbar_titles.dart';
 import 'package:user/services/record_status.dart';
@@ -63,27 +64,17 @@ class RequestCompletedCard extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.normal),
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        for (int i = 0;
-                        i < tempServiceRecord.score!.floor();
-                        i++)
-                          const Icon(
-                            Icons.star,
-                            color: Colors.green,
-                            size: 15,
-                          ),
-                        for (int i = tempServiceRecord.score!.floor();
-                        i < 5;
-                        i++)
-                          const Icon(
-                            Icons.star_border,
-                            color: Colors.green,
-                            size: 15,
-                          ),
-                      ],
-                    )
+                    RatingBar.builder(
+                        ignoreGestures: true,
+                        initialRating: tempServiceRecord.score!,
+                        maxRating: 5,
+                        allowHalfRating: true,
+                        itemSize: 16,
+                        itemBuilder: (context, _) => const Icon(
+                          Icons.star,
+                          color: Colors.green,
+                        ),
+                        onRatingUpdate: (rating) {}),
                   ],
                 ),
               ),
