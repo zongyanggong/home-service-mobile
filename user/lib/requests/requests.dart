@@ -3,6 +3,7 @@ import 'package:user/requests/job_detail.dart';
 import 'package:user/services/record_status.dart';
 import 'package:user/services/service_provider.dart';
 import 'package:user/services/service_record.dart';
+import 'package:user/share/request_cancel_card.dart';
 import 'package:user/share/request_completed_card.dart';
 import 'package:user/share/request_upcoming_card.dart';
 
@@ -248,7 +249,7 @@ class CancelCard extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-              child: RequestCompletedCard(
+              child: RequestCancelCard(
                 tempServiceRecord: tempServiceRecords[index],
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(

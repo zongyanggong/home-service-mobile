@@ -44,7 +44,7 @@ class RequestCancelCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              "${DateFormat.yMd().format(tempServiceRecord.actualDate)} ${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualStartTime!.hour, minute: tempServiceRecord.actualStartTime!.minute))}-${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualEndTime!.hour, minute: tempServiceRecord.actualEndTime!.minute))}",
+              "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).minute))}",
               style:
               const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
