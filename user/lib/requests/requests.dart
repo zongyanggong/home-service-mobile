@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:user/requests/job_detail.dart';
-import 'package:user/services/models.dart';
 import 'package:user/services/record_status.dart';
 import 'package:user/services/service_provider.dart';
 import 'package:user/services/service_record.dart';
@@ -72,8 +71,8 @@ class UpcomingCard extends StatelessWidget {
       ..score = null
       ..review =null
       ..expectedDate = DateTime.now()
-      ..expectedStartTime = DateTime.now()
-      ..expectedEndTime = DateTime.now().add(const Duration(hours: 1)),
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
     TempServiceRecord()
       ..pid = 2
       ..rid = 2
@@ -89,8 +88,8 @@ class UpcomingCard extends StatelessWidget {
       ..actualEndTime=null
       ..createTime=DateTime.now()
       ..expectedDate = DateTime.now()
-      ..expectedStartTime = DateTime.now().add(const Duration(hours: 3))
-      ..expectedEndTime = DateTime.now().add(const Duration(hours: 4)),
+      ..bookingStartTime = DateTime.now().add(const Duration(hours: 3)).millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 4)).millisecondsSinceEpoch,
   ];
 
   @override
@@ -139,8 +138,8 @@ class CompletedCard extends StatelessWidget {
       ..expectedDate = DateTime.now()
       ..actualStartTime = DateTime.now()
       ..actualEndTime = DateTime.now().add(const Duration(hours: 1))
-      ..expectedStartTime = DateTime.now()
-      ..expectedEndTime = DateTime.now().add(const Duration(hours: 1)),
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
     TempServiceRecord()
       ..pid = 2
       ..rid = 2
@@ -155,8 +154,8 @@ class CompletedCard extends StatelessWidget {
       ..acceptedTime=DateTime.now()
       ..actualDate = DateTime.now()
       ..expectedDate = DateTime.now()
-      ..expectedStartTime = DateTime.now()
-      ..expectedEndTime = DateTime.now().add(const Duration(hours: 1))
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
       ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
       ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
   ];

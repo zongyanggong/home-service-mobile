@@ -1,3 +1,5 @@
+// import 'dart:js_interop_unsafe';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -154,9 +156,9 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                       _firestoreService.createServiceRecord(
                         ServiceRecord(
                           rid: uuid.v1(),
-                          uid: info.currentUser!.uid!,
-                          sid: "1",
-                          pid: '1',
+                          uid: info.currentUser.uid!,
+                          sid: widget.serviceProvider.sid.toString(),
+                          pid: widget.serviceProvider.pid,
                           status: RecordStatus.pending,
                           createdTime:
                               DateTime.now().toUtc().millisecondsSinceEpoch,

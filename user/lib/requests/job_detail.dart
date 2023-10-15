@@ -75,7 +75,7 @@ class _JobDetailState extends State<JobDetail> {
                         LabelField(
                           title: "Booking for",
                           hint:
-                              "${DateFormat.yMd().format(widget.serviceRecord.expectedDate)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.expectedStartTime.hour, minute: widget.serviceRecord.expectedStartTime.minute))}-${format24HourTime(TimeOfDay(hour: widget.serviceRecord.expectedEndTime.hour, minute: widget.serviceRecord.expectedEndTime.minute))}",
+                          "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).minute))}",
                         ),
                         LabelField(
                             title: "Address", hint: info.currentUser.address!),

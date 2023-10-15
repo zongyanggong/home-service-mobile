@@ -16,8 +16,8 @@ class TempServiceRecord{
   late DateTime? acceptedTime;
   late DateTime expectedDate;
   late DateTime actualDate;
-  late DateTime expectedStartTime;
-  late DateTime expectedEndTime;
+  late int bookingStartTime;
+  late int bookingEndTime;
   late DateTime? actualStartTime;
   late DateTime? actualEndTime;
   late String? review;
