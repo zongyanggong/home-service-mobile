@@ -5,7 +5,6 @@ import '../services/firestore.dart';
 import '../services/models.dart' as model;
 import '../services/info_state.dart';
 import 'package:provider/provider.dart';
-import '../share/notification_card.dart';
 import 'package:user/share/notification_field.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
