@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:user/requests/job_review.dart';
 import 'package:user/service/appbar_titles.dart';
@@ -189,10 +190,11 @@ class _JobDetailState extends State<JobDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Rating",style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600])),
+                  Text("Rating",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600])),
                   Padding(
                     padding: const EdgeInsets.only(left: 18,top: 9),
                     child: Row(
@@ -239,12 +241,13 @@ class _JobDetailState extends State<JobDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Review",style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600])),
+                  Text("Review",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600])),
                   Padding(
-                    padding: const EdgeInsets.only(left: 18,top: 9),
+                    padding: const EdgeInsets.only(left: 18, top: 9),
                     child: Text(widget.serviceRecord.review!),
                   ),
                 ],
@@ -256,8 +259,11 @@ class _JobDetailState extends State<JobDetail> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: () => {Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => JobViewScreen(serviceRecord: widget.serviceRecord)))},
+                  onPressed: () => {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            JobViewScreen(serviceRecord: widget.serviceRecord)))
+                  },
                   child: const Text("Review now"),
                 ),
               ),

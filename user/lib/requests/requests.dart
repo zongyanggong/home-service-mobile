@@ -163,25 +163,27 @@ class CompletedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 9),
-      child: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: tempServiceRecords.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-            child: RequestCompletedCard(
-              tempServiceRecord: tempServiceRecords[index],
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        JobDetail(serviceRecord: tempServiceRecords[index])));
-              },
-            ),
-          );
-        },
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 9),
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: tempServiceRecords.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              child: RequestCompletedCard(
+                tempServiceRecord: tempServiceRecords[index],
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          JobDetail(serviceRecord: tempServiceRecords[index])));
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
