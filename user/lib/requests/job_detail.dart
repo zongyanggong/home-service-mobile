@@ -184,7 +184,7 @@ class _JobDetailState extends State<JobDetail> {
               ],
             ),
           ),
-          if (widget.serviceRecord.score != null)
+          if (widget.serviceRecord.score != null && widget.serviceRecord.status==RecordStatus.completed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
               child: Column(
@@ -235,7 +235,7 @@ class _JobDetailState extends State<JobDetail> {
                 ],
               ),
             ),
-          if (widget.serviceRecord.review != null)
+          if (widget.serviceRecord.review != null && widget.serviceRecord.status==RecordStatus.completed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
               child: Column(
