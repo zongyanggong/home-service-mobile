@@ -12,7 +12,6 @@ class RequestCompletedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int starCount = tempServiceRecord.score.floor();
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
@@ -43,10 +42,11 @@ class RequestCompletedCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              "${DateFormat.yMd().format(tempServiceRecord.actualDate)} ${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualStartTime.hour, minute: tempServiceRecord.actualStartTime.minute))}-${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualEndTime.hour, minute: tempServiceRecord.actualEndTime.minute))}",
+              "${DateFormat.yMd().format(tempServiceRecord.actualDate)} ${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualStartTime!.hour, minute: tempServiceRecord.actualStartTime!.minute))}-${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualEndTime!.hour, minute: tempServiceRecord.actualEndTime!.minute))}",
               style:
                   const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
+            if (tempServiceRecord.score!=null)
             Padding(
               padding: const EdgeInsets.only(top: 5),
               child: Row(
@@ -55,20 +55,20 @@ class RequestCompletedCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 5),
                     child: Text(
-                      tempServiceRecord.score.toStringAsFixed(2),
+                      tempServiceRecord.score!.toStringAsFixed(2),
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                     ),
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      for (int i = 0; i < starCount; i++)
+                      for (int i = 0; i < tempServiceRecord.score!.floor(); i++)
                         const Icon(
                           Icons.star,
                           color: Colors.green,
                           size: 15,
                         ),
-                      for (int i = starCount; i < 5; i++)
+                      for (int i = tempServiceRecord.score!.floor(); i < 5; i++)
                         const Icon(
                           Icons.star_border,
                           color: Colors.green,
