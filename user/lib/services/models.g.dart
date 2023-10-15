@@ -99,3 +99,16 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'description': instance.description,
       'imgPath': instance.imgPath,
     };
+
+Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
+      uid: json['uid'] as String? ?? "",
+      rid: json['rid'] as String? ?? "",
+      timeStamp: json['timeStamp'] as int? ?? 0,
+    );
+
+Map<String, dynamic> _$NotificationToJson(Notification instance) =>
+    <String, dynamic>{
+      'uid': instance.uid,
+      'rid': instance.rid,
+      'timeStamp': instance.timeStamp,
+    };
