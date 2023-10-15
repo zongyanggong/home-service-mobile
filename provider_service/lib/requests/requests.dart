@@ -162,6 +162,44 @@ class CompletedCard extends StatelessWidget {
       ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
       ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
       ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
+    TempServiceRecord()
+      ..pid = 2
+      ..rid = 3
+      ..sid = 3
+      ..name = 'User 3'
+      ..imgPath = 'assets/images/face2.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
+      ..price = 60
+      ..score = 3.5
+      ..review="Good service"
+      ..status = RecordStatus.rejected
+      ..createTime=DateTime.now()
+      ..acceptedTime=DateTime.now()
+      ..actualDate = DateTime.now()
+      ..expectedDate = DateTime.now()
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
+      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
+      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
+    TempServiceRecord()
+      ..pid = 2
+      ..rid = 4
+      ..sid = 3
+      ..name = 'User 4'
+      ..imgPath = 'assets/images/face2.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
+      ..price = 60
+      ..score = 3.5
+      ..review="Good service"
+      ..status = RecordStatus.canceled
+      ..createTime=DateTime.now()
+      ..acceptedTime=DateTime.now()
+      ..actualDate = DateTime.now()
+      ..expectedDate = DateTime.now()
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
+      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
+      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
   ];
 
   @override
