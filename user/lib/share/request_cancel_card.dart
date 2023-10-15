@@ -6,8 +6,8 @@ import 'package:user/services/service_provider.dart';
 import 'package:user/services/service_record.dart';
 import 'package:user/share/score_with_stars.dart';
 
-class RequestCompletedCard extends StatelessWidget {
-  RequestCompletedCard(
+class RequestCancelCard extends StatelessWidget {
+  RequestCancelCard(
       {super.key, required this.tempServiceRecord, this.onTap});
   TempServiceRecord tempServiceRecord;
   final VoidCallback? onTap;
@@ -48,48 +48,7 @@ class RequestCompletedCard extends StatelessWidget {
               style:
               const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
-            if (tempServiceRecord.score != null &&
-                tempServiceRecord.status == RecordStatus.completed)
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: Text(
-                        tempServiceRecord.score!.toStringAsFixed(2),
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.normal),
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        for (int i = 0;
-                        i < tempServiceRecord.score!.floor();
-                        i++)
-                          const Icon(
-                            Icons.star,
-                            color: Colors.green,
-                            size: 15,
-                          ),
-                        for (int i = tempServiceRecord.score!.floor();
-                        i < 5;
-                        i++)
-                          const Icon(
-                            Icons.star_border,
-                            color: Colors.green,
-                            size: 15,
-                          ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            if (tempServiceRecord.score == null &&
-                tempServiceRecord.status == RecordStatus.completed ||
-                tempServiceRecord.status == RecordStatus.canceled ||
+            if (tempServiceRecord.status == RecordStatus.canceled ||
                 tempServiceRecord.status == RecordStatus.rejected)
               Padding(
                 padding: const EdgeInsets.only(top: 5),

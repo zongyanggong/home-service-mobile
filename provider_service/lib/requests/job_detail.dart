@@ -110,8 +110,6 @@ class _JobDetailState extends State<JobDetail> {
                         if (widget.serviceRecord.status==RecordStatus.confirmed){
                           setState(() {
                             widget.serviceRecord.status=RecordStatus.started;
-                            debugPrint("click1");
-                            debugPrint(widget.serviceRecord.status.toString());
                             widget.serviceRecord.actualStartTime=DateTime.now();
                           });
                         }else if (widget.serviceRecord.status==RecordStatus.started){

@@ -86,7 +86,7 @@ class _JobDetailState extends State<JobDetail> {
               ],
             ),
           ),
-          if (widget.serviceRecord.status != RecordStatus.completed)
+          if (widget.serviceRecord.status == RecordStatus.pending)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Row(
@@ -94,16 +94,14 @@ class _JobDetailState extends State<JobDetail> {
                   Expanded(
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                widget.serviceRecord.status ==
-                                        RecordStatus.pending
-                                    ? Colors.red
-                                    : Colors.grey),
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                           ),
-                          onPressed: widget.serviceRecord.status ==
-                                  RecordStatus.pending
-                              ? () {}
-                              : null,
+                          onPressed: () {
+                            setState(() {
+                              widget.serviceRecord.status=RecordStatus.canceled;
+                              widget.serviceRecord.actualEndTime=DateTime.now();
+                            });
+                          },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -120,16 +118,9 @@ class _JobDetailState extends State<JobDetail> {
                   Expanded(
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                widget.serviceRecord.status ==
-                                        RecordStatus.pending
-                                    ? Colors.green
-                                    : Colors.grey),
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                           ),
-                          onPressed: widget.serviceRecord.status ==
-                                  RecordStatus.pending
-                              ? () {}
-                              : null,
+                          onPressed: () {},
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -160,6 +151,28 @@ class _JobDetailState extends State<JobDetail> {
                       : "",
                   active: widget.serviceRecord.status == RecordStatus.pending,
                 ),
+                if (widget.serviceRecord.status ==
+                    RecordStatus.rejected) //job rejected by provider
+                  JobStatus(
+                    title: "Job Rejected",
+                    subTitle: widget.serviceRecord.actualEndTime != null
+                        ? "Job rejected on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                        : "",
+                    active:
+                    widget.serviceRecord.status == RecordStatus.rejected,
+                  ),
+                if (widget.serviceRecord.status ==
+                    RecordStatus.canceled) //job canceled by user
+                  JobStatus(
+                    title: "Job Canceled",
+                    subTitle: widget.serviceRecord.actualEndTime != null
+                        ? "Job canceled on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                        : "",
+                    active:
+                    widget.serviceRecord.status == RecordStatus.canceled,
+                  ),
+                if (widget.serviceRecord.status != RecordStatus.canceled &&
+                    widget.serviceRecord.status != RecordStatus.rejected)
                 JobStatus(
                   title: "Job Accepted",
                   subTitle: widget.serviceRecord.acceptedTime != null
@@ -167,6 +180,8 @@ class _JobDetailState extends State<JobDetail> {
                       : "",
                   active: widget.serviceRecord.status == RecordStatus.confirmed,
                 ),
+                if (widget.serviceRecord.status != RecordStatus.canceled &&
+                    widget.serviceRecord.status != RecordStatus.rejected)
                 JobStatus(
                   title: "Job In Process",
                   subTitle: widget.serviceRecord.actualStartTime != null
@@ -174,6 +189,8 @@ class _JobDetailState extends State<JobDetail> {
                       : "",
                   active: widget.serviceRecord.status == RecordStatus.started,
                 ),
+                if (widget.serviceRecord.status != RecordStatus.canceled &&
+                    widget.serviceRecord.status != RecordStatus.rejected)
                 JobStatus(
                   title: "Job Completed",
                   subTitle: widget.serviceRecord.actualEndTime != null

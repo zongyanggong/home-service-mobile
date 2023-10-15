@@ -6,6 +6,7 @@ import 'package:user/services/service_category.dart';
 class TempServiceRecord{
   late int rid;
   late String name;
+  late String address;
   late String imgPath;
   late double price;
   late RecordStatus status;

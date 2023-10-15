@@ -16,7 +16,7 @@ class RequestsPage extends StatefulWidget {
 class _RequestsPageState extends State<RequestsPage>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  late final List<Widget> _tabPages = [UpcomingCard(), CompletedCard()];
+  late final List<Widget> _tabPages = [UpcomingCard(), CompletedCard(),CancelCard()];
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class _RequestsPageState extends State<RequestsPage>
       child: Column(
         children: [
           DefaultTabController(
-            length: 2,
+            length: 3,
             child: TabBar(
               indicatorSize: TabBarIndicatorSize.label,
               indicatorColor: Colors.blueAccent[700],
@@ -42,6 +42,9 @@ class _RequestsPageState extends State<RequestsPage>
                 ),
                 Tab(
                   child: Text("Completed"),
+                ),
+                Tab(
+                  child: Text("Canceled"),
                 )
               ],
             ),
@@ -162,6 +165,39 @@ class CompletedCard extends StatelessWidget {
       ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
       ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
       ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 9),
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: tempServiceRecords.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              child: RequestCompletedCard(
+                tempServiceRecord: tempServiceRecords[index],
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          JobDetail(serviceRecord: tempServiceRecords[index])));
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class CancelCard extends StatelessWidget {
+  CancelCard({super.key});
+  final List<TempServiceRecord> tempServiceRecords = [
     TempServiceRecord()
       ..pid = 2
       ..rid = 3

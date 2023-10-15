@@ -16,7 +16,7 @@ class RequestsPage extends StatefulWidget {
 class _RequestsPageState extends State<RequestsPage>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  late final List<Widget> _tabPages = [UpcomingCard(), CompletedCard()];
+  late final List<Widget> _tabPages = [UpcomingCard(), CompletedCard(),CancelCard()];
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class _RequestsPageState extends State<RequestsPage>
       child: Column(
         children: [
           DefaultTabController(
-            length: 2,
+            length: 3,
             child: TabBar(
               indicatorSize: TabBarIndicatorSize.label,
               indicatorColor: Colors.blueAccent[700],
@@ -42,6 +42,9 @@ class _RequestsPageState extends State<RequestsPage>
                 ),
                 Tab(
                   child: Text("Completed"),
+                ),
+                Tab(
+                  child: Text("Canceled"),
                 )
               ],
             ),
@@ -125,11 +128,12 @@ class CompletedCard extends StatelessWidget {
       ..pid = 1
       ..rid = 1
       ..sid = 1
-      ..name = "Provider 1"
+      ..name = "User 1"
       ..imgPath = 'assets/images/face1.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
       ..price = 50
-       // ..score = 4.6
-    ..score=null
+    // ..score = 4.6
+      ..score=null
       ..review=null
       ..status = RecordStatus.completed
       ..createTime=DateTime.now()
@@ -144,12 +148,84 @@ class CompletedCard extends StatelessWidget {
       ..pid = 2
       ..rid = 2
       ..sid = 3
-      ..name = 'Provider 2'
+      ..name = 'User 2'
       ..imgPath = 'assets/images/face2.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
       ..price = 60
       ..score = 3.5
       ..review="Good service"
       ..status = RecordStatus.completed
+      ..createTime=DateTime.now()
+      ..acceptedTime=DateTime.now()
+      ..actualDate = DateTime.now()
+      ..expectedDate = DateTime.now()
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
+      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
+      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 9),
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: tempServiceRecords.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              child: RequestCompletedCard(
+                tempServiceRecord: tempServiceRecords[index],
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          JobDetail(serviceRecord: tempServiceRecords[index])));
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class CancelCard extends StatelessWidget {
+  CancelCard({super.key});
+  final List<TempServiceRecord> tempServiceRecords = [
+    TempServiceRecord()
+      ..pid = 2
+      ..rid = 3
+      ..sid = 3
+      ..name = 'User 3'
+      ..imgPath = 'assets/images/face2.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
+      ..price = 60
+      ..score = 3.5
+      ..review="Good service"
+      ..status = RecordStatus.rejected
+      ..createTime=DateTime.now()
+      ..acceptedTime=DateTime.now()
+      ..actualDate = DateTime.now()
+      ..expectedDate = DateTime.now()
+      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
+      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
+      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
+      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
+    TempServiceRecord()
+      ..pid = 2
+      ..rid = 4
+      ..sid = 3
+      ..name = 'User 4'
+      ..imgPath = 'assets/images/face2.jpg'
+      ..address = "725 Car Stewart, H4M 2W9"
+      ..price = 60
+      ..score = 3.5
+      ..review="Good service"
+      ..status = RecordStatus.canceled
       ..createTime=DateTime.now()
       ..acceptedTime=DateTime.now()
       ..actualDate = DateTime.now()
