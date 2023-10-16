@@ -41,26 +41,29 @@ class ProviderList extends StatelessWidget {
               // Data has been loaded successfully
               final serviceProviders = snapshot.data;
 
-              return Padding(
-                padding: const EdgeInsets.only(top: 9),
-                child: ListView.builder(
-                  itemCount: serviceProviders!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 9),
-                      child: UserCard(
-                        serviceProvider: serviceProviders[index],
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ProviderDetailScreen(
-                                  serviceProvider: serviceProviders[index])));
+              return serviceProviders!.isEmpty
+                  ? const Text("No Provider")
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 9),
+                      child: ListView.builder(
+                        itemCount: serviceProviders.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 9),
+                            child: UserCard(
+                              serviceProvider: serviceProviders[index],
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ProviderDetailScreen(
+                                        serviceProvider:
+                                            serviceProviders[index])));
+                              },
+                            ),
+                          );
                         },
                       ),
                     );
-                  },
-                ),
-              );
             }
           }),
     );

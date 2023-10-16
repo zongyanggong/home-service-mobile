@@ -54,6 +54,8 @@ class FirebaseApi {
   Future initPushNotifications() async {
     //handle notification if the app was terminated and now opened
     FirebaseMessaging.instance.getInitialMessage().then((message) {
+      print("getInitialMessage");
+
       if (message != null) {
         handleMessage(message);
       }
@@ -61,13 +63,16 @@ class FirebaseApi {
 
     //attach event listener for when a notification opens the app
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("onMessageOpenedApp");
       handleMessage(message);
     });
 
     //attach event listener for when a notification is received while the app is in the foreground
     FirebaseMessaging.onMessage.listen((message) {
+      print("onMessage: ${message.notification?.title}");
+
       saveMessageToDatabase(message);
-      //handleMessage(message);
+      // handleMessage(message);
     });
 
     //attach event listener for when a notification is received while the app is in the background

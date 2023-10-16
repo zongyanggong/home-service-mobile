@@ -44,7 +44,7 @@ function sendNotification(recordChanged, token) {
       title: "Data Changed",
       body: "Data in the Firestore collection has been updated.",
     },
-    topic: "serviceRecords",
+    // topic: "serviceRecords",
     data: {
       // You can include custom data in the notification
       uid: recordChanged.uid,
