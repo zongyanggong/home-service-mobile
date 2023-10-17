@@ -39,7 +39,6 @@ class Service {
   Map<String, dynamic> toJson() => _$ServiceToJson(this);
 }
 
-
 @JsonSerializable()
 class ServiceRecord {
   final String rid;
@@ -54,6 +53,8 @@ class ServiceRecord {
   final int bookingStartTime;
   final int bookingEndTime;
   final String appointmentNotes;
+  final double score;
+  final String review;
 
   ServiceRecord({
     this.rid = "",
@@ -68,6 +69,8 @@ class ServiceRecord {
     this.bookingStartTime = 0,
     this.bookingEndTime = 0,
     this.appointmentNotes = "",
+    this.score = 0.0,
+    this.review = "",
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>

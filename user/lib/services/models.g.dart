@@ -49,6 +49,8 @@ ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
       bookingStartTime: json['bookingStartTime'] as int? ?? 0,
       bookingEndTime: json['bookingEndTime'] as int? ?? 0,
       appointmentNotes: json['appointmentNotes'] as String? ?? "",
+      score: (json['score'] as num?)?.toDouble() ?? 0.0,
+      review: json['review'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
@@ -65,6 +67,8 @@ Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
       'bookingStartTime': instance.bookingStartTime,
       'bookingEndTime': instance.bookingEndTime,
       'appointmentNotes': instance.appointmentNotes,
+      'score': instance.score,
+      'review': instance.review,
     };
 
 const _$RecordStatusEnumMap = {
@@ -74,6 +78,7 @@ const _$RecordStatusEnumMap = {
   RecordStatus.completed: 'completed',
   RecordStatus.rejected: 'rejected',
   RecordStatus.reviewed: 'reviewed',
+  RecordStatus.canceled: 'canceled',
 };
 
 Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(

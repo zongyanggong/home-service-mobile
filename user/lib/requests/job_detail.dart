@@ -10,19 +10,93 @@ import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/job_status.dart';
 import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
+import '../services/models.dart' as model;
 
 class JobDetail extends StatefulWidget {
-  JobDetail({super.key, required this.serviceRecord});
-  TempServiceRecord serviceRecord;
-
+  JobDetail(
+      {super.key,
+      required this.selectedIndex,
+      required this.list,
+      required this.jobIndex});
+  final int selectedIndex;
+  final Map<String, dynamic>? list;
+  final int jobIndex;
   @override
-  State<JobDetail> createState() => _JobDetailState();
+  // ignore: library_private_types_in_public_api
+  _JobDetail createState() =>
+      _JobDetail(selectedIndex: selectedIndex, list: list, jobIndex: jobIndex);
 }
 
-class _JobDetailState extends State<JobDetail> {
+class _JobDetail extends State<JobDetail> {
+  _JobDetail(
+      {required this.selectedIndex,
+      required this.list,
+      required this.jobIndex});
+  final int selectedIndex;
+  final Map<String, dynamic>? list;
+  final int jobIndex;
+
   @override
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: false);
+    model.Provider provider;
+    model.Service service;
+    model.ServiceRecord serviceRecord;
+
+    getServiceRecord() {
+      switch (selectedIndex) {
+        case 1:
+          return list!['completedRecords'][jobIndex];
+        case 2:
+          return list!['canceledRecords'][jobIndex];
+
+        default:
+          return list!['upcomingRecords'][jobIndex];
+      }
+    }
+
+    //get info for rendering
+    if (list == null) {
+      return const Text("No requests");
+    } else {
+      serviceRecord = getServiceRecord();
+
+      provider = list!['serviceProviders']
+          .firstWhere((e) => e.pid == serviceRecord.pid);
+
+      service = list!['services'].firstWhere((e) => e.sid == serviceRecord.sid);
+    }
+
+    getFormatTime(int time1) {
+      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
+    }
+
+    getTimeByStatus() {
+      var statusStr = serviceRecord.status.toString().split('.').last;
+      switch (statusStr) {
+        case "pending":
+          return getFormatTime(serviceRecord.createdTime);
+        case "confirmed":
+          return getFormatTime(serviceRecord.acceptedTime);
+          ;
+        case "started":
+          return getFormatTime(serviceRecord.actualStartTime);
+        case "completed":
+          return getFormatTime(serviceRecord.actualEndTime);
+
+        case "canceled":
+          return getFormatTime(serviceRecord.actualEndTime);
+        case "rejected":
+          return getFormatTime(serviceRecord.actualEndTime);
+        default:
+          return "";
+      }
+    }
+
+    getTimePeriod() {
+      // "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}";
+      return "";
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +117,7 @@ class _JobDetailState extends State<JobDetail> {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(widget.serviceRecord.imgPath),
+                      image: NetworkImage(provider.imgPath),
                     ),
                   ),
                 ),
@@ -54,7 +128,7 @@ class _JobDetailState extends State<JobDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.serviceRecord.name,
+                          provider.name,
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -62,20 +136,16 @@ class _JobDetailState extends State<JobDetail> {
                           children: [
                             Expanded(
                                 child: LabelField(
-                                    title: "Job",
-                                    hint:
-                                        categories[widget.serviceRecord.sid])),
+                                    title: "Job", hint: service.name)),
                             Expanded(
                                 child: LabelField(
                                     title: "Job fees",
-                                    hint:
-                                        "CAD \$ ${widget.serviceRecord.price} /hour")),
+                                    hint: "CAD \$ ${provider.price} /hour")),
                           ],
                         ),
                         LabelField(
                           title: "Booking for",
-                          hint:
-                          "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).minute))}",
+                          hint: getTimePeriod(),
                         ),
                         LabelField(
                             title: "Address", hint: info.currentUser.address!),
@@ -86,7 +156,7 @@ class _JobDetailState extends State<JobDetail> {
               ],
             ),
           ),
-          if (widget.serviceRecord.status == RecordStatus.pending)
+          if (serviceRecord.status == RecordStatus.pending)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Row(
@@ -94,12 +164,14 @@ class _JobDetailState extends State<JobDetail> {
                   Expanded(
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.red),
                           ),
                           onPressed: () {
                             setState(() {
-                              widget.serviceRecord.status=RecordStatus.canceled;
-                              widget.serviceRecord.actualEndTime=DateTime.now();
+                              //to do: update status
+                              var status = RecordStatus.canceled;
+                              var actualEndTime = DateTime.now();
                             });
                           },
                           child: const Row(
@@ -118,7 +190,8 @@ class _JobDetailState extends State<JobDetail> {
                   Expanded(
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.green),
                           ),
                           onPressed: () {},
                           child: const Row(
@@ -145,63 +218,62 @@ class _JobDetailState extends State<JobDetail> {
                         fontWeight: FontWeight.w600,
                         color: Colors.grey[600])),
                 JobStatus(
-                  title: "Job Pending",
-                  subTitle: widget.serviceRecord.createTime != null
-                      ? "Job created on ${DateFormat.yMd().format(widget.serviceRecord.createTime)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.createTime.hour, minute: widget.serviceRecord.createTime.minute))}"
+                  title: "Job Created",
+                  subTitle: serviceRecord.createdTime != 0
+                      ? getFormatTime(serviceRecord.createdTime)
                       : "",
-                  active: widget.serviceRecord.status == RecordStatus.pending,
+                  active: serviceRecord.status == RecordStatus.pending,
                 ),
-                if (widget.serviceRecord.status ==
+                if (serviceRecord.status ==
                     RecordStatus.rejected) //job rejected by provider
                   JobStatus(
                     title: "Job Rejected",
-                    subTitle: widget.serviceRecord.actualEndTime != null
-                        ? "Job rejected on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                    subTitle: serviceRecord.actualEndTime != 0
+                        ? getFormatTime(serviceRecord.actualEndTime)
                         : "",
-                    active:
-                    widget.serviceRecord.status == RecordStatus.rejected,
+                    active: serviceRecord.status == RecordStatus.rejected,
                   ),
-                if (widget.serviceRecord.status ==
+                if (serviceRecord.status ==
                     RecordStatus.canceled) //job canceled by user
                   JobStatus(
                     title: "Job Canceled",
-                    subTitle: widget.serviceRecord.actualEndTime != null
-                        ? "Job canceled on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                    subTitle: serviceRecord.actualEndTime != 0
+                        ? getFormatTime(serviceRecord.actualEndTime)
                         : "",
-                    active:
-                    widget.serviceRecord.status == RecordStatus.canceled,
+                    active: serviceRecord.status == RecordStatus.canceled,
                   ),
-                if (widget.serviceRecord.status != RecordStatus.canceled &&
-                    widget.serviceRecord.status != RecordStatus.rejected)
-                JobStatus(
-                  title: "Job Accepted",
-                  subTitle: widget.serviceRecord.acceptedTime != null
-                      ? "Job accepted on ${DateFormat.yMd().format(widget.serviceRecord.acceptedTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.acceptedTime!.hour, minute: widget.serviceRecord.acceptedTime!.minute))}"
-                      : "",
-                  active: widget.serviceRecord.status == RecordStatus.confirmed,
-                ),
-                if (widget.serviceRecord.status != RecordStatus.canceled &&
-                    widget.serviceRecord.status != RecordStatus.rejected)
-                JobStatus(
-                  title: "Job In Process",
-                  subTitle: widget.serviceRecord.actualStartTime != null
-                      ? "Job started on ${DateFormat.yMd().format(widget.serviceRecord.actualStartTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualStartTime!.hour, minute: widget.serviceRecord.actualStartTime!.minute))}"
-                      : "",
-                  active: widget.serviceRecord.status == RecordStatus.started,
-                ),
-                if (widget.serviceRecord.status != RecordStatus.canceled &&
-                    widget.serviceRecord.status != RecordStatus.rejected)
-                JobStatus(
-                  title: "Job Completed",
-                  subTitle: widget.serviceRecord.actualEndTime != null
-                      ? "Job started on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
-                      : "",
-                  active: widget.serviceRecord.status == RecordStatus.completed,
-                ),
+                if (serviceRecord.status != RecordStatus.canceled &&
+                    serviceRecord.status != RecordStatus.rejected)
+                  JobStatus(
+                    title: "Job Accepted",
+                    subTitle: serviceRecord.acceptedTime != 0
+                        ? getFormatTime(serviceRecord.acceptedTime)
+                        : "",
+                    active: serviceRecord.status == RecordStatus.confirmed,
+                  ),
+                if (serviceRecord.status != RecordStatus.canceled &&
+                    serviceRecord.status != RecordStatus.rejected)
+                  JobStatus(
+                    title: "Job In Process",
+                    subTitle: serviceRecord.actualStartTime != 0
+                        ? getFormatTime(serviceRecord.actualStartTime)
+                        : "",
+                    active: serviceRecord.status == RecordStatus.started,
+                  ),
+                if (serviceRecord.status != RecordStatus.canceled &&
+                    serviceRecord.status != RecordStatus.rejected)
+                  JobStatus(
+                    title: "Job Completed",
+                    subTitle: serviceRecord.actualEndTime != 0
+                        ? getFormatTime(serviceRecord.actualEndTime)
+                        : "",
+                    active: serviceRecord.status == RecordStatus.completed,
+                  ),
               ],
             ),
           ),
-          if (widget.serviceRecord.score != null && widget.serviceRecord.status==RecordStatus.completed)
+          if (serviceRecord.score != null &&
+              serviceRecord.status == RecordStatus.completed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
               child: Column(
@@ -213,28 +285,28 @@ class _JobDetailState extends State<JobDetail> {
                           fontWeight: FontWeight.w600,
                           color: Colors.grey[600])),
                   Padding(
-                    padding: const EdgeInsets.only(left: 18,top: 9),
+                    padding: const EdgeInsets.only(left: 18, top: 9),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(right: 5),
                           child: Text(
-                            widget.serviceRecord.score!.toStringAsFixed(2),
+                            serviceRecord.score!.toStringAsFixed(2),
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.normal),
                           ),
                         ),
                         RatingBar.builder(
                             ignoreGestures: true,
-                            initialRating: widget.serviceRecord.score!,
+                            initialRating: serviceRecord.score!,
                             maxRating: 5,
                             allowHalfRating: true,
                             itemSize: 16,
                             itemBuilder: (context, _) => const Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
+                                  Icons.star,
+                                  color: Colors.green,
+                                ),
                             onRatingUpdate: (rating) {}),
                       ],
                     ),
@@ -242,7 +314,8 @@ class _JobDetailState extends State<JobDetail> {
                 ],
               ),
             ),
-          if (widget.serviceRecord.review != null && widget.serviceRecord.status==RecordStatus.completed)
+          if (serviceRecord.review != null &&
+              serviceRecord.status == RecordStatus.completed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
               child: Column(
@@ -255,26 +328,26 @@ class _JobDetailState extends State<JobDetail> {
                           color: Colors.grey[600])),
                   Padding(
                     padding: const EdgeInsets.only(left: 18, top: 9),
-                    child: Text(widget.serviceRecord.review!),
+                    child: Text(serviceRecord.review!),
                   ),
                 ],
               ),
             ),
-          if (widget.serviceRecord.status == RecordStatus.completed &&
-              widget.serviceRecord.score == null)
-            Center(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: ElevatedButton(
-                  onPressed: () => {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            JobViewScreen(serviceRecord: widget.serviceRecord)))
-                  },
-                  child: const Text("Review now"),
-                ),
-              ),
-            ),
+          // if (serviceRecord.status == RecordStatus.completed &&
+          //     serviceRecord.score == null)
+          //   Center(
+          //     child: SizedBox(
+          //       width: MediaQuery.of(context).size.width / 2,
+          //       child: ElevatedButton(
+          //         onPressed: () => {
+          //           Navigator.of(context).push(MaterialPageRoute(
+          //               builder: (context) =>
+          //                   JobViewScreen(serviceRecord: serviceRecord)))
+          //         },
+          //         child: const Text("Review now"),
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );

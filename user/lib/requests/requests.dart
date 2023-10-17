@@ -3,9 +3,13 @@ import 'package:user/requests/job_detail.dart';
 import 'package:user/services/record_status.dart';
 import 'package:user/services/service_provider.dart';
 import 'package:user/services/service_record.dart';
-import 'package:user/share/request_cancel_card.dart';
-import 'package:user/share/request_completed_card.dart';
-import 'package:user/share/request_upcoming_card.dart';
+import 'package:user/share/job_card.dart';
+import '../services/firestore.dart';
+import '../services/models.dart' as model;
+import '../services/info_state.dart';
+import 'package:provider/provider.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class RequestsPage extends StatefulWidget {
   const RequestsPage({super.key});
@@ -16,12 +20,16 @@ class RequestsPage extends StatefulWidget {
 
 class _RequestsPageState extends State<RequestsPage>
     with TickerProviderStateMixin {
-  int _selectedIndex = 0;
-  late final List<Widget> _tabPages = [UpcomingCard(), CompletedCard(),CancelCard()];
+  int _selectedIndex = 1;
+  late final List<Widget> _tabPages = [
+    Text("1"),
+    Text("2"),
+    Text("3"),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<ServiceProvider> serviceProviders = [ServiceProvider()];
+    // List<ServiceProvider> serviceProviders = [ServiceProvider()];
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -50,217 +58,135 @@ class _RequestsPageState extends State<RequestsPage>
               ],
             ),
           ),
-          _tabPages[_selectedIndex]
+          JobCardList(selectedIndex: _selectedIndex),
         ],
       ),
     );
   }
 }
 
-class UpcomingCard extends StatelessWidget {
-  UpcomingCard({super.key});
-  final List<TempServiceRecord> tempServiceRecords = [
-    TempServiceRecord()
-      ..pid = 1
-      ..rid = 1
-      ..sid = 1
-      ..name = "Provider 1"
-      ..imgPath = 'assets/images/face1.jpg'
-      ..price = 50
-      ..status = RecordStatus.pending
-      ..createTime=DateTime.now()
-      ..acceptedTime=null
-      ..actualStartTime=null
-      ..actualEndTime=null
-      ..score = null
-      ..review =null
-      ..expectedDate = DateTime.now()
-      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
-    TempServiceRecord()
-      ..pid = 2
-      ..rid = 2
-      ..sid = 3
-      ..name = 'Provider 2'
-      ..imgPath = 'assets/images/face2.jpg'
-      ..price = 60
-      ..score = null
-      ..review =null
-      ..status = RecordStatus.started
-      ..acceptedTime=DateTime.now()
-      ..actualStartTime=DateTime.now()
-      ..actualEndTime=null
-      ..createTime=DateTime.now()
-      ..expectedDate = DateTime.now()
-      ..bookingStartTime = DateTime.now().add(const Duration(hours: 3)).millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 4)).millisecondsSinceEpoch,
-  ];
+class JobCardList extends StatelessWidget {
+  final int selectedIndex;
+  JobCardList({required this.selectedIndex});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 9),
-      child: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: tempServiceRecords.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-            child: RequestUpcomingCard(
-              tempServiceRecord: tempServiceRecords[index],
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        JobDetail(serviceRecord: tempServiceRecords[index])));
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+    var info = Provider.of<Info>(context, listen: true);
 
-class CompletedCard extends StatelessWidget {
-  CompletedCard({super.key});
-  final List<TempServiceRecord> tempServiceRecords = [
-    TempServiceRecord()
-      ..pid = 1
-      ..rid = 1
-      ..sid = 1
-      ..name = "User 1"
-      ..imgPath = 'assets/images/face1.jpg'
-      ..address = "725 Car Stewart, H4M 2W9"
-      ..price = 50
-    // ..score = 4.6
-      ..score=null
-      ..review=null
-      ..status = RecordStatus.completed
-      ..createTime=DateTime.now()
-      ..acceptedTime=DateTime.now()
-      ..actualDate = DateTime.now()
-      ..expectedDate = DateTime.now()
-      ..actualStartTime = DateTime.now()
-      ..actualEndTime = DateTime.now().add(const Duration(hours: 1))
-      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
-    TempServiceRecord()
-      ..pid = 2
-      ..rid = 2
-      ..sid = 3
-      ..name = 'User 2'
-      ..imgPath = 'assets/images/face2.jpg'
-      ..address = "725 Car Stewart, H4M 2W9"
-      ..price = 60
-      ..score = 3.5
-      ..review="Good service"
-      ..status = RecordStatus.completed
-      ..createTime=DateTime.now()
-      ..acceptedTime=DateTime.now()
-      ..actualDate = DateTime.now()
-      ..expectedDate = DateTime.now()
-      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
-      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
-      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
-  ];
+    getServiceRecordsInfo() async {
+      //Get all providers
+      List<model.Provider> serviceProviders =
+          await _firestoreService.getProvider();
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 9),
-        child: ListView.builder(
-          shrinkWrap: true,
-          primary: false,
-          itemCount: tempServiceRecords.length,
-          itemBuilder: (BuildContext context, int index) {
+      //Get all services
+      List<model.Service> services = await _firestoreService.getService();
+
+      //Get all service records
+      List<model.ServiceRecord> serviceRecords =
+          await _firestoreService.getServiceRecord();
+      //Get current user's service records
+      serviceRecords =
+          serviceRecords.where((e) => e.uid == info.currentUser.uid).toList();
+
+      //Get uncoming service
+      List<model.ServiceRecord> upcomingRecords = serviceRecords
+          .where((e) =>
+              e.status == RecordStatus.pending ||
+              e.status == RecordStatus.confirmed ||
+              e.status == RecordStatus.started)
+          .toList();
+
+      //Get completed service
+      List<model.ServiceRecord> completedRecords = serviceRecords
+          .where((e) =>
+              e.status == RecordStatus.completed ||
+              e.status == RecordStatus.reviewed)
+          .toList();
+
+      //Get canceled service
+      List<model.ServiceRecord> canceledRecords = serviceRecords
+          .where((e) =>
+              e.status == RecordStatus.rejected ||
+              e.status == RecordStatus.canceled)
+          .toList();
+
+      //Get length
+      var length = 0;
+      switch (selectedIndex) {
+        case 1:
+          length = completedRecords.length;
+        case 2:
+          length = canceledRecords.length;
+        default:
+          length = upcomingRecords.length;
+      }
+
+      //Return object include all info
+      return {
+        'serviceProviders': serviceProviders,
+        'services': services,
+        'upcomingRecords': upcomingRecords,
+        'completedRecords': completedRecords,
+        'canceledRecords': canceledRecords,
+        'length': length,
+      };
+    }
+
+    return FutureBuilder<Map<String, dynamic>>(
+        future: getServiceRecordsInfo(),
+        builder: (BuildContext context,
+            AsyncSnapshot<Map<String, dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Data is still loading
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            // Data loading has encountered an error
+            return Text('Error: ${snapshot.error}');
+          } else {
+            // Data has been loaded successfully
+            final listObj = snapshot.data;
+            if (listObj == null) {
+              return const Center(
+                child: Text("No Request"),
+              );
+            } else {
+              if (listObj['serviceProviders'] == null ||
+                  (listObj['upcomingRecords'] == null &&
+                      listObj['completedRecords'] == null &&
+                      listObj['canceledRecords'] == null)) {
+                return const Center(
+                  child: Text("No Request"),
+                );
+              }
+            }
+
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-              child: RequestCompletedCard(
-                tempServiceRecord: tempServiceRecords[index],
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          JobDetail(serviceRecord: tempServiceRecords[index])));
+              padding: const EdgeInsets.only(top: 9),
+              child: ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: listObj['length'],
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                    child: JobCard(
+                      selectedIndex: selectedIndex,
+                      list: listObj,
+                      jobIndex: index,
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => JobDetail(
+                                selectedIndex: selectedIndex,
+                                list: listObj,
+                                jobIndex: index)));
+                      },
+                    ),
+                  );
                 },
               ),
             );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class CancelCard extends StatelessWidget {
-  CancelCard({super.key});
-  final List<TempServiceRecord> tempServiceRecords = [
-    TempServiceRecord()
-      ..pid = 2
-      ..rid = 3
-      ..sid = 3
-      ..name = 'User 3'
-      ..imgPath = 'assets/images/face2.jpg'
-      ..address = "725 Car Stewart, H4M 2W9"
-      ..price = 60
-      ..score = 3.5
-      ..review="Good service"
-      ..status = RecordStatus.rejected
-      ..createTime=DateTime.now()
-      ..acceptedTime=DateTime.now()
-      ..actualDate = DateTime.now()
-      ..expectedDate = DateTime.now()
-      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
-      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
-      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
-    TempServiceRecord()
-      ..pid = 2
-      ..rid = 4
-      ..sid = 3
-      ..name = 'User 4'
-      ..imgPath = 'assets/images/face2.jpg'
-      ..address = "725 Car Stewart, H4M 2W9"
-      ..price = 60
-      ..score = 3.5
-      ..review="Good service"
-      ..status = RecordStatus.canceled
-      ..createTime=DateTime.now()
-      ..acceptedTime=DateTime.now()
-      ..actualDate = DateTime.now()
-      ..expectedDate = DateTime.now()
-      ..bookingStartTime = DateTime.now().millisecondsSinceEpoch
-      ..bookingEndTime = DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch
-      ..actualStartTime = DateTime.now().add(const Duration(hours: 3))
-      ..actualEndTime = DateTime.now().add(const Duration(hours: 4)),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 9),
-        child: ListView.builder(
-          shrinkWrap: true,
-          primary: false,
-          itemCount: tempServiceRecords.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-              child: RequestCancelCard(
-                tempServiceRecord: tempServiceRecords[index],
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          JobDetail(serviceRecord: tempServiceRecords[index])));
-                },
-              ),
-            );
-          },
-        ),
-      ),
-    );
+          }
+        });
   }
 }
