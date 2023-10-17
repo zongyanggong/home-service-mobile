@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import '../services/firestore.dart';
 import '../services/models.dart' as model;
 import '../services/info_state.dart';
 import 'package:provider/provider.dart';
 import 'package:user/share/notification_field.dart';
-import '../services/info_state.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:user/service/appbar_titles.dart';
 
