@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 class DropdownField extends StatelessWidget {
   final String title;
-  late int index;
+  late String index;
   final List<String> array;
   final ValueChanged<int> onValueChanged;
   DropdownField(
-      {super.key, required this.title, this.index = 0, required this.array,required this.onValueChanged});
+      {super.key,
+      required this.title,
+      this.index = "",
+      required this.array,
+      required this.onValueChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +35,15 @@ class DropdownField extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<int>(
-                      isExpanded: true, // This ensures it takes the full width of its parent
+                      isExpanded:
+                          true, // This ensures it takes the full width of its parent
                       items: array.asMap().entries.map((entry) {
                         return DropdownMenuItem<int>(
                           value: entry.key,
                           child: Text(entry.value),
                         );
                       }).toList(),
-                      value: index,
+                      value: int.parse(index),
                       onChanged: (int? value) {
                         onValueChanged(value!);
                       },

@@ -71,14 +71,14 @@ class LoginPage extends StatelessWidget {
                             name: user.displayName,
                             email: user.email,
                             phone: '',
-                            sid: 0,
+                            sid: "",
                             price: 0.0,
                             description: "",
                             imgPath: user.photoURL,
                           ),
                         );
                       }
-                      // User creation was successful, you can add your logic here
+                      //   // User creation was successful, you can add your logic here
                     } catch (e) {
                       // Handle any errors that occurred during user creation
                       print('Error creating user: $e');
@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                     info.setProvider(
                         await _firestoreService.getProviderByPid(user!.uid));
 
-                    //Save Service to Provider
+                    // //Save Service to Provider
                     List<model.Service> services =
                         await _firestoreService.getService();
                     info.setService(services.map((e) => e.name).toList());

@@ -85,7 +85,7 @@ class Provider {
   final String email;
   final String address;
   final String phone;
-  final int sid; //service he can prodive, only one service for now
+  final String sid; //service he can prodive, only one service for now
   final double price;
   final String description;
   final String imgPath;

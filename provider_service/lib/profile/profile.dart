@@ -98,7 +98,7 @@ class _BodyContentState extends State<BodyContent> {
                             index: info.currentUser.sid!,
                             onValueChanged: (value) {
                               setState(() {
-                                info.currentUser.sid = value;
+                                info.currentUser.sid = value.toString();
                               });
                             },
                           ),

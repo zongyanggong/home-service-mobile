@@ -8,19 +8,98 @@ import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/job_status.dart';
 import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
+import '../services/models.dart' as model;
 
 class JobDetail extends StatefulWidget {
-  JobDetail({super.key, required this.serviceRecord});
-  TempServiceRecord serviceRecord;
+  JobDetail(
+      {super.key,
+      required this.selectedIndex,
+      required this.list,
+      required this.jobIndex});
+  final int selectedIndex;
+  final Map<String, dynamic>? list;
+  final int jobIndex;
 
   @override
-  State<JobDetail> createState() => _JobDetailState();
+  State<JobDetail> createState() => _JobDetailState(
+      selectedIndex: selectedIndex, list: list, jobIndex: jobIndex);
 }
 
 class _JobDetailState extends State<JobDetail> {
+  _JobDetailState(
+      {required this.selectedIndex,
+      required this.list,
+      required this.jobIndex});
+  final int selectedIndex;
+  final Map<String, dynamic>? list;
+  final int jobIndex;
+
   @override
   Widget build(BuildContext context) {
-    // var info = Provider.of<Info>(context, listen: false);
+    var info = Provider.of<Info>(context, listen: false);
+    model.User user;
+    model.Service service;
+    model.ServiceRecord serviceRecord;
+
+    getServiceRecord() {
+      switch (selectedIndex) {
+        case 1:
+          return list!['completedRecords'][jobIndex];
+        case 2:
+          return list!['canceledRecords'][jobIndex];
+
+        default:
+          return list!['upcomingRecords'][jobIndex];
+      }
+    }
+
+    //get info for rendering
+    if (list == null) {
+      return const Text("No requests");
+    } else {
+      serviceRecord = getServiceRecord();
+
+      user =
+          list!['serviceUsers'].firstWhere((e) => e.uid == serviceRecord.uid);
+
+      service = list!['services'].firstWhere((e) => e.sid == serviceRecord.sid);
+    }
+
+    getFormatTime(int time1) {
+      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
+    }
+
+    getTimeByStatus() {
+      var statusStr = serviceRecord.status
+          .toString()
+          .split('.')
+          .last
+          .toString()
+          .split('.')
+          .last;
+      switch (statusStr) {
+        case "pending":
+          return getFormatTime(serviceRecord.createdTime);
+        case "confirmed":
+          return getFormatTime(serviceRecord.acceptedTime);
+        case "started":
+          return getFormatTime(serviceRecord.actualStartTime);
+        case "completed":
+          return getFormatTime(serviceRecord.actualEndTime);
+
+        case "canceled":
+          return getFormatTime(serviceRecord.actualEndTime);
+        case "rejected":
+          return getFormatTime(serviceRecord.actualEndTime);
+        default:
+          return "";
+      }
+    }
+
+    getTimePeriod() {
+      // "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}";
+      return "";
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +121,7 @@ class _JobDetailState extends State<JobDetail> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage(widget.serviceRecord.imgPath),
+                        image: NetworkImage(user.imgPath!),
                       ),
                     ),
                   ),
@@ -53,7 +132,7 @@ class _JobDetailState extends State<JobDetail> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.serviceRecord.name,
+                            user.name!,
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -61,24 +140,20 @@ class _JobDetailState extends State<JobDetail> {
                             children: [
                               Expanded(
                                   child: LabelField(
-                                      title: "Job",
-                                      hint: categories[
-                                          widget.serviceRecord.sid])),
+                                      title: "Job", hint: service.name)),
                               Expanded(
                                   child: LabelField(
                                       title: "Job fees",
                                       hint:
-                                          "CAD \$ ${widget.serviceRecord.price} /hour")),
+                                          "CAD \$ ${serviceRecord.price} /hour")),
                             ],
                           ),
                           LabelField(
                             title: "Booking for",
                             hint:
-                                "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(widget.serviceRecord.bookingEndTime).minute))}",
+                                "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}",
                           ),
-                          LabelField(
-                              title: "Address",
-                              hint: widget.serviceRecord.address!),
+                          LabelField(title: "Address", hint: user.address!),
                         ],
                       ),
                     ),
@@ -88,39 +163,81 @@ class _JobDetailState extends State<JobDetail> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: widget.serviceRecord.status == RecordStatus.pending
+              child: serviceRecord.status
+                          .toString()
+                          .split('.')
+                          .last
+                          .toString()
+                          .split('.')
+                          .last ==
+                      "pending"
                   ? PendingButton(
-                      serviceRecord: widget.serviceRecord,
+                      serviceRecord: serviceRecord,
                       onCancelJob: () {
-                        setState(() {
-                          widget.serviceRecord.status = RecordStatus.rejected;
-                          widget.serviceRecord.actualEndTime = DateTime.now();
-                        });
+                        // setState(() {
+                        //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "rejected";
+                        //   serviceRecord.actualEndTime = DateTime.now();
+                        // });
                       },
                       onAcceptJob: () {
-                        setState(() {
-                          widget.serviceRecord.status = RecordStatus.confirmed;
-                          widget.serviceRecord.acceptedTime = DateTime.now();
-                        });
+                        // setState(() {
+                        //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "confirmed";
+                        //   serviceRecord.acceptedTime = DateTime.now();
+                        // });
                       },
                     )
-                  : widget.serviceRecord.status == RecordStatus.confirmed ||
-                          widget.serviceRecord.status == RecordStatus.started
-                      ? JobDetailButton(serviceRecord: widget.serviceRecord,onButtonClick: (){
-                        if (widget.serviceRecord.status==RecordStatus.confirmed){
-                          setState(() {
-                            widget.serviceRecord.status=RecordStatus.started;
-                            widget.serviceRecord.actualStartTime=DateTime.now();
-                          });
-                        }else if (widget.serviceRecord.status==RecordStatus.started){
-                          setState(() {
-                            widget.serviceRecord.status=RecordStatus.completed;
-                            widget.serviceRecord.actualEndTime=DateTime.now();
-                          });
-                        }else{
-
-                        }
-              },)
+                  : serviceRecord.status
+                                  .toString()
+                                  .split('.')
+                                  .last
+                                  .toString()
+                                  .split('.')
+                                  .last ==
+                              "confirmed" ||
+                          serviceRecord.status
+                                  .toString()
+                                  .split('.')
+                                  .last
+                                  .toString()
+                                  .split('.')
+                                  .last ==
+                              "started"
+                      ? JobDetailButton(
+                          serviceRecord: serviceRecord,
+                          onButtonClick: () {
+                            if (serviceRecord.status
+                                    .toString()
+                                    .split('.')
+                                    .last
+                                    .toString()
+                                    .split('.')
+                                    .last ==
+                                "confirmed") {
+                              // setState(() {
+                              //   serviceRecord.status.toString().split('.').last
+                              //       .toString()
+                              //       .split('.')
+                              //       .last = "started";
+                              //   serviceRecord.actualStartTime = DateTime.now();
+                              // });
+                            } else if (serviceRecord.status
+                                    .toString()
+                                    .split('.')
+                                    .last
+                                    .toString()
+                                    .split('.')
+                                    .last ==
+                                "started") {
+                              // setState(() {
+                              //   serviceRecord.status.toString().split('.').last
+                              //       .toString()
+                              //       .split('.')
+                              //       .last = "completed";
+                              //   serviceRecord.actualEndTime = DateTime.now();
+                              // });
+                            } else {}
+                          },
+                        )
                       : null,
             ),
             Padding(
@@ -135,66 +252,127 @@ class _JobDetailState extends State<JobDetail> {
                           color: Colors.grey[600])),
                   JobStatus(
                     title: "Job Pending",
-                    subTitle: widget.serviceRecord.createTime != null
-                        ? "Job created on ${DateFormat.yMd().format(widget.serviceRecord.createTime)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.createTime.hour, minute: widget.serviceRecord.createTime.minute))}"
+                    subTitle: serviceRecord.createdTime != 0
+                        ? "Job created on ${getFormatTime(serviceRecord.createdTime)} "
                         : "",
-                    active: widget.serviceRecord.status == RecordStatus.pending,
+                    active: serviceRecord.status.toString().split('.').last ==
+                        "pending",
                   ),
-                  if (widget.serviceRecord.status ==
-                      RecordStatus.rejected) //job rejected by provider
+                  if (serviceRecord.status
+                          .toString()
+                          .split('.')
+                          .last
+                          .toString()
+                          .split('.')
+                          .last ==
+                      "rejected") //job rejected by provider
                     JobStatus(
                       title: "Job Rejected",
-                      subTitle: widget.serviceRecord.actualEndTime != null
-                          ? "Job rejected on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                      subTitle: serviceRecord.actualEndTime != 0
+                          ? "Job rejected on ${getFormatTime(serviceRecord.actualEndTime)}"
                           : "",
-                      active:
-                          widget.serviceRecord.status == RecordStatus.rejected,
+                      active: serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last ==
+                          "rejected",
                     ),
-                  if (widget.serviceRecord.status ==
-                      RecordStatus.canceled) //job canceled by user
+                  if (serviceRecord.status
+                          .toString()
+                          .split('.')
+                          .last
+                          .toString()
+                          .split('.')
+                          .last ==
+                      "canceled") //job canceled by user
                     JobStatus(
                       title: "Job Canceled",
-                      subTitle: widget.serviceRecord.actualEndTime != null
-                          ? "Job canceled on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                      subTitle: serviceRecord.actualEndTime != 0
+                          ? "Job canceled on ${getFormatTime(serviceRecord.actualEndTime)} }"
                           : "",
-                      active:
-                          widget.serviceRecord.status == RecordStatus.canceled,
+                      active: serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last ==
+                          "canceled",
                     ),
-                  if (widget.serviceRecord.status != RecordStatus.canceled &&
-                      widget.serviceRecord.status != RecordStatus.rejected)
+                  if (serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last !=
+                          "canceled" &&
+                      serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last !=
+                          "rejected")
                     JobStatus(
                       title: "Job Accepted",
-                      subTitle: widget.serviceRecord.acceptedTime != null
-                          ? "Job accepted on ${DateFormat.yMd().format(widget.serviceRecord.acceptedTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.acceptedTime!.hour, minute: widget.serviceRecord.acceptedTime!.minute))}"
+                      subTitle: serviceRecord.acceptedTime != 0
+                          ? "Job accepted on ${getFormatTime(serviceRecord.acceptedTime)}"
                           : "",
-                      active:
-                          widget.serviceRecord.status == RecordStatus.confirmed,
+                      active: serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last !=
+                          "confirmed",
                     ),
-                  if (widget.serviceRecord.status != RecordStatus.canceled &&
-                      widget.serviceRecord.status != RecordStatus.rejected)
+                  if (serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last !=
+                          "canceled" &&
+                      serviceRecord.status
+                              .toString()
+                              .split('.')
+                              .last
+                              .toString()
+                              .split('.')
+                              .last !=
+                          "rejected")
                     JobStatus(
                       title: "Job In Process",
-                      subTitle: widget.serviceRecord.actualStartTime != null
-                          ? "Job started on ${DateFormat.yMd().format(widget.serviceRecord.actualStartTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualStartTime!.hour, minute: widget.serviceRecord.actualStartTime!.minute))}"
+                      subTitle: serviceRecord.actualStartTime != 0
+                          ? "Job started on ${getFormatTime(serviceRecord.actualStartTime)}"
                           : "",
-                      active:
-                          widget.serviceRecord.status == RecordStatus.started,
+                      active: serviceRecord.status.toString().split('.').last ==
+                          "started",
                     ),
-                  if (widget.serviceRecord.status != RecordStatus.canceled &&
-                      widget.serviceRecord.status != RecordStatus.rejected)
+                  if (serviceRecord.status.toString().split('.').last !=
+                          "canceled" &&
+                      serviceRecord.status.toString().split('.').last !=
+                          "rejected")
                     JobStatus(
                       title: "Job Completed",
-                      subTitle: widget.serviceRecord.actualEndTime != null
-                          ? "Job started on ${DateFormat.yMd().format(widget.serviceRecord.actualEndTime!)} ${format24HourTime(TimeOfDay(hour: widget.serviceRecord.actualEndTime!.hour, minute: widget.serviceRecord.actualEndTime!.minute))}"
+                      subTitle: serviceRecord.actualEndTime != 0
+                          ? "Job started on ${getFormatTime(serviceRecord.actualEndTime)}"
                           : "",
-                      active:
-                          widget.serviceRecord.status == RecordStatus.completed,
+                      active: serviceRecord.status.toString().split('.').last ==
+                          "completed",
                     ),
                 ],
               ),
             ),
-            if (widget.serviceRecord.score != null &&
-                widget.serviceRecord.status == RecordStatus.completed)
+            if (serviceRecord.score > 0 &&
+                serviceRecord.status.toString().split('.').last == "completed")
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -214,7 +392,7 @@ class _JobDetailState extends State<JobDetail> {
                           Padding(
                             padding: const EdgeInsets.only(right: 5),
                             child: Text(
-                              widget.serviceRecord.score!.toStringAsFixed(2),
+                              serviceRecord.score!.toStringAsFixed(2),
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.normal),
                             ),
@@ -223,14 +401,14 @@ class _JobDetailState extends State<JobDetail> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               for (int i = 0;
-                                  i < widget.serviceRecord.score!.floor();
+                                  i < serviceRecord.score!.floor();
                                   i++)
                                 const Icon(
                                   Icons.star,
                                   color: Colors.green,
                                   size: 15,
                                 ),
-                              for (int i = widget.serviceRecord.score!.floor();
+                              for (int i = serviceRecord.score!.floor();
                                   i < 5;
                                   i++)
                                 const Icon(
@@ -246,8 +424,8 @@ class _JobDetailState extends State<JobDetail> {
                   ],
                 ),
               ),
-            if (widget.serviceRecord.review != null &&
-                widget.serviceRecord.status == RecordStatus.completed)
+            if (serviceRecord.review != "" &&
+                serviceRecord.status.toString().split('.').last == "completed")
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -261,7 +439,7 @@ class _JobDetailState extends State<JobDetail> {
                             color: Colors.grey[600])),
                     Padding(
                       padding: const EdgeInsets.only(left: 18, top: 9),
-                      child: Text(widget.serviceRecord.review!),
+                      child: Text(serviceRecord.review!),
                     ),
                   ],
                 ),
@@ -276,12 +454,12 @@ class _JobDetailState extends State<JobDetail> {
 class JobDetailButton extends StatelessWidget {
   JobDetailButton({super.key, required this.serviceRecord, this.onButtonClick});
 
-  TempServiceRecord serviceRecord;
+  model.ServiceRecord serviceRecord;
   final VoidCallback? onButtonClick;
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(serviceRecord.status.toString());
+    debugPrint(serviceRecord.status.toString().split('.').last.toString());
     return ElevatedButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
@@ -290,18 +468,19 @@ class JobDetailButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(serviceRecord.status == RecordStatus.confirmed
+            Icon(serviceRecord.status.toString().split('.').last == "confirmed"
                 ? Icons.build
-                : serviceRecord.status == RecordStatus.started
+                : serviceRecord.status.toString().split('.').last == "started"
                     ? Icons.thumb_up
                     : null),
             const SizedBox(
               width: 10,
             ),
             Text(
-                serviceRecord.status == RecordStatus.confirmed
+                serviceRecord.status.toString().split('.').last == "confirmed"
                     ? "Start Job"
-                    : serviceRecord.status == RecordStatus.started
+                    : serviceRecord.status.toString().split('.').last ==
+                            "started"
                         ? "Mark Job Complete"
                         : "",
                 style: const TextStyle(
@@ -319,7 +498,7 @@ class PendingButton extends StatelessWidget {
       required this.serviceRecord,
       this.onCancelJob,
       this.onAcceptJob});
-  TempServiceRecord serviceRecord;
+  model.ServiceRecord serviceRecord;
   final VoidCallback? onCancelJob;
   final VoidCallback? onAcceptJob;
 
