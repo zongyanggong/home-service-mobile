@@ -55,6 +55,7 @@ class ServiceRecord {
   final String appointmentNotes;
   final double score;
   final String review;
+  final double price;
 
   ServiceRecord({
     this.rid = "",
@@ -71,6 +72,7 @@ class ServiceRecord {
     this.appointmentNotes = "",
     this.score = 0.0,
     this.review = "",
+    this.price = 0.0,
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>
@@ -111,11 +113,13 @@ class Provider {
 @JsonSerializable()
 class Notification {
   final String uid;
+  final String pid;
   final String rid;
   final int timeStamp;
 
   Notification({
     this.uid = "",
+    this.pid = "",
     this.rid = "",
     this.timeStamp = 0,
   });

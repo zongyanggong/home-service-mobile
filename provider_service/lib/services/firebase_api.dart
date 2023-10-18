@@ -44,6 +44,7 @@ class FirebaseApi {
 
     _firestoreService.createNotification(model.Notification(
       uid: message.data["uid"],
+      pid: message.data["pid"],
       rid: message.data["rid"],
       timeStamp: int.parse(message.data["timeStamp"]),
     ));

@@ -48,6 +48,7 @@ function sendNotification(recordChanged, token) {
     data: {
       // You can include custom data in the notification
       uid: recordChanged.uid,
+      pid: recordChanged.pid,
       rid: recordChanged.rid,
       timeStamp: Date.now().toString(),
     },
