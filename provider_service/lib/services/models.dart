@@ -114,3 +114,21 @@ class Provider {
       _$ProviderFromJson(json);
   Map<String, dynamic> toJson() => _$ProviderToJson(this);
 }
+
+//Notification
+@JsonSerializable()
+class Notification {
+  final String uid;
+  final String rid;
+  final int timeStamp;
+
+  Notification({
+    this.uid = "",
+    this.rid = "",
+    this.timeStamp = 0,
+  });
+
+  factory Notification.fromJson(Map<String, dynamic> json) =>
+      _$NotificationFromJson(json);
+  Map<String, dynamic> toJson() => _$NotificationToJson(this);
+}
