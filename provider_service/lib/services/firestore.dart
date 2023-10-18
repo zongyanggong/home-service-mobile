@@ -96,8 +96,7 @@ class FirestoreService {
   }
 
   Future<void> updateServiceById(Service service) async {
-    var reference =
-        _database.collection("services").doc(service.sid.toString());
+    var reference = _database.collection("services").doc(service.sid);
     var newData = {
       "name": service.name,
     };
@@ -155,6 +154,9 @@ class FirestoreService {
       "bookingStartTime": serviceRecord.bookingStartTime,
       "bookingEndTime": serviceRecord.bookingEndTime,
       "appointmentNotes": serviceRecord.appointmentNotes,
+      "score": serviceRecord.score,
+      "review": serviceRecord.review,
+      "price": serviceRecord.price,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
@@ -196,7 +198,7 @@ class FirestoreService {
         name: "",
         email: "",
         phone: '',
-        sid: 0,
+        sid: "",
         price: 0.0,
         description: "",
         imgPath: "",
@@ -231,5 +233,25 @@ class FirestoreService {
     var reference = _database.collection("providers").doc(provider.pid);
 
     return reference.delete();
+  }
+
+  //Notification related
+  //Get notifications
+  Future<List<Notification>> getNotifications() async {
+    var reference = _database.collection("notifications");
+    var snapshot = await reference.get();
+    var data = snapshot.docs.map((document) => document.data());
+    var notification =
+        data.map((documentData) => Notification.fromJson(documentData));
+    return notification.toList();
+  }
+
+  //Create notification
+  Future<void> createNotification(Notification notification) async {
+    var reference = _database
+        .collection("notifications")
+        .doc(notification.timeStamp.toString())
+        .set(notification.toJson());
+    await reference;
   }
 }

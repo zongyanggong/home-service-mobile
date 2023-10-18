@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:user/services/info_state.dart';
 
 class AccountCard extends StatelessWidget {
   const AccountCard(
@@ -55,7 +53,7 @@ class AccountCard extends StatelessWidget {
                   ),
                 ),
                 // Display camera icon only when isEdit is true
-                if (isEdit)
+                if (imgPath != "" && isEdit)
                   const Positioned(
                     top: 0,
                     right: 0,
@@ -85,11 +83,14 @@ class AccountCard extends StatelessWidget {
                         // <-- Wrapped with a GestureDetector to handle tap events
                         onTap:
                             onViewProfile, // <-- Assigning the passed function to the onTap handler
-                        child: const Text(
-                          "View profile",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal),
-                        ),
+                        child: imgPath == ""
+                            ? const Text("")
+                            : const Text(
+                                "View profile",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
                       ),
                     ),
                 ],

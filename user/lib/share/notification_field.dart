@@ -14,7 +14,7 @@ class NotificationField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
         borderRadius: BorderRadius.circular(10.0), // Rounded corners
@@ -27,14 +27,18 @@ class NotificationField extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text(date),
             ],
           ),
           Text(
             message,
-            style:  TextStyle(fontSize: 14, fontWeight: FontWeight.normal,color: Colors.grey[600]),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey[600]),
           ),
         ],
       ),

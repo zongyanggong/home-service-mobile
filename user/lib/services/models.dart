@@ -39,7 +39,6 @@ class Service {
   Map<String, dynamic> toJson() => _$ServiceToJson(this);
 }
 
-
 @JsonSerializable()
 class ServiceRecord {
   final String rid;
@@ -54,6 +53,9 @@ class ServiceRecord {
   final int bookingStartTime;
   final int bookingEndTime;
   final String appointmentNotes;
+  final double score;
+  final String review;
+  final double price;
 
   ServiceRecord({
     this.rid = "",
@@ -68,6 +70,9 @@ class ServiceRecord {
     this.bookingStartTime = 0,
     this.bookingEndTime = 0,
     this.appointmentNotes = "",
+    this.score = 0.0,
+    this.review = "",
+    this.price = 0.0,
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>
@@ -82,7 +87,7 @@ class Provider {
   final String email;
   final String address;
   final String phone;
-  final int sid; //service he can prodive, only one service for now
+  final String sid; //service he can prodive, only one service for now
   final double price;
   final String description;
   final String imgPath;
@@ -93,7 +98,7 @@ class Provider {
     this.email = "",
     this.address = "",
     this.phone = "",
-    this.sid = 0,
+    this.sid = "",
     this.price = 0,
     this.description = "",
     this.imgPath = "",
@@ -102,4 +107,24 @@ class Provider {
   factory Provider.fromJson(Map<String, dynamic> json) =>
       _$ProviderFromJson(json);
   Map<String, dynamic> toJson() => _$ProviderToJson(this);
+}
+
+//Notification
+@JsonSerializable()
+class Notification {
+  final String uid;
+  final String pid;
+  final String rid;
+  final int timeStamp;
+
+  Notification({
+    this.uid = "",
+    this.pid = "",
+    this.rid = "",
+    this.timeStamp = 0,
+  });
+
+  factory Notification.fromJson(Map<String, dynamic> json) =>
+      _$NotificationFromJson(json);
+  Map<String, dynamic> toJson() => _$NotificationToJson(this);
 }

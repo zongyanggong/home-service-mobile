@@ -18,7 +18,7 @@ class CategoriesPage extends StatelessWidget {
             "Which service do you need?",
             style: Theme.of(context)
                 .textTheme
-                .headlineLarge
+                .headlineSmall
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
@@ -39,7 +39,7 @@ class CategoriesPage extends StatelessWidget {
                                     const Duration(milliseconds: 350), () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => ProviderList(
-                                            sid: index,
+                                            sid: index.toString(),
                                             title: categories[index],
                                           )));
                                 });

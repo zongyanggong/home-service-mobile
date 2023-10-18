@@ -4,12 +4,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import './services/service.dart';
 import 'firebase_options.dart';
+import 'services/firebase_api.dart';
+import 'notifications/notifications.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseApi().initNotifications();
   runApp(HomeServiceApp());
 }
 
@@ -39,6 +44,7 @@ class HomeServiceApp extends StatelessWidget {
           routes: {
             '/login': (context) => LoginPage(),
             '/home': (context) => const HomeScreen(),
+            '/notifications': (context) => NotificationsPage(),
           },
           theme: ThemeData(
             primarySwatch: Colors.blue,

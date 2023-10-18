@@ -76,6 +76,17 @@ class FirestoreService {
     return service.toList();
   }
 
+  Future<String> getServiceNameBySid(String sid) async {
+    var reference = _database.collection("services").doc(sid);
+    var snapshot = await reference.get();
+    var data = snapshot.data();
+    if (data == null) {
+      throw Exception("Service $sid does not exist");
+    } else {
+      return data["name"];
+    }
+  }
+
   Future<Service> getServiceByName(String name) async {
     var reference = _database.collection("services").doc(name);
     var snapshot = await reference.get();
@@ -119,12 +130,12 @@ class FirestoreService {
     return serviceRecord.toList();
   }
 
-  Future<ServiceRecord> getServiceRecordByName(String name) async {
-    var reference = _database.collection("serviceRecords").doc(name);
+  Future<ServiceRecord> getServiceRecordByRid(String rid) async {
+    var reference = _database.collection("serviceRecords").doc(rid);
     var snapshot = await reference.get();
     var data = snapshot.data();
     if (data == null) {
-      throw Exception("ServiceRecord $name does not exist");
+      throw Exception("ServiceRecord $rid does not exist");
     } else {
       return ServiceRecord.fromJson(data);
     }
@@ -153,6 +164,9 @@ class FirestoreService {
       "bookingStartTime": serviceRecord.bookingStartTime,
       "bookingEndTime": serviceRecord.bookingEndTime,
       "appointmentNotes": serviceRecord.appointmentNotes,
+      "score": serviceRecord.score,
+      "review": serviceRecord.review,
+      "price": serviceRecord.price,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
@@ -184,6 +198,17 @@ class FirestoreService {
     }
   }
 
+  Future<Provider> getProviderByPid(String pid) async {
+    var reference = _database.collection("providers").doc(pid);
+    var snapshot = await reference.get();
+    var data = snapshot.data();
+    if (data == null) {
+      throw Exception("Provider $pid does not exist");
+    } else {
+      return Provider.fromJson(data);
+    }
+  }
+
   Future<void> createProvider(Provider provider) async {
     var reference = _database
         .collection("providers")
@@ -208,5 +233,25 @@ class FirestoreService {
     var reference = _database.collection("providers").doc(provider.pid);
 
     return reference.delete();
+  }
+
+  //Notification related
+  //Get notifications
+  Future<List<Notification>> getNotifications() async {
+    var reference = _database.collection("notifications");
+    var snapshot = await reference.get();
+    var data = snapshot.docs.map((document) => document.data());
+    var notification =
+        data.map((documentData) => Notification.fromJson(documentData));
+    return notification.toList();
+  }
+
+  //Create notification
+  Future<void> createNotification(Notification notification) async {
+    var reference = _database
+        .collection("notifications")
+        .doc(notification.timeStamp.toString())
+        .set(notification.toJson());
+    await reference;
   }
 }

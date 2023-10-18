@@ -31,17 +31,19 @@ class Info extends ChangeNotifier {
   }
 
   ServiceRecord _serviceRecord = ServiceRecord(
-    rid:"1",
-    uid:"1",
+    rid: "1",
+    uid: "1",
     sid: "1",
     pid: "1",
     status: RecordStatus.pending,
     createdTime: 0,
-    acceptedTime :0,
+    acceptedTime: 0,
     actualStartTime: 0,
-    actualEndTime : 0,
-    bookingStartTime :0,
-    bookingEndTime : 0,
+    actualEndTime: 0,
+    bookingStartTime: 0,
+    bookingEndTime: 0,
+    score: 0.0,
+    review: "",
   );
 
   ServiceRecord get serviceRecord => _serviceRecord;

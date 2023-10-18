@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 2;
   late final List<Widget> _tabPages = [
     const RequestsPage(),
-    const NotificationsPage(),
+    NotificationsPage(),
     const CategoriesPage(),
     AccountPage()
   ];

@@ -25,7 +25,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
     };
 
 Service _$ServiceFromJson(Map<String, dynamic> json) => Service(
-      sid: json['sid'] as int? ?? 0,
+      sid: json['sid'] as String? ?? "",
       name: json['name'] as String? ?? "",
     );
 
@@ -49,6 +49,9 @@ ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
       bookingStartTime: json['bookingStartTime'] as int? ?? 0,
       bookingEndTime: json['bookingEndTime'] as int? ?? 0,
       appointmentNotes: json['appointmentNotes'] as String? ?? "",
+      score: (json['score'] as num?)?.toDouble() ?? 0.0,
+      review: json['review'] as String? ?? "",
+      price: (json['price'] as num?)?.toDouble() ?? 0.00,
     );
 
 Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
@@ -65,6 +68,9 @@ Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
       'bookingStartTime': instance.bookingStartTime,
       'bookingEndTime': instance.bookingEndTime,
       'appointmentNotes': instance.appointmentNotes,
+      'score': instance.score,
+      'review': instance.review,
+      'price': instance.price,
     };
 
 const _$RecordStatusEnumMap = {
@@ -81,7 +87,7 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       name: json['name'] as String? ?? "",
       email: json['email'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
-      sid: json['sid'] as int? ?? 0,
+      sid: json['sid'] as String? ?? "",
       price: (json['price'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String? ?? "",
       imgPath: json['imgPath'] as String? ?? "",
@@ -96,4 +102,19 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'price': instance.price,
       'description': instance.description,
       'imgPath': instance.imgPath,
+    };
+
+Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
+      uid: json['uid'] as String? ?? "",
+      pid: json['pid'] as String? ?? "",
+      rid: json['rid'] as String? ?? "",
+      timeStamp: json['timeStamp'] as int? ?? 0,
+    );
+
+Map<String, dynamic> _$NotificationToJson(Notification instance) =>
+    <String, dynamic>{
+      'uid': instance.uid,
+      'pid': instance.pid,
+      'rid': instance.rid,
+      'timeStamp': instance.timeStamp,
     };
