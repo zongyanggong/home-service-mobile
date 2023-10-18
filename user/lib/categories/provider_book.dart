@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
 import 'package:user/services/record_status.dart';
-
+import 'package:user/services/service_provider.dart';
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/input_field.dart';
 import 'package:user/share/user_card.dart';
@@ -170,6 +168,9 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
                           bookingEndTime: _convertTimeTomillisecondsSinceEpoch(
                               _selectedDate, _endTime),
                           appointmentNotes: notesController.text,
+                          score: 0.0,
+                          review: "",
+                          price: widget.serviceProvider.price,
                         ),
                       );
 

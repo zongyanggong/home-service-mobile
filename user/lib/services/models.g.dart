@@ -51,6 +51,7 @@ ServiceRecord _$ServiceRecordFromJson(Map<String, dynamic> json) =>
       appointmentNotes: json['appointmentNotes'] as String? ?? "",
       score: (json['score'] as num?)?.toDouble() ?? 0.0,
       review: json['review'] as String? ?? "",
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
@@ -69,6 +70,7 @@ Map<String, dynamic> _$ServiceRecordToJson(ServiceRecord instance) =>
       'appointmentNotes': instance.appointmentNotes,
       'score': instance.score,
       'review': instance.review,
+      'price': instance.price,
     };
 
 const _$RecordStatusEnumMap = {
@@ -107,6 +109,7 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
 
 Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
       uid: json['uid'] as String? ?? "",
+      pid: json['pid'] as String? ?? "",
       rid: json['rid'] as String? ?? "",
       timeStamp: json['timeStamp'] as int? ?? 0,
     );
@@ -114,6 +117,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
 Map<String, dynamic> _$NotificationToJson(Notification instance) =>
     <String, dynamic>{
       'uid': instance.uid,
+      'pid': instance.pid,
       'rid': instance.rid,
       'timeStamp': instance.timeStamp,
     };

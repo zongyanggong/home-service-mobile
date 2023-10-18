@@ -102,17 +102,15 @@ class NotificationsPage extends StatelessWidget {
       //Get current user's notifications
       List<model.Notification> notifications =
           await _firestoreService.getNotifications();
+      //Select only notifications that belong to current user: Provider
       notifications =
-          notifications.where((e) => e.uid == info.currentUser.pid).toList();
-
-      print(notifications);
+          notifications.where((e) => e.pid == info.currentUser.pid).toList();
 
       //Get current user's service records
       List<model.ServiceRecord> serviceRecords =
           await _firestoreService.getServiceRecord();
       serviceRecords =
-          serviceRecords.where((e) => e.uid == info.currentUser.pid).toList();
-      print(serviceRecords);
+          serviceRecords.where((e) => e.pid == info.currentUser.pid).toList();
 
       //Get service names
       List<model.Service> services = await _firestoreService.getService();

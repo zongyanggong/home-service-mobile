@@ -166,6 +166,7 @@ class FirestoreService {
       "appointmentNotes": serviceRecord.appointmentNotes,
       "score": serviceRecord.score,
       "review": serviceRecord.review,
+      "price": serviceRecord.price,
     };
     return reference.set(newData, SetOptions(merge: true));
   }

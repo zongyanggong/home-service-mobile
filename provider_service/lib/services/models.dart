@@ -119,11 +119,13 @@ class Provider {
 @JsonSerializable()
 class Notification {
   final String uid;
+  final String pid;
   final String rid;
   final int timeStamp;
 
   Notification({
     this.uid = "",
+    this.pid = "",
     this.rid = "",
     this.timeStamp = 0,
   });
