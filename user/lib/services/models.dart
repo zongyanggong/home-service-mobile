@@ -96,7 +96,7 @@ class Provider {
     this.email = "",
     this.address = "",
     this.phone = "",
-    this.sid = 0,
+    this.sid = "",
     this.price = 0,
     this.description = "",
     this.imgPath = "",

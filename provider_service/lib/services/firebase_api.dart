@@ -73,10 +73,6 @@ class FirebaseApi {
 
       saveMessageToDatabase(message);
       // handleMessage(message);
-
-      // navigatorKey.currentState?.pushNamed(
-      //   '/home',
-      // );
     });
 
     //attach event listener for when a notification is received while the app is in the background

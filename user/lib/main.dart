@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:user/services/firebase_api.dart';
 import './services/service.dart';
 import 'firebase_options.dart';
-import 'services/firebase_api.dart';
 import 'notifications/notifications.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -34,7 +33,7 @@ class HomeServiceApp extends StatelessWidget {
             future: _auth.isUserSignedIn(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                bool isUserSignedIn = snapshot.data as bool;
+                // bool isUserSignedIn = snapshot.data as bool;
                 // return isUserSignedIn ? HomeScreen() : LoginPage();
                 return LoginPage();
               }

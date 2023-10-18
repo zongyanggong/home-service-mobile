@@ -234,4 +234,24 @@ class FirestoreService {
 
     return reference.delete();
   }
+
+  //Notification related
+  //Get notifications
+  Future<List<Notification>> getNotifications() async {
+    var reference = _database.collection("notifications");
+    var snapshot = await reference.get();
+    var data = snapshot.docs.map((document) => document.data());
+    var notification =
+        data.map((documentData) => Notification.fromJson(documentData));
+    return notification.toList();
+  }
+
+  //Create notification
+  Future<void> createNotification(Notification notification) async {
+    var reference = _database
+        .collection("notifications")
+        .doc(notification.timeStamp.toString())
+        .set(notification.toJson());
+    await reference;
+  }
 }

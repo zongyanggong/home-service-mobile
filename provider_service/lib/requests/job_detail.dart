@@ -163,82 +163,58 @@ class _JobDetailState extends State<JobDetail> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: serviceRecord.status
-                          .toString()
-                          .split('.')
-                          .last
-                          .toString()
-                          .split('.')
-                          .last ==
-                      "pending"
-                  ? PendingButton(
-                      serviceRecord: serviceRecord,
-                      onCancelJob: () {
-                        // setState(() {
-                        //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "rejected";
-                        //   serviceRecord.actualEndTime = DateTime.now();
-                        // });
-                      },
-                      onAcceptJob: () {
-                        // setState(() {
-                        //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "confirmed";
-                        //   serviceRecord.acceptedTime = DateTime.now();
-                        // });
-                      },
-                    )
-                  : serviceRecord.status
-                                  .toString()
-                                  .split('.')
-                                  .last
-                                  .toString()
-                                  .split('.')
-                                  .last ==
-                              "confirmed" ||
-                          serviceRecord.status
-                                  .toString()
-                                  .split('.')
-                                  .last
-                                  .toString()
-                                  .split('.')
-                                  .last ==
-                              "started"
-                      ? JobDetailButton(
+              child:
+                  serviceRecord.status.toString().split('.').last == "pending"
+                      ? PendingButton(
                           serviceRecord: serviceRecord,
-                          onButtonClick: () {
-                            if (serviceRecord.status
-                                    .toString()
-                                    .split('.')
-                                    .last
-                                    .toString()
-                                    .split('.')
-                                    .last ==
-                                "confirmed") {
-                              // setState(() {
-                              //   serviceRecord.status.toString().split('.').last
-                              //       .toString()
-                              //       .split('.')
-                              //       .last = "started";
-                              //   serviceRecord.actualStartTime = DateTime.now();
-                              // });
-                            } else if (serviceRecord.status
-                                    .toString()
-                                    .split('.')
-                                    .last
-                                    .toString()
-                                    .split('.')
-                                    .last ==
-                                "started") {
-                              // setState(() {
-                              //   serviceRecord.status.toString().split('.').last
-                              //       .toString()
-                              //       .split('.')
-                              //       .last = "completed";
-                              //   serviceRecord.actualEndTime = DateTime.now();
-                              // });
-                            } else {}
+                          onCancelJob: () {
+                            // setState(() {
+                            //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "rejected";
+                            //   serviceRecord.actualEndTime = DateTime.now();
+                            // });
+                          },
+                          onAcceptJob: () {
+                            // setState(() {
+                            //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "confirmed";
+                            //   serviceRecord.acceptedTime = DateTime.now();
+                            // });
                           },
                         )
-                      : null,
+                      : serviceRecord.status.toString().split('.').last ==
+                                  "confirmed" ||
+                              serviceRecord.status.toString().split('.').last ==
+                                  "started"
+                          ? JobDetailButton(
+                              serviceRecord: serviceRecord,
+                              onButtonClick: () {
+                                if (serviceRecord.status
+                                        .toString()
+                                        .split('.')
+                                        .last ==
+                                    "confirmed") {
+                                  // setState(() {
+                                  //   serviceRecord.status.toString().split('.').last
+                                  //       .toString()
+                                  //       .split('.')
+                                  //       .last = "started";
+                                  //   serviceRecord.actualStartTime = DateTime.now();
+                                  // });
+                                } else if (serviceRecord.status
+                                        .toString()
+                                        .split('.')
+                                        .last ==
+                                    "started") {
+                                  // setState(() {
+                                  //   serviceRecord.status.toString().split('.').last
+                                  //       .toString()
+                                  //       .split('.')
+                                  //       .last = "completed";
+                                  //   serviceRecord.actualEndTime = DateTime.now();
+                                  // });
+                                } else {}
+                              },
+                            )
+                          : null,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -258,95 +234,41 @@ class _JobDetailState extends State<JobDetail> {
                     active: serviceRecord.status.toString().split('.').last ==
                         "pending",
                   ),
-                  if (serviceRecord.status
-                          .toString()
-                          .split('.')
-                          .last
-                          .toString()
-                          .split('.')
-                          .last ==
+                  if (serviceRecord.status.toString().split('.').last ==
                       "rejected") //job rejected by provider
                     JobStatus(
                       title: "Job Rejected",
                       subTitle: serviceRecord.actualEndTime != 0
                           ? "Job rejected on ${getFormatTime(serviceRecord.actualEndTime)}"
                           : "",
-                      active: serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last ==
+                      active: serviceRecord.status.toString().split('.').last ==
                           "rejected",
                     ),
-                  if (serviceRecord.status
-                          .toString()
-                          .split('.')
-                          .last
-                          .toString()
-                          .split('.')
-                          .last ==
+                  if (serviceRecord.status.toString().split('.').last ==
                       "canceled") //job canceled by user
                     JobStatus(
                       title: "Job Canceled",
                       subTitle: serviceRecord.actualEndTime != 0
                           ? "Job canceled on ${getFormatTime(serviceRecord.actualEndTime)} }"
                           : "",
-                      active: serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last ==
+                      active: serviceRecord.status.toString().split('.').last ==
                           "canceled",
                     ),
-                  if (serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last !=
+                  if (serviceRecord.status.toString().split('.').last !=
                           "canceled" &&
-                      serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last !=
+                      serviceRecord.status.toString().split('.').last !=
                           "rejected")
                     JobStatus(
                       title: "Job Accepted",
                       subTitle: serviceRecord.acceptedTime != 0
                           ? "Job accepted on ${getFormatTime(serviceRecord.acceptedTime)}"
                           : "",
-                      active: serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last !=
+                      active: serviceRecord.status.toString().split('.').last ==
                           "confirmed",
                     ),
-                  if (serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last !=
+                  if (serviceRecord.status.toString().split('.').last !=
                           "canceled" &&
-                      serviceRecord.status
-                              .toString()
-                              .split('.')
-                              .last
-                              .toString()
-                              .split('.')
-                              .last !=
+                      serviceRecord.status.toString().split('.').last !=
                           "rejected")
                     JobStatus(
                       title: "Job In Process",

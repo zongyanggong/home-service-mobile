@@ -79,11 +79,14 @@ class AccountCard extends StatelessWidget {
                         // <-- Wrapped with a GestureDetector to handle tap events
                         onTap:
                             onViewProfile, // <-- Assigning the passed function to the onTap handler
-                        child: const Text(
-                          "View profile",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal),
-                        ),
+                        child: imgPath == ""
+                            ? const Text("")
+                            : const Text(
+                                "View profile",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
                       ),
                     ),
                 ],
