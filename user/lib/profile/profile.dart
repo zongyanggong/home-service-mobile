@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:user/services/getAddress.dart';
 import 'package:user/services/http_request.dart';
 import 'package:user/services/info_state.dart';
@@ -8,6 +11,7 @@ import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/input_field.dart';
 import 'package:provider/provider.dart';
 import '../services/firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
@@ -27,21 +31,36 @@ class ProfileSceen extends StatelessWidget {
   }
 }
 
-class BodyContent extends StatelessWidget {
+class BodyContent extends StatefulWidget {
   const BodyContent({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    var info = Provider.of<Info>(context, listen: false);
+  State<BodyContent> createState() => _BodyContentState();
+}
 
-    TextEditingController addressController = TextEditingController();
+class _BodyContentState extends State<BodyContent> {
+  final addressController = TextEditingController();
+  final telephoneController = TextEditingController();
+  final emailController = TextEditingController();
+  var info;
+  List<String> autoCompleted = [];
+  late PickedFile _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    info = Provider.of<Info>(context, listen: false);
     addressController.text = info.currentUser.address!;
-    TextEditingController telephoneController = TextEditingController();
     telephoneController.text = info.currentUser.phone!;
-    TextEditingController emailController = TextEditingController();
     emailController.text = info.currentUser.email!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,8 +72,9 @@ class BodyContent extends StatelessWidget {
                 child: AccountCard(
                   name: info.currentUser.name!,
                   imgPath: info.currentUser.imgPath!,
+                  // imageWidget: _imageFile==null?NetworkImage(info.currentUser.imgPath!):FileImage(File(_imageFile.path)),
                   isEdit: true,
-                  onTakePicture: () {},
+                  onTakePicture: () {takePhoto(ImageSource.camera);},
                 ),
               ),
               Container(
@@ -70,6 +90,54 @@ class BodyContent extends StatelessWidget {
                       title: "Address",
                       hint: "Please input your address",
                       controller: addressController,
+                      onSubmitted: (value) {
+                        setState(() {
+                          autoCompleted = [];
+                        });
+                      },
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          getAddressFromCanadapost(value).then((value) {
+                            autoCompleted = [];
+                            value.forEach((dynamic item) {
+                              Map<String, dynamic> mapItem =
+                                  item as Map<String, dynamic>;
+                              setState(() {
+                                autoCompleted.add(
+                                    "${mapItem["Text"]},${mapItem["Description"]}");
+                              });
+                              debugPrint(
+                                  "${mapItem["Text"]},${mapItem["Description"]}");
+                            });
+                          });
+                        } else {
+                          //clear out the result
+                          setState(() {
+                            autoCompleted = [];
+                          });
+                        }
+                      },
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: autoCompleted.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(
+                              Icons.pin_drop,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(autoCompleted[index]),
+                          onTap: () {
+                            setState(() {
+                              addressController.text = autoCompleted[index];
+                              autoCompleted = [];
+                            });
+                          },
+                        );
+                      },
                     ),
                     InputField(
                       title: "Telephone",
@@ -99,29 +167,17 @@ class BodyContent extends StatelessWidget {
                   child: const Text("Update"),
                 ),
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: ElevatedButton(
-                  onPressed: () {
-                    getAddressFromCanadapost("725").then((value) {
-                      debugPrint(value.length.toString());
-                      value.forEach((dynamic item) {
-                        Map<String, dynamic> mapItem =
-                            item as Map<String, dynamic>;
-                        debugPrint(
-                            "${mapItem["Text"]},${mapItem["Description"]}");
-                      });
-                    });
-
-                    // debugPrint(results.toString());
-                  },
-                  child: const Text("test"),
-                ),
-              ),
             ],
           ),
         ],
       ),
     ]);
+  }
+
+  void takePhoto(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    setState(() {
+      _imageFile = pickedFile as PickedFile;
+    });
   }
 }

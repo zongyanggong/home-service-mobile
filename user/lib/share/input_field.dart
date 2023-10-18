@@ -6,13 +6,17 @@ class InputField extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? widget;
   final int? maxLines;
+  final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
   const InputField(
       {super.key,
       required this.title,
       required this.hint,
       this.controller,
         this.maxLines,
-      this.widget});
+      this.widget,
+      this.onChanged,
+      this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +40,21 @@ class InputField extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
-                     maxLines: maxLines??1,
+                    maxLines: maxLines??1,
                     readOnly:widget == null ? false : true,
                     autofocus: false,
                     cursorColor: Colors.grey[700],
                     controller: controller,
+                    onChanged: (value) {
+                      if (onChanged != null) {
+                        onChanged!(value);
+                      }
+                    },
+                    onFieldSubmitted: (value){
+                      if (onSubmitted!=null){
+                        onSubmitted!(value);
+                      }
+                    },
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
