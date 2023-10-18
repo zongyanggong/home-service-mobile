@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:user/services/info_state.dart';
 
 class AccountCard extends StatelessWidget {
   const AccountCard(
@@ -20,8 +18,6 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var info = Provider.of<Info>(context, listen: false);
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
@@ -53,7 +49,7 @@ class AccountCard extends StatelessWidget {
                   ),
                 ),
                 // Display camera icon only when isEdit is true
-                if (isEdit)
+                if (imgPath != "" && isEdit)
                   const Positioned(
                     top: 0,
                     right: 0,

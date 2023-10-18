@@ -125,61 +125,70 @@ class JobCardList extends StatelessWidget {
       };
     }
 
-    return FutureBuilder<Map<String, dynamic>>(
-        future: getServiceRecordsInfo(),
-        builder: (BuildContext context,
-            AsyncSnapshot<Map<String, dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Data is still loading
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            // Data loading has encountered an error
-            return Text('Error1: ${snapshot.error}');
-          } else {
-            // Data has been loaded successfully
-            final listObj = snapshot.data;
-            if (listObj == null) {
-              return const Center(
-                child: Text("No Request"),
-              );
-            } else {
-              if (listObj['serviceProviders'] == null ||
-                  (listObj['upcomingRecords'] == null &&
-                      listObj['completedRecords'] == null &&
-                      listObj['canceledRecords'] == null)) {
-                return const Center(
-                  child: Text("No Request"),
+    return info.currentUser.uid == ""
+        ? const Padding(
+            padding: EdgeInsets.all(16.0), // Adjust the value as needed
+            child: Center(
+              child: Text(
+                "Please login to see your requests",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ))
+        : FutureBuilder<Map<String, dynamic>>(
+            future: getServiceRecordsInfo(),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, dynamic>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // Data is still loading
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                // Data loading has encountered an error
+                return Text('Error1: ${snapshot.error}');
+              } else {
+                // Data has been loaded successfully
+                final listObj = snapshot.data;
+                if (listObj == null) {
+                  return const Center(
+                    child: Text("No Request"),
+                  );
+                } else {
+                  if (listObj['serviceProviders'] == null ||
+                      (listObj['upcomingRecords'] == null &&
+                          listObj['completedRecords'] == null &&
+                          listObj['canceledRecords'] == null)) {
+                    return const Center(
+                      child: Text("No Request"),
+                    );
+                  }
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 9),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: listObj['length'],
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 9),
+                        child: JobCard(
+                          selectedIndex: selectedIndex,
+                          list: listObj,
+                          jobIndex: index,
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => JobDetail(
+                                    selectedIndex: selectedIndex,
+                                    list: listObj,
+                                    jobIndex: index)));
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 );
               }
-            }
-
-            return Padding(
-              padding: const EdgeInsets.only(top: 9),
-              child: ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: listObj['length'],
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                    child: JobCard(
-                      selectedIndex: selectedIndex,
-                      list: listObj,
-                      jobIndex: index,
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => JobDetail(
-                                selectedIndex: selectedIndex,
-                                list: listObj,
-                                jobIndex: index)));
-                      },
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-        });
+            });
   }
 }

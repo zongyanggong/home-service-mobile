@@ -11,7 +11,7 @@ class AccountCard extends StatelessWidget {
 
   final String name;
   final String imgPath;
-  final bool isEdit; //In edit page, Camera icon will be displayed
+  final bool isEdit;
   final VoidCallback?
       onViewProfile; // <-- Added a callback function type for "View profile" tap event
   final VoidCallback? onTakePicture;

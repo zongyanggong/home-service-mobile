@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:user/categories/provider_book.dart';
 import 'package:user/service/appbar_titles.dart';
-
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/category_card.dart';
 import 'package:user/share/user_card.dart';
 import '../services/models.dart' as model;
+import '../services/info_state.dart';
+import 'package:provider/provider.dart';
 
 class ProviderDetailScreen extends StatelessWidget {
   const ProviderDetailScreen({super.key, required this.serviceProvider});
@@ -13,6 +14,8 @@ class ProviderDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var info = Provider.of<Info>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         title: AppBarTitle(
@@ -63,13 +66,26 @@ class ProviderDetailScreen extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 2,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ProviderBookScreen(
-                          serviceProvider: serviceProvider)));
-                },
-                child: const Text("Book Now"),
-              ),
+                  onPressed: info.currentUser.uid == ""
+                      ? null
+                      : () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ProviderBookScreen(
+                                  serviceProvider: serviceProvider)));
+                        },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        // Button is disabled, so return the grey color
+                        return Colors.grey; // You can adjust this color
+                      }
+                      return Colors
+                          .blue; // Default color when the button is active
+                    }),
+                  ),
+                  child: const Text("Book Now",
+                      style: TextStyle(fontSize: 16, color: Colors.white))),
             ),
           ],
         ),

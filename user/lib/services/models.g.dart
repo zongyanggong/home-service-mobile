@@ -87,7 +87,7 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       email: json['email'] as String? ?? "",
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
-      sid: json['sid'] as int? ?? 0,
+      sid: json['sid'] as String? ?? "",
       price: (json['price'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String? ?? "",
       imgPath: json['imgPath'] as String? ?? "",

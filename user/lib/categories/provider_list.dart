@@ -13,7 +13,7 @@ final FirestoreService _firestoreService = FirestoreService();
 class ProviderList extends StatelessWidget {
   ProviderList({super.key, required this.sid, required this.title});
 
-  int sid;
+  String sid;
   String title;
   @override
   Widget build(BuildContext context) {
