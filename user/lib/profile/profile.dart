@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:user/services/getAddress.dart';
+import 'package:user/services/http_request.dart';
 import 'package:user/services/info_state.dart';
 import 'package:user/share/account_card.dart';
 import 'package:user/share/account_input.dart';
@@ -97,7 +99,25 @@ class BodyContent extends StatelessWidget {
                   child: const Text("Update"),
                 ),
               ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: ElevatedButton(
+                  onPressed: () {
+                    getAddressFromCanadapost("725").then((value) {
+                      debugPrint(value.length.toString());
+                      value.forEach((dynamic item) {
+                        Map<String, dynamic> mapItem =
+                            item as Map<String, dynamic>;
+                        debugPrint(
+                            "${mapItem["Text"]},${mapItem["Description"]}");
+                      });
+                    });
 
+                    // debugPrint(results.toString());
+                  },
+                  child: const Text("test"),
+                ),
+              ),
             ],
           ),
         ],
