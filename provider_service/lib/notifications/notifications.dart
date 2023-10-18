@@ -133,54 +133,63 @@ class NotificationsPage extends StatelessWidget {
       return notifiscationRecordList;
     }
 
-    return FutureBuilder<List<NotificationRecord>>(
-        future: getNotificationRecords(),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<NotificationRecord>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Data is still loading
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            // Data loading has encountered an error
-            return Text('Error: ${snapshot.error}');
-          } else {
-            // Data has been loaded successfully
-            final notifiscationRecords = snapshot.data;
-            if (notifiscationRecords == null) {
-              return const Center(
-                child: Text("No notification"),
-              );
-            }
-
-            return SingleChildScrollView(
-                child: Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: notifiscationRecords.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                    child: NotificationField(
-                      title: notifiscationRecords[
-                              notifiscationRecords.length - 1 - index]
-                          .title,
-                      date: notifiscationRecords[
-                              notifiscationRecords.length - 1 - index]
-                          .date,
-                      message: notifiscationRecords[
-                              notifiscationRecords.length - 1 - index]
-                          .message,
-                      // date: notifiscationRecords[index].date,
-                      // message: notifiscationRecords[index].message,
-                    ),
-                  );
-                },
+    return info.currentUser.pid == ""
+        ? const Padding(
+            padding: EdgeInsets.all(16.0), // Adjust the value as needed
+            child: Center(
+              child: Text(
+                "Please login to see your notifications",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            ));
-          }
-        });
+            ))
+        : FutureBuilder<List<NotificationRecord>>(
+            future: getNotificationRecords(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<NotificationRecord>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // Data is still loading
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                // Data loading has encountered an error
+                return Text('Error: ${snapshot.error}');
+              } else {
+                // Data has been loaded successfully
+                final notifiscationRecords = snapshot.data;
+                if (notifiscationRecords == null) {
+                  return const Center(
+                    child: Text("No notification"),
+                  );
+                }
+
+                return SingleChildScrollView(
+                    child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: notifiscationRecords.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 3),
+                        child: NotificationField(
+                          title: notifiscationRecords[
+                                  notifiscationRecords.length - 1 - index]
+                              .title,
+                          date: notifiscationRecords[
+                                  notifiscationRecords.length - 1 - index]
+                              .date,
+                          message: notifiscationRecords[
+                                  notifiscationRecords.length - 1 - index]
+                              .message,
+                          // date: notifiscationRecords[index].date,
+                          // message: notifiscationRecords[index].message,
+                        ),
+                      );
+                    },
+                  ),
+                ));
+              }
+            });
   }
 }

@@ -11,7 +11,7 @@ class AccountCard extends StatelessWidget {
 
   final String name;
   final String imgPath;
-  final bool isEdit;
+  final bool isEdit; //In edit page, Camera icon will be displayed
   final VoidCallback?
       onViewProfile; // <-- Added a callback function type for "View profile" tap event
   final VoidCallback? onTakePicture;
@@ -79,11 +79,14 @@ class AccountCard extends StatelessWidget {
                         // <-- Wrapped with a GestureDetector to handle tap events
                         onTap:
                             onViewProfile, // <-- Assigning the passed function to the onTap handler
-                        child: const Text(
-                          "View profile",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.normal),
-                        ),
+                        child: imgPath == ""
+                            ? const Text("")
+                            : const Text(
+                                "View profile",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
                       ),
                     ),
                 ],

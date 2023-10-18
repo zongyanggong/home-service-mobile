@@ -21,9 +21,6 @@ class AccountPage extends StatelessWidget {
 
     var name = info.currentUser.uid == "" ? "Guest" : info.currentUser.name!;
 
-    var imgPath =
-        info.currentUser.imgPath == "" ? info.currentUser.imgPath! : '';
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
