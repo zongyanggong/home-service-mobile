@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user/requests/job_detail.dart';
 import 'package:user/services/record_status.dart';
-import 'package:user/services/service_provider.dart';
-import 'package:user/services/service_record.dart';
 import 'package:user/share/job_card.dart';
 import '../services/firestore.dart';
 import '../services/models.dart' as model;
@@ -20,12 +18,7 @@ class RequestsPage extends StatefulWidget {
 
 class _RequestsPageState extends State<RequestsPage>
     with TickerProviderStateMixin {
-  int _selectedIndex = 1;
-  late final List<Widget> _tabPages = [
-    Text("1"),
-    Text("2"),
-    Text("3"),
-  ];
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -91,23 +84,23 @@ class JobCardList extends StatelessWidget {
       //Get uncoming service
       List<model.ServiceRecord> upcomingRecords = serviceRecords
           .where((e) =>
-              e.status == RecordStatus.pending ||
-              e.status == RecordStatus.confirmed ||
-              e.status == RecordStatus.started)
+              e.status.toString().split('.').last == "pending" ||
+              e.status.toString().split('.').last == "confirmed" ||
+              e.status.toString().split('.').last == "started")
           .toList();
 
       //Get completed service
       List<model.ServiceRecord> completedRecords = serviceRecords
           .where((e) =>
-              e.status == RecordStatus.completed ||
-              e.status == RecordStatus.reviewed)
+              e.status.toString().split('.').last == "completed" ||
+              e.status.toString().split('.').last == "reviewed")
           .toList();
 
       //Get canceled service
       List<model.ServiceRecord> canceledRecords = serviceRecords
           .where((e) =>
-              e.status == RecordStatus.rejected ||
-              e.status == RecordStatus.canceled)
+              e.status.toString().split('.').last == "rejected" ||
+              e.status.toString().split('.').last == "canceled")
           .toList();
 
       //Get length
@@ -141,7 +134,7 @@ class JobCardList extends StatelessWidget {
             return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             // Data loading has encountered an error
-            return Text('Error: ${snapshot.error}');
+            return Text('Error1: ${snapshot.error}');
           } else {
             // Data has been loaded successfully
             final listObj = snapshot.data;

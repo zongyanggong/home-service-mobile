@@ -25,11 +25,11 @@ class User {
 
 @JsonSerializable()
 class Service {
-  final int sid;
+  final String sid;
   final String name;
 
   Service({
-    this.sid = 0,
+    this.sid = "",
     this.name = "",
   });
 
@@ -61,6 +61,9 @@ class ServiceRecord {
   final int bookingStartTime;
   final int bookingEndTime;
   final String appointmentNotes;
+  final double score;
+  final String review;
+  final double price;
 
   ServiceRecord({
     this.rid = "",
@@ -75,6 +78,9 @@ class ServiceRecord {
     this.bookingStartTime = 0,
     this.bookingEndTime = 0,
     this.appointmentNotes = "",
+    this.score = 0.0,
+    this.review = "",
+    this.price = 0.00,
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) =>
@@ -88,7 +94,7 @@ class Provider {
   String? name;
   String? email;
   String? phone;
-  int? sid; //service he can prodive, only one service for now
+  String? sid; //service he can prodive, only one service for now
   double? price;
   String? description;
   String? imgPath;
@@ -98,7 +104,7 @@ class Provider {
     this.name = "",
     this.email = "",
     this.phone = "",
-    this.sid = 0,
+    this.sid = "",
     this.price = 0,
     this.description = "",
     this.imgPath = "",
