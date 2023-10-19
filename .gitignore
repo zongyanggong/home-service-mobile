@@ -29,5 +29,5 @@ doc/api/
 # server
 server/serviceAccountKey.json
 server/node_modules
-server/.env
+./server/.env
 
