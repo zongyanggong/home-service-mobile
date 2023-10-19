@@ -180,7 +180,7 @@ class JobCardList extends StatelessWidget {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => JobDetail(
                                     selectedIndex: selectedIndex,
-                                    list: listObj,
+                                    // list: listObj,
                                     jobIndex: index)));
                           },
                         ),

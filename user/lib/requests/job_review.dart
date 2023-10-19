@@ -10,10 +10,11 @@ import 'package:user/share/input_field.dart';
 import 'package:user/share/job_status.dart';
 import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
+import '../services/models.dart' as model;
 
 class JobViewScreen extends StatefulWidget {
-  JobViewScreen({super.key, required this.serviceRecord});
-  TempServiceRecord serviceRecord;
+  JobViewScreen({super.key, required this.provider});
+  model.Provider provider;
 
   @override
   State<JobViewScreen> createState() => _JobViewScreenState();
@@ -68,7 +69,7 @@ class _JobViewScreenState extends State<JobViewScreen> {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(widget.serviceRecord.imgPath),
+                      image: NetworkImage(""), //widget.service.imgPath),
                     ),
                   ),
                 ),
@@ -78,14 +79,14 @@ class _JobViewScreenState extends State<JobViewScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.serviceRecord.name,
+                        widget.provider.name,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Text(categories[widget.serviceRecord.sid],
+                      Text("", //categories[widget.provider.sid],
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.normal)),
                     ],
@@ -112,7 +113,7 @@ class _JobViewScreenState extends State<JobViewScreen> {
               height: 20,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 12,right: 12,bottom: 20),
+              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 20),
               child: InputField(
                 title: "Let us know your experience",
                 hint: "Please input",
@@ -124,7 +125,7 @@ class _JobViewScreenState extends State<JobViewScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: (){
+                  onPressed: () {
                     debugPrint(_desController.text);
                     debugPrint(initScore.toString());
                   },
