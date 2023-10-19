@@ -20,7 +20,6 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var info = Provider.of<Info>(context, listen: false);
     return Container(
       decoration: BoxDecoration(
         color: Colors.blueGrey[50], // Background color
