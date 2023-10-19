@@ -51,7 +51,7 @@ class _RequestsPageState extends State<RequestsPage>
                   child: Text("Completed"),
                 ),
                 Tab(
-                  child: Text("Canceled"),
+                  child: Text("Cancelled"),
                 )
               ],
             ),
@@ -100,11 +100,11 @@ class JobCardList extends StatelessWidget {
               e.status.toString().split('.').last == "reviewed")
           .toList();
 
-      //Get canceled service
-      List<model.ServiceRecord> canceledRecords = serviceRecords
+      //Get cancelled service
+      List<model.ServiceRecord> cancelledRecords = serviceRecords
           .where((e) =>
               e.status.toString().split('.').last == "rejected" ||
-              e.status.toString().split('.').last == "canceled")
+              e.status.toString().split('.').last == "cancelled")
           .toList();
 
       //Get length
@@ -113,7 +113,7 @@ class JobCardList extends StatelessWidget {
         case 1:
           length = completedRecords.length;
         case 2:
-          length = canceledRecords.length;
+          length = cancelledRecords.length;
         default:
           length = upcomingRecords.length;
       }
@@ -124,7 +124,7 @@ class JobCardList extends StatelessWidget {
         'services': services,
         'upcomingRecords': upcomingRecords,
         'completedRecords': completedRecords,
-        'canceledRecords': canceledRecords,
+        'cancelledRecords': cancelledRecords,
         'length': length,
       };
     }
@@ -159,7 +159,7 @@ class JobCardList extends StatelessWidget {
                   if (listObj['serviceUsers'] == null ||
                       (listObj['upcomingRecords'] == null &&
                           listObj['completedRecords'] == null &&
-                          listObj['canceledRecords'] == null)) {
+                          listObj['cancelledRecords'] == null)) {
                     return const Center(
                       child: Text("No Request"),
                     );
@@ -184,7 +184,6 @@ class JobCardList extends StatelessWidget {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => JobDetail(
                                     selectedIndex: selectedIndex,
-                                    list: listObj,
                                     jobIndex: index)));
                           },
                         ),
