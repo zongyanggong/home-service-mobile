@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/release
 /android/app/google-services.json
 /analysis_options.yaml
+
+#contain senstitive information
+/lib/firebase_options.dart
+/ios/Runner/GoogleService-Info.plist
+/android/app/google-services.json

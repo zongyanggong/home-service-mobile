@@ -7,7 +7,8 @@ class AccountCard extends StatelessWidget {
       required this.imgPath,
       this.isEdit = false,
       this.onViewProfile, // <-- Added a callback function for "View profile" tap event
-      this.onTakePicture});
+      this.onTakePicture,
+      this.imageWidget});
 
   final String name;
   final String imgPath;
@@ -15,6 +16,7 @@ class AccountCard extends StatelessWidget {
   final VoidCallback?
       onViewProfile; // <-- Added a callback function type for "View profile" tap event
   final VoidCallback? onTakePicture;
+  final ImageProvider? imageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +38,12 @@ class AccountCard extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: imgPath != ""
+                    image: imageWidget != null
                         ? DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(imgPath) // Use network image,
-                            )
+                            //image: NetworkImage(imgPath) // Use network image,
+                            image: imageWidget!,
+                          )
                         : const DecorationImage(
                             fit: BoxFit.cover,
                             image: AssetImage(
