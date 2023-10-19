@@ -99,7 +99,7 @@ class Provider {
     this.address = "",
     this.phone = "",
     this.sid = "",
-    this.price = 0,
+    this.price = 0.0,
     this.description = "",
     this.imgPath = "",
   });
