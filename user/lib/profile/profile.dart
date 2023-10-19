@@ -47,7 +47,7 @@ class _BodyContentState extends State<BodyContent> {
   var info;
   List<String> autoCompleted = [];
   final ImagePicker _picker = ImagePicker();
-File? _selectedImage;
+  File? _selectedImage;
   @override
   void initState() {
     // TODO: implement initState
@@ -101,6 +101,7 @@ File? _selectedImage;
                         });
                       },
                       onChanged: (value) {
+                        // debugPrint(value);
                         if (value.isNotEmpty) {
                           getAddressFromCanadapost(value).then((value) {
                             autoCompleted = [];
@@ -165,7 +166,11 @@ File? _selectedImage;
                     info.currentUser.phone = telephoneController.text,
                     info.currentUser.email = emailController.text,
                     //add upload image
-
+                    if (_selectedImage != null)
+                      {
+                        //add upload image
+                        _selectedImage = null
+                      },
                     // Update user in firestore
                     _firestoreService.updateUserById(info.currentUser),
                     Navigator.pop(context),
@@ -181,11 +186,11 @@ File? _selectedImage;
   }
 
   Future _pickImageFromCamera() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    if(returnedImage==null) return;
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnedImage == null) return;
     setState(() {
       _selectedImage = File(returnedImage.path);
     });
   }
-
 }

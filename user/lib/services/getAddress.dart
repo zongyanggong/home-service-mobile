@@ -10,7 +10,7 @@ Future<List<dynamic>> getAddressFromCanadapost(String searchTerm) async {
   };
 
   final body = {
-    'Key': 'BZ31-UZ44-RE73-DH89',
+    'Key': 'ME52-CP17-JN31-YN86',
     'SearchTerm': searchTerm,
   };
 
