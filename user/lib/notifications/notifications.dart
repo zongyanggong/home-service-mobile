@@ -16,7 +16,7 @@ Map<String, dynamic> statusMap = {
   'completed': 'Service completed',
   'rejected': 'Service rejected',
   'reviewed': 'Service reviewed',
-  'canceled': 'Service canceled',
+  'cancelled': 'Service cancelled',
 };
 
 class NotificationRecord {
@@ -58,8 +58,8 @@ class NotificationsPage extends StatelessWidget {
         case 'reviewed':
           return "Your appointment with the ${serviceName} has been reviewed";
 
-        default: // 'canceled'
-          return "Your appointment with the ${serviceName} has been canceled";
+        default: // 'cancelled'
+          return "Your appointment with the ${serviceName} has been cancelled";
       }
     }
 
@@ -83,7 +83,7 @@ class NotificationsPage extends StatelessWidget {
         case 'reviewed':
           return getFormatTime(sr.bookingEndTime);
 
-        default: // 'canceled'
+        default: // 'cancelled'
           return getFormatTime(sr.actualEndTime);
       }
     }

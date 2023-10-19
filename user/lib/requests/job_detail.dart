@@ -97,7 +97,7 @@ class _JobDetail extends State<JobDetail> {
         serviceRecords = serviceRecords
             .where((e) =>
                 e.status.toString().split('.').last == "rejected" ||
-                e.status.toString().split('.').last == "canceled")
+                e.status.toString().split('.').last == "cancelled")
             .toList();
       default:
         serviceRecords = serviceRecords
@@ -141,8 +141,8 @@ class _JobDetail extends State<JobDetail> {
           return "Job started at ${getFormatTime(serviceRecord?.actualStartTime ?? 0)}";
         case "completed":
           return "Job completed at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
-        case "canceled":
-          return "Job canceled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
+        case "cancelled":
+          return "Job cancelled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
           return "Job rejected at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
         default:
@@ -232,7 +232,7 @@ class _JobDetail extends State<JobDetail> {
                                 ? () {
                                     setState(() {
                                       //to do: update status
-                                      status = "canceled";
+                                      status = "cancelled";
                                       cancelTime =
                                           DateTime.now().millisecondsSinceEpoch;
                                     });
@@ -253,7 +253,7 @@ class _JobDetail extends State<JobDetail> {
                                       actualStartTime:
                                           serviceRecord!.actualStartTime,
                                       actualEndTime: cancelTime!,
-                                      status: RecordStatus.canceled,
+                                      status: RecordStatus.cancelled,
                                       score: serviceRecord!.score,
                                       review: serviceRecord!.review,
                                       price: serviceRecord!.price,
@@ -294,7 +294,7 @@ class _JobDetail extends State<JobDetail> {
                                     //Cancel original job
                                     setState(() {
                                       //to do: update status
-                                      status = "canceled";
+                                      status = "cancelled";
                                       cancelTime =
                                           DateTime.now().millisecondsSinceEpoch;
                                     });
@@ -315,7 +315,7 @@ class _JobDetail extends State<JobDetail> {
                                       actualStartTime:
                                           serviceRecord!.actualStartTime,
                                       actualEndTime: cancelTime!,
-                                      status: RecordStatus.canceled,
+                                      status: RecordStatus.cancelled,
                                       score: serviceRecord!.score,
                                       review: serviceRecord!.review,
                                       price: serviceRecord!.price,
@@ -378,28 +378,28 @@ class _JobDetail extends State<JobDetail> {
                         active: true,
                       ),
                     ),
-                    // if (serviceRecord?.status ==RecordStatus.canceled) //job canceled by user
+                    // if (serviceRecord?.status ==RecordStatus.cancelled) //job cancelled by user
                     Visibility(
-                      visible: status == "canceled",
+                      visible: status == "cancelled",
                       child: JobStatus(
-                        title: "Job Canceled",
-                        subTitle: getTimeByStatus("canceled"),
+                        title: "Job cancelled",
+                        subTitle: getTimeByStatus("cancelled"),
                         active: true,
                       ),
                     ),
-                    // if (serviceRecord?.status != RecordStatus.canceled &&serviceRecord?.status != RecordStatus.rejected)
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&serviceRecord?.status != RecordStatus.rejected)
                     Visibility(
-                      visible: status != "canceled" && status != "rejected",
+                      visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job Accepted",
                         subTitle: getTimeByStatus("accepted"),
                         active: status == "confirmed",
                       ),
                     ),
-                    // if (serviceRecord?.status != RecordStatus.canceled &&
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&
                     //     serviceRecord?.status != RecordStatus.rejected)
                     Visibility(
-                      visible: status != "canceled" && status != "rejected",
+                      visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job In Process",
                         subTitle: status == "started"
@@ -408,10 +408,10 @@ class _JobDetail extends State<JobDetail> {
                         active: status == "started",
                       ),
                     ),
-                    // if (serviceRecord?.status != RecordStatus.canceled &&
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&
                     //     serviceRecord?.status != RecordStatus.rejected)
                     Visibility(
-                      visible: status != "canceled" && status != "rejected",
+                      visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job Completed",
                         subTitle: status == "completed"

@@ -231,7 +231,7 @@ class _ProviderBookScreenState extends State<ProviderBookScreen> {
     var pickedTime = await _showTimePicker();
     String _formatedTime = pickedTime.format(context);
     if (pickedTime == null) {
-      debugPrint("Time canceled");
+      debugPrint("Time cancelled");
     } else if (isStartTime) {
       setState(() {
         _startTime = _formatedTime;

@@ -7,8 +7,7 @@ import 'package:user/services/service_record.dart';
 import 'package:user/share/score_with_stars.dart';
 
 class RequestCancelCard extends StatelessWidget {
-  RequestCancelCard(
-      {super.key, required this.tempServiceRecord, this.onTap});
+  RequestCancelCard({super.key, required this.tempServiceRecord, this.onTap});
   TempServiceRecord tempServiceRecord;
   final VoidCallback? onTap;
 
@@ -46,9 +45,9 @@ class RequestCancelCard extends StatelessWidget {
             Text(
               "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.bookingEndTime).minute))}",
               style:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
-            if (tempServiceRecord.status == RecordStatus.canceled ||
+            if (tempServiceRecord.status == RecordStatus.cancelled ||
                 tempServiceRecord.status == RecordStatus.rejected)
               Padding(
                 padding: const EdgeInsets.only(top: 5),

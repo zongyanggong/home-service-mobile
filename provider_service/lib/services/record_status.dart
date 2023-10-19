@@ -5,5 +5,5 @@ enum RecordStatus {
   completed,
   rejected,
   reviewed,
-  canceled,
+  cancelled,
 }

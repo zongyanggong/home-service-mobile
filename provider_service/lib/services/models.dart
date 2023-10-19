@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:user/services/record_status.dart';
 part 'models.g.dart';
 
 @JsonSerializable()
@@ -36,15 +37,6 @@ class Service {
   factory Service.fromJson(Map<String, dynamic> json) =>
       _$ServiceFromJson(json);
   Map<String, dynamic> toJson() => _$ServiceToJson(this);
-}
-
-enum RecordStatus {
-  pending,
-  confirmed,
-  started,
-  completed,
-  rejected,
-  reviewed,
 }
 
 @JsonSerializable()

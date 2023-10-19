@@ -33,7 +33,7 @@ class JobCard extends StatelessWidget {
         case 1:
           return list!['completedRecords'][jobIndex];
         case 2:
-          return list!['canceledRecords'][jobIndex];
+          return list!['cancelledRecords'][jobIndex];
 
         default:
           return list!['upcomingRecords'][jobIndex];
@@ -69,7 +69,7 @@ class JobCard extends StatelessWidget {
         case "completed":
           return getFormatTime(serviceRecord.actualEndTime);
 
-        case "canceled":
+        case "cancelled":
           return getFormatTime(serviceRecord.actualEndTime);
         case "rejected":
           return getFormatTime(serviceRecord.actualEndTime);
