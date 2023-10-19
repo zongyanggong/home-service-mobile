@@ -82,8 +82,9 @@ class NotificationsPage extends StatelessWidget {
           return getFormatTime(sr.acceptedTime);
         case 'reviewed':
           return getFormatTime(sr.bookingEndTime);
+
         default: // 'canceled'
-          return getFormatTime(sr.acceptedTime);
+          return getFormatTime(sr.actualEndTime);
       }
     }
 
