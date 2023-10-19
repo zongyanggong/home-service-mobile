@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:user/services/getAddress.dart';
@@ -46,9 +46,8 @@ class _BodyContentState extends State<BodyContent> {
   final emailController = TextEditingController();
   var info;
   List<String> autoCompleted = [];
-  late PickedFile _imageFile;
   final ImagePicker _picker = ImagePicker();
-
+File? _selectedImage;
   @override
   void initState() {
     // TODO: implement initState
@@ -72,9 +71,15 @@ class _BodyContentState extends State<BodyContent> {
                 child: AccountCard(
                   name: info.currentUser.name!,
                   imgPath: info.currentUser.imgPath!,
-                  // imageWidget: _imageFile==null?NetworkImage(info.currentUser.imgPath!):FileImage(File(_imageFile.path)),
+                  imageWidget: _selectedImage == null
+                      ? NetworkImage(info.currentUser.imgPath!)
+                      : FileImage(_selectedImage!) as ImageProvider,
+                  // imageWidget: NetworkImage(info.currentUser.imgPath!),
                   isEdit: true,
-                  onTakePicture: () {takePhoto(ImageSource.camera);},
+                  onTakePicture: () {
+                    // takePhoto(ImageSource.camera);
+                    _pickImageFromCamera();
+                  },
                 ),
               ),
               Container(
@@ -159,6 +164,7 @@ class _BodyContentState extends State<BodyContent> {
                     info.currentUser.address = addressController.text,
                     info.currentUser.phone = telephoneController.text,
                     info.currentUser.email = emailController.text,
+                    //add upload image
 
                     // Update user in firestore
                     _firestoreService.updateUserById(info.currentUser),
@@ -174,10 +180,12 @@ class _BodyContentState extends State<BodyContent> {
     ]);
   }
 
-  void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
+  Future _pickImageFromCamera() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    if(returnedImage==null) return;
     setState(() {
-      _imageFile = pickedFile as PickedFile;
+      _selectedImage = File(returnedImage.path);
     });
   }
+
 }

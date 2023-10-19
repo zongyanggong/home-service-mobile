@@ -31,6 +31,7 @@ class AccountPage extends StatelessWidget {
               child: AccountCard(
                 name: name,
                 imgPath: info.currentUser.imgPath!,
+                imageWidget: NetworkImage(info.currentUser.imgPath!),
                 isEdit: info.currentUser.uid == ""
                     ? true
                     : false, // false : show view profile

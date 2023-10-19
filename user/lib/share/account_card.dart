@@ -53,10 +53,13 @@ class AccountCard extends StatelessWidget {
                 ),
                 // Display camera icon only when isEdit is true
                 if (imgPath != "" && isEdit)
-                  const Positioned(
+                  Positioned(
                     top: 0,
                     right: 0,
-                    child: Icon(Icons.camera_alt, color: Colors.blue),
+                    child: IconButton(
+                      icon: const Icon(Icons.camera_alt, color: Colors.blue),
+                      onPressed: onTakePicture ?? (() => {}),
+                    ),
                   ),
               ],
             ),
