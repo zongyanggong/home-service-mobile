@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../services/models.dart' as model;
 import '../services/firestore.dart';
 import 'job_review.dart';
+import '../categories/provider_book.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
@@ -141,7 +142,7 @@ class _JobDetail extends State<JobDetail> {
         case "completed":
           return "Job completed at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
         case "canceled":
-          return "Job canceled at ${getFormatTime(cancelTime ?? 0)}";
+          return "Job canceled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
           return "Job rejected at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
         default:
@@ -290,9 +291,53 @@ class _JobDetail extends State<JobDetail> {
                             ),
                             onPressed: status == "pending"
                                 ? () {
+                                    //Cancel original job
                                     setState(() {
-                                      //to popout reselect time page
+                                      //to do: update status
+                                      status = "canceled";
+                                      cancelTime =
+                                          DateTime.now().millisecondsSinceEpoch;
                                     });
+
+                                    //Save to firestore
+                                    final updatedServiceRecord =
+                                        model.ServiceRecord(
+                                      rid: serviceRecord!.rid,
+                                      uid: serviceRecord!.uid,
+                                      pid: serviceRecord!.pid,
+                                      sid: serviceRecord!.sid,
+                                      bookingStartTime:
+                                          serviceRecord!.bookingStartTime,
+                                      bookingEndTime:
+                                          serviceRecord!.bookingEndTime,
+                                      createdTime: serviceRecord!.createdTime,
+                                      acceptedTime: serviceRecord!.acceptedTime,
+                                      actualStartTime:
+                                          serviceRecord!.actualStartTime,
+                                      actualEndTime: cancelTime!,
+                                      status: RecordStatus.canceled,
+                                      score: serviceRecord!.score,
+                                      review: serviceRecord!.review,
+                                      price: serviceRecord!.price,
+                                      appointmentNotes:
+                                          serviceRecord!.appointmentNotes,
+                                    );
+
+                                    // Now, update the ServiceRecord
+                                    try {
+                                      _firestoreService.updateServiceRecordById(
+                                          updatedServiceRecord);
+                                    } catch (e) {
+                                      debugPrint(e.toString());
+                                    }
+
+                                    //To Book page to book new job
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProviderBookScreen(
+                                                  serviceProvider: provider!,
+                                                )));
                                   }
                                 : null,
                             child: const Row(
@@ -357,7 +402,9 @@ class _JobDetail extends State<JobDetail> {
                       visible: status != "canceled" && status != "rejected",
                       child: JobStatus(
                         title: "Job In Process",
-                        subTitle: getTimeByStatus("started"),
+                        subTitle: status == "started"
+                            ? getTimeByStatus("started")
+                            : "",
                         active: status == "started",
                       ),
                     ),
@@ -367,7 +414,9 @@ class _JobDetail extends State<JobDetail> {
                       visible: status != "canceled" && status != "rejected",
                       child: JobStatus(
                         title: "Job Completed",
-                        subTitle: getTimeByStatus("completed"),
+                        subTitle: status == "completed"
+                            ? getTimeByStatus("completed")
+                            : "",
                         active: status == "completed",
                       ),
                     ),
