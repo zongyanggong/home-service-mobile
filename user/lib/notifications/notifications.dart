@@ -76,14 +76,13 @@ class NotificationsPage extends StatelessWidget {
           return getFormatTime(sr.acceptedTime);
         case 'started':
           return getFormatTime(sr.actualStartTime);
-
         case 'completed':
           return getFormatTime(sr.actualEndTime);
-
         case 'rejected':
-          return getFormatTime(sr.actualEndTime);
-        // case 'reviewed':
-        //   return getFormatTime(sr.bookingEndTime);// to be changed
+          return getFormatTime(sr.acceptedTime);
+        case 'reviewed':
+          return getFormatTime(sr.bookingEndTime);
+
         default: // 'canceled'
           return getFormatTime(sr.actualEndTime);
       }
@@ -95,8 +94,6 @@ class NotificationsPage extends StatelessWidget {
           await _firestoreService.getNotifications();
       notifications =
           notifications.where((e) => e.uid == info.currentUser.uid).toList();
-
-      print(notifications);
 
       //Get current user's service records
       List<model.ServiceRecord> serviceRecords =
