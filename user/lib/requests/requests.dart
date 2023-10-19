@@ -74,14 +74,14 @@ class JobCardList extends StatelessWidget {
       //Get all services
       List<model.Service> services = await _firestoreService.getService();
 
-      //Get all service records
+      // //Get all service records
       List<model.ServiceRecord> serviceRecords =
           await _firestoreService.getServiceRecord();
-      //Get current user's service records
+      // //Get current user's service records
       serviceRecords =
           serviceRecords.where((e) => e.uid == info.currentUser.uid).toList();
 
-      //Get uncoming service
+      // //Get uncoming service
       List<model.ServiceRecord> upcomingRecords = serviceRecords
           .where((e) =>
               e.status.toString().split('.').last == "pending" ||
