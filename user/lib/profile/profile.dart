@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:user/services/getAddress.dart';
@@ -46,7 +46,7 @@ class _BodyContentState extends State<BodyContent> {
   final emailController = TextEditingController();
   var info;
   List<String> autoCompleted = [];
-  late PickedFile _imageFile;
+  PickedFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -72,9 +72,16 @@ class _BodyContentState extends State<BodyContent> {
                 child: AccountCard(
                   name: info.currentUser.name!,
                   imgPath: info.currentUser.imgPath!,
-                  // imageWidget: _imageFile==null?NetworkImage(info.currentUser.imgPath!):FileImage(File(_imageFile.path)),
+                  // imageWidget: _imageFile == null
+                  //     ? NetworkImage(info.currentUser.imgPath!)
+                  //         as ImageProvider<Object>
+                  //     : FileImage(File(_imageFile!.path))
+                  //         as ImageProvider<Object>,
+                  imageWidget: NetworkImage(info.currentUser.imgPath!),
                   isEdit: true,
-                  onTakePicture: () {takePhoto(ImageSource.camera);},
+                  onTakePicture: () {
+                    takePhoto(ImageSource.camera);
+                  },
                 ),
               ),
               Container(
