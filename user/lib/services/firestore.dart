@@ -152,11 +152,12 @@ class FirestoreService {
   Future<void> updateServiceRecordById(ServiceRecord serviceRecord) async {
     var reference =
         _database.collection("serviceRecords").doc(serviceRecord.rid);
+    String statusString = serviceRecord.status.toString().split('.').last;
     var newData = {
       "uid": serviceRecord.uid,
       "sid": serviceRecord.sid,
       "pid": serviceRecord.pid,
-      "status": serviceRecord.status,
+      "status": statusString,
       "createdTime": serviceRecord.createdTime,
       "acceptedTime": serviceRecord.acceptedTime,
       "actualStartTime": serviceRecord.actualStartTime,
