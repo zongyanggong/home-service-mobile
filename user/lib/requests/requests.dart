@@ -46,7 +46,7 @@ class _RequestsPageState extends State<RequestsPage>
                   child: Text("Completed"),
                 ),
                 Tab(
-                  child: Text("cancelled"),
+                  child: Text("Cancelled"),
                 )
               ],
             ),

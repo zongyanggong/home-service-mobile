@@ -130,17 +130,33 @@ class _JobDetail extends State<JobDetail> {
       }
     }
 
-    getTimeByStatus(status) {
-      //var statusStr = serviceRecord?.status.toString().split('.').last;
-      switch (status) {
+    getTimeByStatus(item) {
+      switch (item) {
         case "pending":
           return "Job created at ${getFormatTime(serviceRecord?.createdTime ?? 0)}";
         case "confirmed":
-          return "Job confirmed at ${getFormatTime(serviceRecord?.acceptedTime ?? 0)}";
+          if (status == "completed" ||
+              status == "confirmed" ||
+              status == "started" ||
+              status == "reviewed") {
+            return "Job accepted at ${getFormatTime(serviceRecord?.acceptedTime ?? 0)}";
+          } else {
+            return "";
+          }
         case "started":
-          return "Job started at ${getFormatTime(serviceRecord?.actualStartTime ?? 0)}";
+          if (status == "completed" ||
+              status == "started" ||
+              status == "reviewed") {
+            return "Job started at ${getFormatTime(serviceRecord?.actualStartTime ?? 0)}";
+          } else {
+            return "";
+          }
         case "completed":
-          return "Job completed at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
+          if (status == "completed" || status == "reviewed") {
+            return "Job completed at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
+          } else {
+            return "";
+          }
         case "cancelled":
           return "Job cancelled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
@@ -392,7 +408,7 @@ class _JobDetail extends State<JobDetail> {
                       visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job Accepted",
-                        subTitle: getTimeByStatus("accepted"),
+                        subTitle: getTimeByStatus("confirmed"),
                         active: status == "confirmed",
                       ),
                     ),
@@ -402,9 +418,7 @@ class _JobDetail extends State<JobDetail> {
                       visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job In Process",
-                        subTitle: status == "started"
-                            ? getTimeByStatus("started")
-                            : "",
+                        subTitle: getTimeByStatus("started"),
                         active: status == "started",
                       ),
                     ),
@@ -414,18 +428,18 @@ class _JobDetail extends State<JobDetail> {
                       visible: status != "cancelled" && status != "rejected",
                       child: JobStatus(
                         title: "Job Completed",
-                        subTitle: status == "completed"
-                            ? getTimeByStatus("completed")
-                            : "",
+                        subTitle: getTimeByStatus("completed"),
                         active: status == "completed",
                       ),
                     ),
                   ],
                 ),
               ),
-              if (serviceRecord?.score != null &&
-                  serviceRecord?.status == RecordStatus.completed)
-                Padding(
+              // if (serviceRecord?.score != null &&
+              //     serviceRecord?.status == RecordStatus.completed)
+              Visibility(
+                visible: status == "completed" || status == "reviewed",
+                child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                   child: Column(
@@ -467,9 +481,12 @@ class _JobDetail extends State<JobDetail> {
                     ],
                   ),
                 ),
-              if (serviceRecord?.review != null &&
-                  serviceRecord?.status == RecordStatus.completed)
-                Padding(
+              ),
+              // if (serviceRecord?.review != null &&
+              //     serviceRecord?.status == RecordStatus.completed)
+              Visibility(
+                visible: status == "completed" || status == "reviewed",
+                child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                   child: Column(
@@ -487,19 +504,25 @@ class _JobDetail extends State<JobDetail> {
                     ],
                   ),
                 ),
+              ),
               // if (status == completed &&
               //     serviceRecord.score == null)
               Visibility(
-                visible: status == "completed" && serviceRecord?.score == null,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
-                  child: ElevatedButton(
-                    onPressed: () => {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              JobViewScreen(provider: provider!)))
-                    },
-                    child: const Text("Review now"),
+                visible: status == "completed",
+                child: Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => JobViewScreen(
+                                provider: provider!,
+                                serviceRecord: serviceRecord!,
+                                selectedIndex: selectedIndex,
+                                jobIndex: jobIndex)))
+                      },
+                      child: const Text("Review now"),
+                    ),
                   ),
                 ),
               ),

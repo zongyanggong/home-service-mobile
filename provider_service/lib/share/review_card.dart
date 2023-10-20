@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:user/service/appbar_titles.dart';
-import 'package:user/services/record_status.dart';
-import 'package:user/services/service_provider.dart';
-import 'package:user/services/service_record.dart';
-import 'package:user/share/score_with_stars.dart';
+import '../services/models.dart' as model;
 
 class ReviewCard extends StatelessWidget {
-  ReviewCard({super.key, required this.tempServiceRecord});
-  TempServiceRecord tempServiceRecord;
+  ReviewCard({super.key, required this.tempServiceRecord, required this.user});
+  model.ServiceRecord tempServiceRecord;
+  model.User user;
 
   @override
   Widget build(BuildContext context) {
@@ -30,30 +28,35 @@ class ReviewCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage(tempServiceRecord.imgPath),
+                  image: NetworkImage(user.imgPath ?? ""),
                 ),
               ),
             ),
             title: Text(
-              tempServiceRecord.name,
+              user.name ?? "",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
             ),
-            subtitle: Text(
-              categories[tempServiceRecord.sid],
-              style:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-            ),
+            //Provider side dont need profession
+            // subtitle: Text(
+            //   categories[user.sid],
+            //   style:
+            //       const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+            // ),
             trailing: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  "${DateFormat.yMd().format(tempServiceRecord.actualDate)} ${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualStartTime!.hour, minute: tempServiceRecord.actualStartTime!.minute))}-${format24HourTime(TimeOfDay(hour: tempServiceRecord.actualEndTime!.hour, minute: tempServiceRecord.actualEndTime!.minute))}",
+                  "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.actualStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.actualStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.actualStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.actualEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(tempServiceRecord.actualEndTime).minute))}",
                   style: const TextStyle(
                       fontSize: 14, fontWeight: FontWeight.normal),
                 ),
-                if (tempServiceRecord.score != null &&
-                    tempServiceRecord.status == RecordStatus.completed)
-                  Padding(
+                // if (tempServiceRecord.score != null &&
+                //     tempServiceRecord.status.toString().split('.').last == "completed")
+                Visibility(
+                  visible:
+                      tempServiceRecord.status.toString().split('.').last ==
+                          "reviewed",
+                  child: Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -61,14 +64,14 @@ class ReviewCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 5),
                           child: Text(
-                            tempServiceRecord.score!.toStringAsFixed(2),
+                            tempServiceRecord.score.toStringAsFixed(2),
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.normal),
                           ),
                         ),
                         RatingBar.builder(
                             ignoreGestures: true,
-                            initialRating: tempServiceRecord.score!,
+                            initialRating: tempServiceRecord.score,
                             maxRating: 5,
                             allowHalfRating: true,
                             itemSize: 16,
@@ -80,12 +83,13 @@ class ReviewCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                )
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 18, right: 18, bottom: 12),
-            child: Text(tempServiceRecord.review!,
+            child: Text(tempServiceRecord.review,
                 style: const TextStyle(
                     fontSize: 16, fontWeight: FontWeight.normal)),
           ),
