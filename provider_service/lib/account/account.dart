@@ -33,7 +33,7 @@ class AccountPage extends StatelessWidget {
               padding: const EdgeInsets.all(18.0),
               child: AccountCard(
                 name: name,
-                imgPath: info.currentUser.imgPath!,
+                imageWidget: NetworkImage(info.currentUser.imgPath!),
                 onViewProfile: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ProfileSceen()));

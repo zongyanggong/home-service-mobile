@@ -1,15 +1,14 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:user/service/appbar_titles.dart';
-import 'package:user/services/models.dart';
-import 'package:user/services/service_provider.dart';
 import 'package:user/share/account_card.dart';
-import 'package:user/share/account_input.dart';
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/dropdown_field.dart';
 import 'package:user/share/input_field.dart';
 import 'package:provider/provider.dart' as provider;
 import '../services/firestore.dart';
 import '../services/info_state.dart';
+import 'package:image_picker/image_picker.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
@@ -39,21 +38,30 @@ class BodyContent extends StatefulWidget {
 }
 
 class _BodyContentState extends State<BodyContent> {
+  TextEditingController telephoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+  late List<String> categories;
+  var info;
+  List<String> autoCompleted = [];
+  final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    info = provider.Provider.of<Info>(context, listen: false);
+    categories = info.getService();
+    telephoneController.text = info.currentUser.phone!;
+    emailController.text = info.currentUser.email!;
+    priceController.text = info.currentUser.price.toString();
+    descController.text = info.currentUser.description!;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var info = provider.Provider.of<Info>(context, listen: false);
-
-    List<String> categories = info.getService();
-
-    TextEditingController telephoneController = TextEditingController();
-    telephoneController.text = info.currentUser.phone!;
-    TextEditingController emailController = TextEditingController();
-    emailController.text = info.currentUser.email!;
-    TextEditingController priceController = TextEditingController();
-    priceController.text = info.currentUser.price.toString();
-    TextEditingController descController = TextEditingController();
-    descController.text = info.currentUser.description!;
-
     return ListView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,9 +72,13 @@ class _BodyContentState extends State<BodyContent> {
                 padding: const EdgeInsets.all(18.0),
                 child: AccountCard(
                   name: info.currentUser.name!,
-                  imgPath: info.currentUser.imgPath!,
+                  imageWidget: _selectedImage == null
+                      ? NetworkImage(info.currentUser.imgPath!)
+                      : FileImage(_selectedImage!) as ImageProvider,
                   isEdit: true,
-                  onTakePicture: () {},
+                  onTakePicture: () {
+                    _pickImageFromCamera();
+                  },
                 ),
               ),
               Container(
@@ -133,7 +145,12 @@ class _BodyContentState extends State<BodyContent> {
                     info.currentUser.phone = telephoneController.text,
                     info.currentUser.email = emailController.text,
                     info.currentUser.description = descController.text,
-
+//add upload image
+                    if (_selectedImage != null)
+                      {
+                        //add upload image
+                        _selectedImage = null
+                      },
                     // Update user in firestore
                     _firestoreService.updateProviderById(info.currentUser),
                   },
@@ -145,5 +162,14 @@ class _BodyContentState extends State<BodyContent> {
         ],
       ),
     ]);
+  }
+
+  Future _pickImageFromCamera() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnedImage == null) return;
+    setState(() {
+      _selectedImage = File(returnedImage.path);
+    });
   }
 }

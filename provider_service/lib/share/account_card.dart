@@ -4,17 +4,17 @@ class AccountCard extends StatelessWidget {
   const AccountCard(
       {super.key,
       required this.name,
-      required this.imgPath,
       this.isEdit = false,
       this.onViewProfile, // <-- Added a callback function for "View profile" tap event
-      this.onTakePicture});
+      this.onTakePicture,
+      this.imageWidget});
 
   final String name;
-  final String imgPath;
   final bool isEdit;
   final VoidCallback?
       onViewProfile; // <-- Added a callback function type for "View profile" tap event
   final VoidCallback? onTakePicture;
+  final ImageProvider<Object>? imageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +36,11 @@ class AccountCard extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: imgPath != ""
+                    image: imageWidget != null
                         ? DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(imgPath) // Use network image,
-                            )
+                            image: imageWidget!,
+                          )
                         : const DecorationImage(
                             fit: BoxFit.cover,
                             image: AssetImage(
@@ -49,11 +49,14 @@ class AccountCard extends StatelessWidget {
                   ),
                 ),
                 // Display camera icon only when isEdit is true
-                if (isEdit)
-                  const Positioned(
+                if (imageWidget != null && isEdit)
+                  Positioned(
                     top: 0,
                     right: 0,
-                    child: Icon(Icons.camera_alt, color: Colors.blue),
+                    child: IconButton(
+                      icon: const Icon(Icons.camera_alt, color: Colors.blue),
+                      onPressed: onTakePicture ?? (() => {}),
+                    ),
                   ),
               ],
             ),
@@ -79,7 +82,7 @@ class AccountCard extends StatelessWidget {
                         // <-- Wrapped with a GestureDetector to handle tap events
                         onTap:
                             onViewProfile, // <-- Assigning the passed function to the onTap handler
-                        child: imgPath == ""
+                        child: imageWidget == null
                             ? const Text("")
                             : const Text(
                                 "View profile",

@@ -3,15 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:user/services/getAddress.dart';
-import 'package:user/services/http_request.dart';
 import 'package:user/services/info_state.dart';
 import 'package:user/share/account_card.dart';
-import 'package:user/share/account_input.dart';
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/input_field.dart';
 import 'package:provider/provider.dart';
 import '../services/firestore.dart';
-import 'package:image_picker/image_picker.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
@@ -70,7 +67,6 @@ class _BodyContentState extends State<BodyContent> {
                 padding: const EdgeInsets.all(18.0),
                 child: AccountCard(
                   name: info.currentUser.name!,
-                  imgPath: info.currentUser.imgPath!,
                   imageWidget: _selectedImage == null
                       ? NetworkImage(info.currentUser.imgPath!)
                       : FileImage(_selectedImage!) as ImageProvider,
