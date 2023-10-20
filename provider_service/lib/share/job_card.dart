@@ -52,27 +52,33 @@ class JobCard extends StatelessWidget {
       service = list!['services'].firstWhere((e) => e.sid == serviceRecord.sid);
     }
 
-    getFormatTime(int time1) {
-      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
+    getTimePeriod(int flag) {
+      if (flag == 0) {
+        //0 : return booking time
+        return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}";
+      } else {
+        //1 : return actual time
+        return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.actualStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.actualStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.actualStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.actualEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.actualEndTime).minute))}";
+      }
     }
 
     getTimeByStatus() {
       var statusStr = serviceRecord.status.toString().split('.').last;
       switch (statusStr) {
-        case "confirmed":
-          return getFormatTime(serviceRecord.acceptedTime);
-        case "started":
-          return getFormatTime(serviceRecord.actualStartTime);
-        case "completed":
-          return getFormatTime(serviceRecord.actualEndTime);
         case "cancelled":
-          return getFormatTime(serviceRecord.actualEndTime);
+          return getTimePeriod(0);
         case "rejected":
-          return getFormatTime(serviceRecord.actualEndTime);
+          return getTimePeriod(0);
+        case "confirmed":
+          return getTimePeriod(0);
+        case "started":
+          return getTimePeriod(0);
+        case "completed":
+          return getTimePeriod(1);
         case "reviewed":
-          return getFormatTime(serviceRecord.actualEndTime);
+          return getTimePeriod(1);
         default:
-          return getFormatTime(serviceRecord.createdTime); //pending
+          return getTimePeriod(0); //pending
       }
     }
 
