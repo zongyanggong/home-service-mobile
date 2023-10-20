@@ -1,7 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:user/main.dart';
+import 'package:user/services/auth_service.dart';
 import '../services/firestore.dart';
 import '../services/models.dart' as model;
+import 'package:http/http.dart' as http;
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
@@ -20,12 +22,17 @@ class FirebaseApi {
     //Request permission from user(will prompt user for permission if not already granted)
     await _fcm.requestPermission();
 
-    //fetch the FCM token for this device
-    String? token = await _fcm.getToken();
-    print('Token: $token'); //normally you would save this token to your server
-
     //initialize further settings for pushing notifications
     initPushNotifications();
+  }
+
+  //Get FCM token function
+  Future<String?> getFcmToken() async {
+    //fetch the FCM token for this device
+    String? token = await _fcm.getToken();
+    //send the FCM token to server
+    // sendTokenToServer(token);
+    return token;
   }
 
 //Function to handle received messages
