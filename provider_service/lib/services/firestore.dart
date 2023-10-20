@@ -165,6 +165,18 @@ class FirestoreService {
     return reference.set(newData, SetOptions(merge: true));
   }
 
+  Future<void> updateSRStartedTimeById(
+      ServiceRecord serviceRecord, int? time, String? status) async {
+    var reference =
+        _database.collection("serviceRecords").doc(serviceRecord.rid);
+
+    var newData = {
+      "status": status ?? serviceRecord.status.toString().split('.').last,
+      "acceptedTime": time ?? serviceRecord.acceptedTime,
+    };
+    return reference.set(newData, SetOptions(merge: true));
+  }
+
   Future<void> deleteServiceRecordById(ServiceRecord serviceRecord) async {
     var reference =
         _database.collection("serviceRecords").doc(serviceRecord.rid);

@@ -56,6 +56,10 @@ class JobCard extends StatelessWidget {
       return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
     }
 
+    getTimePeriod() {
+      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).minute))}";
+    }
+
     getTimeByStatus() {
       var statusStr = serviceRecord.status.toString().split('.').last;
       switch (statusStr) {

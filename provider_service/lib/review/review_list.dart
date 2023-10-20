@@ -59,8 +59,7 @@ class _ReviewListScreen extends State<ReviewListScreen> {
   }
 
   isReviewed(serviceRecord) {
-    if (serviceRecord.status.toString().split('.').last == "reviewed" ||
-        serviceRecord.status.toString().split('.').last == "completed") {
+    if (serviceRecord.status.toString().split('.').last == "reviewed") {
       return true;
     } else {
       return false;

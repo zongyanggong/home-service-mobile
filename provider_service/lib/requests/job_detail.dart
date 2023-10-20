@@ -316,7 +316,7 @@ class _JobDetailState extends State<JobDetail> {
                                     serviceRecord!.bookingStartTime,
                                 bookingEndTime: serviceRecord!.bookingEndTime,
                                 createdTime: serviceRecord!.createdTime,
-                                acceptedTime: serviceRecord!.acceptedTime,
+                                acceptedTime: acceptedTime!,
                                 actualStartTime: startedTime!,
                                 actualEndTime: serviceRecord!.actualEndTime,
                                 status: RecordStatus.started,
@@ -351,8 +351,8 @@ class _JobDetailState extends State<JobDetail> {
                                     serviceRecord!.bookingStartTime,
                                 bookingEndTime: serviceRecord!.bookingEndTime,
                                 createdTime: serviceRecord!.createdTime,
-                                acceptedTime: serviceRecord!.acceptedTime,
-                                actualStartTime: serviceRecord!.actualStartTime,
+                                acceptedTime: acceptedTime!,
+                                actualStartTime: startedTime!,
                                 actualEndTime: completedTime!,
                                 status: RecordStatus.completed,
                                 score: serviceRecord!.score,
@@ -448,9 +448,12 @@ class _JobDetailState extends State<JobDetail> {
                 ],
               ),
             ),
-            if (serviceRecord?.score != null &&
-                serviceRecord?.status.toString().split('.').last == "completed")
-              Padding(
+            // if (serviceRecord?.score != null &&
+            //     serviceRecord?.status.toString().split('.').last == "completed")
+            Visibility(
+              visible: serviceRecord?.status.toString().split('.').last ==
+                  "reviewed",
+              child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                 child: Column(
@@ -501,12 +504,12 @@ class _JobDetailState extends State<JobDetail> {
                   ],
                 ),
               ),
+            ),
             // if (serviceRecord?.review != "" &&
             //     serviceRecord?.status.toString().split('.').last == "completed")
             Visibility(
-              visible: serviceRecord?.review != "" &&
-                  serviceRecord?.status.toString().split('.').last ==
-                      "completed",
+              visible: serviceRecord?.status.toString().split('.').last ==
+                  "reviewed",
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
