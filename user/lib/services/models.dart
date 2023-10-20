@@ -119,12 +119,16 @@ class Notification {
   final String uid;
   final String pid;
   final String rid;
+  final String title;
+  final String message;
   final int timeStamp;
 
   Notification({
     this.uid = "",
     this.pid = "",
     this.rid = "",
+    this.title = "",
+    this.message = "",
     this.timeStamp = 0,
   });
 
