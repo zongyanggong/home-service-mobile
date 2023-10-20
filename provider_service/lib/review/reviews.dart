@@ -6,20 +6,105 @@ import 'package:user/review/review_list.dart';
 import 'package:user/share/review_field.dart';
 import 'package:user/share/score_with_stars.dart';
 import '../services/info_state.dart';
+import '../services/models.dart' as model;
+import '../services/firestore.dart';
 import 'package:provider/provider.dart';
 
-class ReviewsPage extends StatelessWidget {
-  const ReviewsPage({super.key});
+final FirestoreService _firestoreService = FirestoreService();
+
+class ReviewsPage extends StatefulWidget {
+  ReviewsPage({super.key});
+  @override
+  _ReviewsPage createState() => _ReviewsPage();
+}
+
+class _ReviewsPage extends State<ReviewsPage> {
+  _ReviewsPage();
+
+  List<model.ServiceRecord>? serviceRecord;
+  int taskCompletedCount = 0;
+  int taskReviewedCount = 0;
+  double averageScore = 0.0;
+  List<int> scoreCounts = [0, 0, 0, 0, 0];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() async {
+    var info = Provider.of<Info>(context, listen: false);
+
+    //Get current user related service records
+    serviceRecord = await _loadServiceRecords(info);
+
+    //Count all completed, reviewed tasks number
+    taskCompletedCount = serviceRecord!
+        .where((e) =>
+            e.status.toString().split('.').last == "completed" ||
+            "reviewed" == e.status.toString().split('.').last)
+        .toList()
+        .length;
+
+    //Get all reviewed tasks number
+    taskReviewedCount = serviceRecord!
+        .where((e) => e.status.toString().split('.').last == "reviewed")
+        .toList()
+        .length;
+
+    //Calculate average score
+    averageScore = serviceRecord!
+            .where((e) => e.status.toString().split('.').last == "reviewed")
+            .toList()
+            .fold(0.0, (sum, e) => sum + e.score) /
+        taskReviewedCount;
+    print("averageScore: $averageScore");
+
+    //Count all scores below 2
+    scoreCounts[0] = _getScoreBetween(0, 2);
+
+    //Count all scores between 2 and 3
+    scoreCounts[1] = _getScoreBetween(2, 3);
+
+    //Count all scores between 3 and 4
+    scoreCounts[2] = _getScoreBetween(3, 4);
+
+    //Count all scores between 4 and 5
+    scoreCounts[3] = _getScoreBetween(4, 5);
+
+    //Count all scores between 5 and 6
+    scoreCounts[4] = _getScoreBetween(5, 6);
+
+    // Ensure the widget is rebuilt after data is loaded.
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  //Get score between a and b
+  int _getScoreBetween(int a, int b) {
+    return serviceRecord!
+        .where((e) =>
+            e.status.toString().split('.').last == "reviewed" &&
+            e.score >= a &&
+            e.score < b)
+        .toList()
+        .length;
+  }
+
+  Future<List<model.ServiceRecord>> _loadServiceRecords(info) async {
+    //Get all services
+    List<model.ServiceRecord> serviceRecords =
+        await _firestoreService.getServiceRecord();
+
+    //Get current user's service records
+    return serviceRecords.where((e) => e.pid == info.currentUser.pid).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: true);
-
-    //total=70
-    //avescore=70/20=3.5
-    Scores scores = Scores()
-      ..scores = [2, 3, 4, 5, 6]
-      ..countCompleted = 50;
 
     return info.currentUser.pid == ""
         ? const Padding(
@@ -54,13 +139,13 @@ class ReviewsPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      scores.aveScore.toStringAsFixed(2),
+                      averageScore.toStringAsFixed(2),
                       style: const TextStyle(
                           fontSize: 30, fontWeight: FontWeight.bold),
                     ),
                     RatingBar.builder(
                         ignoreGestures: true,
-                        initialRating: scores.aveScore,
+                        initialRating: averageScore,
                         minRating: 1,
                         maxRating: 5,
                         allowHalfRating: true,
@@ -75,16 +160,16 @@ class ReviewsPage extends StatelessWidget {
                 ListView.builder(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: scores.scores.length,
+                  itemCount: scoreCounts.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 9),
                       child: ScoreItem(
-                        score: scores.scores.length - index,
-                        count: scores.scores[scores.scores.length - index - 1],
-                        value: scores.scores[scores.scores.length - index - 1] /
-                            scores.countReview,
+                        score: scoreCounts.length - index,
+                        count: scoreCounts[scoreCounts.length - index - 1],
+                        value: scoreCounts[scoreCounts.length - index - 1] /
+                            taskReviewedCount,
                       ),
                     );
                   },
@@ -108,7 +193,7 @@ class ReviewsPage extends StatelessWidget {
                     children: [
                       Expanded(
                           child: ReviewField(
-                              title: scores.countReview,
+                              title: taskReviewedCount,
                               subTitle: "People Reviewed",
                               iconData: Icons.stars)),
                       const SizedBox(
@@ -116,7 +201,7 @@ class ReviewsPage extends StatelessWidget {
                       ),
                       Expanded(
                           child: ReviewField(
-                              title: scores.countCompleted,
+                              title: taskCompletedCount,
                               subTitle: "Tasks completed",
                               iconData: Icons.check_circle)),
                     ],
@@ -166,7 +251,7 @@ class ScoreItem extends StatelessWidget {
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
           percent: value,
-          center: Text("${value * 100}%"),
+          center: Text("${(value * 100).toStringAsFixed(2)}%"),
           linearStrokeCap: LinearStrokeCap.butt,
           progressColor: Colors.green,
         ),

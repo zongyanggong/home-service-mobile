@@ -30,6 +30,9 @@ class _JobDetailState extends State<JobDetail> {
   model.ServiceRecord? serviceRecord;
   late var status;
   int? cancelTime;
+  int? acceptedTime;
+  int? startedTime;
+  int? completedTime;
 
   @override
   void initState() {
@@ -121,30 +124,28 @@ class _JobDetailState extends State<JobDetail> {
         case "pending":
           return "Job created at ${getFormatTime(serviceRecord?.createdTime ?? 0)}";
         case "confirmed":
-          if ((cancelTime == null || cancelTime == 0) &&
-              (serviceRecord == null || serviceRecord?.acceptedTime == 0)) {
-            return "";
-          }
-          return "Job confirmed at ${getFormatTime(cancelTime ?? serviceRecord?.acceptedTime ?? 0)}";
-        case "started":
-          if (status == "confirmed" ||
-              status == "pending" ||
-              (cancelTime == null || cancelTime == 0) &&
-                  (serviceRecord == null ||
-                      serviceRecord?.actualStartTime == 0)) {
-            return "";
-          }
-          return "Job started at ${getFormatTime(cancelTime ?? serviceRecord?.actualStartTime ?? 0)}";
-        case "completed":
-          if (status == "confirmed" ||
-              status == "pending" ||
+          if (status == "completed" ||
+              status == "confirmed" ||
               status == "started" ||
-              (cancelTime == null || cancelTime == 0) &&
-                  (serviceRecord == null ||
-                      serviceRecord?.actualEndTime == 0)) {
+              status == "reviewed") {
+            return "Job accepted at ${acceptedTime == null ? getFormatTime(serviceRecord?.acceptedTime ?? 0) : getFormatTime(acceptedTime!)}";
+          } else {
             return "";
           }
-          return "Job completed at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
+        case "started":
+          if (status == "completed" ||
+              status == "started" ||
+              status == "reviewed") {
+            return "Job started at ${startedTime == null ? getFormatTime(serviceRecord?.actualStartTime ?? 0) : getFormatTime(startedTime!)}";
+          } else {
+            return "";
+          }
+        case "completed":
+          if (status == "completed" || status == "reviewed") {
+            return "Job completed at ${completedTime == null ? getFormatTime(serviceRecord?.actualEndTime ?? 0) : getFormatTime(completedTime!)}}";
+          } else {
+            return "";
+          }
         case "cancelled":
           return "Job cancelled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
@@ -262,7 +263,7 @@ class _JobDetailState extends State<JobDetail> {
                         setState(() {
                           //to do: update status
                           status = "confirmed";
-                          cancelTime = DateTime.now().millisecondsSinceEpoch;
+                          acceptedTime = DateTime.now().millisecondsSinceEpoch;
                         });
 
                         //Save to firestore
@@ -274,7 +275,7 @@ class _JobDetailState extends State<JobDetail> {
                           bookingStartTime: serviceRecord!.bookingStartTime,
                           bookingEndTime: serviceRecord!.bookingEndTime,
                           createdTime: serviceRecord!.createdTime,
-                          acceptedTime: cancelTime!,
+                          acceptedTime: acceptedTime!,
                           actualStartTime: serviceRecord!.actualStartTime,
                           actualEndTime: serviceRecord!.actualEndTime,
                           status: RecordStatus.confirmed,
@@ -301,7 +302,7 @@ class _JobDetailState extends State<JobDetail> {
                             if (status == "confirmed") {
                               setState(() {
                                 status = "started";
-                                cancelTime =
+                                startedTime =
                                     DateTime.now().millisecondsSinceEpoch;
                               });
 
@@ -316,7 +317,7 @@ class _JobDetailState extends State<JobDetail> {
                                 bookingEndTime: serviceRecord!.bookingEndTime,
                                 createdTime: serviceRecord!.createdTime,
                                 acceptedTime: serviceRecord!.acceptedTime,
-                                actualStartTime: cancelTime!,
+                                actualStartTime: startedTime!,
                                 actualEndTime: serviceRecord!.actualEndTime,
                                 status: RecordStatus.started,
                                 score: serviceRecord!.score,
@@ -336,7 +337,7 @@ class _JobDetailState extends State<JobDetail> {
                             } else if (status == "started") {
                               setState(() {
                                 status = "completed";
-                                cancelTime =
+                                completedTime =
                                     DateTime.now().millisecondsSinceEpoch;
                               });
 
@@ -352,7 +353,7 @@ class _JobDetailState extends State<JobDetail> {
                                 createdTime: serviceRecord!.createdTime,
                                 acceptedTime: serviceRecord!.acceptedTime,
                                 actualStartTime: serviceRecord!.actualStartTime,
-                                actualEndTime: cancelTime!,
+                                actualEndTime: completedTime!,
                                 status: RecordStatus.completed,
                                 score: serviceRecord!.score,
                                 review: serviceRecord!.review,
