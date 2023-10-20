@@ -11,10 +11,22 @@ import 'package:user/share/job_status.dart';
 import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
 import '../services/models.dart' as model;
+import '../services/firestore.dart';
+import './job_detail.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class JobViewScreen extends StatefulWidget {
-  JobViewScreen({super.key, required this.provider});
+  JobViewScreen(
+      {super.key,
+      required this.provider,
+      required this.serviceRecord,
+      required this.selectedIndex,
+      required this.jobIndex});
   model.Provider provider;
+  model.ServiceRecord serviceRecord;
+  int selectedIndex;
+  int jobIndex;
 
   @override
   State<JobViewScreen> createState() => _JobViewScreenState();
@@ -23,6 +35,36 @@ class JobViewScreen extends StatefulWidget {
 class _JobViewScreenState extends State<JobViewScreen> {
   final TextEditingController _desController = TextEditingController();
   double initScore = 3;
+  model.Provider? provider;
+  model.Service? service;
+  String serviceName = "";
+  bool isReviewed = true;
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() async {
+    var info = Provider.of<Info>(context, listen: false);
+    provider = widget.provider;
+
+    service = await _loadService(provider);
+    serviceName = service!.name;
+
+    // Ensure the widget is rebuilt after data is loaded.
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<model.Service> _loadService(provider) async {
+    //Get all services
+    List<model.Service> services = await _firestoreService.getService();
+    //Get current record's service
+    return services.firstWhere((e) => e.sid == provider.sid);
+  }
+
   @override
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: false);
@@ -69,7 +111,7 @@ class _JobViewScreenState extends State<JobViewScreen> {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(""), //widget.service.imgPath),
+                      image: NetworkImage(widget.provider.imgPath),
                     ),
                   ),
                 ),
@@ -86,7 +128,7 @@ class _JobViewScreenState extends State<JobViewScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text("", //categories[widget.provider.sid],
+                      Text(serviceName,
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.normal)),
                     ],
@@ -107,7 +149,9 @@ class _JobViewScreenState extends State<JobViewScreen> {
                       color: Colors.green,
                     ),
                 onRatingUpdate: (rating) {
-                  initScore = rating;
+                  setState(() {
+                    initScore = rating;
+                  });
                 }),
             const SizedBox(
               height: 20,
@@ -125,10 +169,52 @@ class _JobViewScreenState extends State<JobViewScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 child: ElevatedButton(
-                  onPressed: () {
-                    debugPrint(_desController.text);
-                    debugPrint(initScore.toString());
-                  },
+                  onPressed: isReviewed
+                      ? () {
+                          //Update service record review status
+
+                          final updatedServiceRecord = model.ServiceRecord(
+                            rid: widget.serviceRecord.rid,
+                            uid: widget.serviceRecord.uid,
+                            pid: widget.serviceRecord.pid,
+                            sid: widget.serviceRecord.sid,
+                            bookingStartTime:
+                                widget.serviceRecord.bookingStartTime,
+                            bookingEndTime: widget.serviceRecord.bookingEndTime,
+                            createdTime: widget.serviceRecord.createdTime,
+                            acceptedTime: widget.serviceRecord.acceptedTime,
+                            actualStartTime:
+                                widget.serviceRecord.actualStartTime,
+                            actualEndTime: widget.serviceRecord.actualEndTime,
+                            status: RecordStatus.reviewed,
+                            score: initScore,
+                            review: _desController.text,
+                            price: widget.serviceRecord.price,
+                            appointmentNotes:
+                                widget.serviceRecord.appointmentNotes,
+                          );
+
+                          // Now, update the ServiceRecord
+                          try {
+                            _firestoreService
+                                .updateServiceRecordById(updatedServiceRecord);
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
+
+                          //Grey the button
+                          setState(() {
+                            isReviewed = false;
+                          });
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          // Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => JobDetail(
+                          //         selectedIndex: widget.selectedIndex,
+                          //         // list: listObj,
+                          //         jobIndex: widget.jobIndex)));
+                        }
+                      : null,
                   child: const Text("Submit Rating"),
                 ),
               ),
