@@ -2,103 +2,160 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:user/service/appbar_titles.dart';
 import 'package:user/services/info_state.dart';
-import 'package:user/services/record_status.dart';
-import 'package:user/services/service_record.dart';
 import 'package:user/share/appBarTitle.dart';
 import 'package:user/share/job_status.dart';
 import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
 import '../services/models.dart' as model;
+import '../services/firestore.dart';
+import 'package:user/services/record_status.dart';
+
+final FirestoreService _firestoreService = FirestoreService();
 
 class JobDetail extends StatefulWidget {
-  JobDetail(
-      {super.key,
-      required this.selectedIndex,
-      required this.list,
-      required this.jobIndex});
+  JobDetail({super.key, required this.selectedIndex, required this.jobIndex});
   final int selectedIndex;
-  final Map<String, dynamic>? list;
   final int jobIndex;
 
   @override
-  State<JobDetail> createState() => _JobDetailState(
-      selectedIndex: selectedIndex, list: list, jobIndex: jobIndex);
+  State<JobDetail> createState() => _JobDetailState();
 }
 
 class _JobDetailState extends State<JobDetail> {
-  _JobDetailState(
-      {required this.selectedIndex,
-      required this.list,
-      required this.jobIndex});
-  final int selectedIndex;
-  final Map<String, dynamic>? list;
-  final int jobIndex;
+  _JobDetailState();
+  late int selectedIndex;
+  late int jobIndex;
+  model.User? user;
+  model.Service? service;
+  model.ServiceRecord? serviceRecord;
+  late var status;
+  int? cancelTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() async {
+    var info = Provider.of<Info>(context, listen: false);
+    selectedIndex = widget.selectedIndex;
+    jobIndex = widget.jobIndex;
+
+    serviceRecord = await _loadServiceRecord(info, selectedIndex, jobIndex);
+    user = await _loadUser(serviceRecord);
+    service = await _loadService(serviceRecord);
+    status = serviceRecord?.status.toString().split('.').last;
+
+    // Ensure the widget is rebuilt after data is loaded.
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<model.Service> _loadService(serviceRecord) async {
+    //Get all services
+    List<model.Service> services = await _firestoreService.getService();
+    //Get current record's service
+    return services.firstWhere((e) => e.sid == serviceRecord.sid);
+  }
+
+  Future<model.User> _loadUser(serviceRecord) async {
+    //Get all providers
+    List<model.User> users = await _firestoreService.getUser();
+    //Get current record's provider
+    return users.firstWhere((e) => e.uid == serviceRecord.uid);
+  }
+
+  Future<model.ServiceRecord> _loadServiceRecord(
+      info, selectedIndex, jobIndex) async {
+    //Get all service records
+    List<model.ServiceRecord> serviceRecords =
+        await _firestoreService.getServiceRecord();
+    //Get current user's service records
+    serviceRecords =
+        serviceRecords.where((e) => e.pid == info.currentUser.pid).toList();
+    //Get service based on selectedIndex, which belongs to each tabs' records
+    switch (selectedIndex) {
+      case 1:
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "completed" ||
+                e.status.toString().split('.').last == "reviewed")
+            .toList();
+      case 2:
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "rejected" ||
+                e.status.toString().split('.').last == "cancelled")
+            .toList();
+      default:
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "pending" ||
+                e.status.toString().split('.').last == "confirmed" ||
+                e.status.toString().split('.').last == "started")
+            .toList();
+    }
+    return serviceRecords[jobIndex];
+  }
 
   @override
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: false);
-    model.User user;
-    model.Service service;
-    model.ServiceRecord serviceRecord;
 
-    getServiceRecord() {
-      switch (selectedIndex) {
-        case 1:
-          return list!['completedRecords'][jobIndex];
-        case 2:
-          return list!['canceledRecords'][jobIndex];
-
-        default:
-          return list!['upcomingRecords'][jobIndex];
-      }
-    }
-
-    //get info for rendering
-    if (list == null) {
-      return const Text("No requests");
-    } else {
-      serviceRecord = getServiceRecord();
-
-      user =
-          list!['serviceUsers'].firstWhere((e) => e.uid == serviceRecord.uid);
-
-      service = list!['services'].firstWhere((e) => e.sid == serviceRecord.sid);
+    //Wait for data to be loaded
+    if (serviceRecord == null ||
+        user == null ||
+        service == null ||
+        status == null) {
+      return const CircularProgressIndicator(); // or any other loading indicator
     }
 
     getFormatTime(int time1) {
       return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
     }
 
-    getTimeByStatus() {
-      var statusStr = serviceRecord.status
-          .toString()
-          .split('.')
-          .last
-          .toString()
-          .split('.')
-          .last;
-      switch (statusStr) {
+    getTimeByStatus(item) {
+      switch (item) {
         case "pending":
-          return getFormatTime(serviceRecord.createdTime);
+          return "Job created at ${getFormatTime(serviceRecord?.createdTime ?? 0)}";
         case "confirmed":
-          return getFormatTime(serviceRecord.acceptedTime);
+          if ((cancelTime == null || cancelTime == 0) &&
+              (serviceRecord == null || serviceRecord?.acceptedTime == 0)) {
+            return "";
+          }
+          return "Job confirmed at ${getFormatTime(cancelTime ?? serviceRecord?.acceptedTime ?? 0)}";
         case "started":
-          return getFormatTime(serviceRecord.actualStartTime);
+          if (status == "confirmed" ||
+              status == "pending" ||
+              (cancelTime == null || cancelTime == 0) &&
+                  (serviceRecord == null ||
+                      serviceRecord?.actualStartTime == 0)) {
+            return "";
+          }
+          return "Job started at ${getFormatTime(cancelTime ?? serviceRecord?.actualStartTime ?? 0)}";
         case "completed":
-          return getFormatTime(serviceRecord.actualEndTime);
-
-        case "canceled":
-          return getFormatTime(serviceRecord.actualEndTime);
+          if (status == "confirmed" ||
+              status == "pending" ||
+              status == "started" ||
+              (cancelTime == null || cancelTime == 0) &&
+                  (serviceRecord == null ||
+                      serviceRecord?.actualEndTime == 0)) {
+            return "";
+          }
+          return "Job completed at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
+        case "cancelled":
+          return "Job cancelled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
-          return getFormatTime(serviceRecord.actualEndTime);
+          return "Job rejected at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
         default:
           return "";
       }
     }
 
     getTimePeriod() {
-      // "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}";
-      return "";
+      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).minute))}";
     }
 
     return Scaffold(
@@ -121,7 +178,7 @@ class _JobDetailState extends State<JobDetail> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(user.imgPath!),
+                        image: NetworkImage(user?.imgPath ?? ""),
                       ),
                     ),
                   ),
@@ -132,7 +189,7 @@ class _JobDetailState extends State<JobDetail> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user.name!,
+                            user?.name ?? "",
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -140,20 +197,21 @@ class _JobDetailState extends State<JobDetail> {
                             children: [
                               Expanded(
                                   child: LabelField(
-                                      title: "Job", hint: service.name)),
+                                      title: "Job", hint: service?.name ?? "")),
                               Expanded(
                                   child: LabelField(
                                       title: "Job fees",
                                       hint:
-                                          "CAD \$ ${serviceRecord.price} /hour")),
+                                          "CAD \$ ${serviceRecord?.price} /hour")),
                             ],
                           ),
                           LabelField(
                             title: "Booking for",
-                            hint:
-                                "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}",
+                            hint: getTimePeriod(),
                           ),
-                          LabelField(title: "Address", hint: user.address!),
+                          LabelField(
+                              title: "Address",
+                              hint: user?.address?.toString() ?? ""),
                         ],
                       ),
                     ),
@@ -163,58 +221,157 @@ class _JobDetailState extends State<JobDetail> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
-              child:
-                  serviceRecord.status.toString().split('.').last == "pending"
-                      ? PendingButton(
-                          serviceRecord: serviceRecord,
-                          onCancelJob: () {
-                            // setState(() {
-                            //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "rejected";
-                            //   serviceRecord.actualEndTime = DateTime.now();
-                            // });
-                          },
-                          onAcceptJob: () {
-                            // setState(() {
-                            //   serviceRecord.status.toString().split('.').last.toString().split('.').last = "confirmed";
-                            //   serviceRecord.acceptedTime = DateTime.now();
-                            // });
+              child: status == "pending"
+                  ? PendingButton(
+                      serviceRecord: serviceRecord!,
+                      onCancelJob: () {
+                        setState(() {
+                          //to do: update status
+                          status = "cancelled";
+                          cancelTime = DateTime.now().millisecondsSinceEpoch;
+                        });
+
+                        //Save to firestore
+                        final updatedServiceRecord = model.ServiceRecord(
+                          rid: serviceRecord!.rid,
+                          uid: serviceRecord!.uid,
+                          pid: serviceRecord!.pid,
+                          sid: serviceRecord!.sid,
+                          bookingStartTime: serviceRecord!.bookingStartTime,
+                          bookingEndTime: serviceRecord!.bookingEndTime,
+                          createdTime: serviceRecord!.createdTime,
+                          acceptedTime: serviceRecord!.acceptedTime,
+                          actualStartTime: serviceRecord!.actualStartTime,
+                          actualEndTime: cancelTime!,
+                          status: RecordStatus.cancelled,
+                          score: serviceRecord!.score,
+                          review: serviceRecord!.review,
+                          price: serviceRecord!.price,
+                          appointmentNotes: serviceRecord!.appointmentNotes,
+                        );
+
+                        // Now, update the ServiceRecord
+                        try {
+                          _firestoreService
+                              .updateServiceRecordById(updatedServiceRecord);
+                        } catch (e) {
+                          debugPrint(e.toString());
+                        }
+                      },
+                      onAcceptJob: () {
+                        setState(() {
+                          //to do: update status
+                          status = "confirmed";
+                          cancelTime = DateTime.now().millisecondsSinceEpoch;
+                        });
+
+                        //Save to firestore
+                        final updatedServiceRecord = model.ServiceRecord(
+                          rid: serviceRecord!.rid,
+                          uid: serviceRecord!.uid,
+                          pid: serviceRecord!.pid,
+                          sid: serviceRecord!.sid,
+                          bookingStartTime: serviceRecord!.bookingStartTime,
+                          bookingEndTime: serviceRecord!.bookingEndTime,
+                          createdTime: serviceRecord!.createdTime,
+                          acceptedTime: cancelTime!,
+                          actualStartTime: serviceRecord!.actualStartTime,
+                          actualEndTime: serviceRecord!.actualEndTime,
+                          status: RecordStatus.confirmed,
+                          score: serviceRecord!.score,
+                          review: serviceRecord!.review,
+                          price: serviceRecord!.price,
+                          appointmentNotes: serviceRecord!.appointmentNotes,
+                        );
+
+                        // Now, update the ServiceRecord
+                        try {
+                          _firestoreService
+                              .updateServiceRecordById(updatedServiceRecord);
+                        } catch (e) {
+                          debugPrint(e.toString());
+                        }
+                      },
+                    )
+                  : status == "confirmed" || status == "started"
+                      ? JobDetailButton(
+                          serviceRecord: serviceRecord!,
+                          status: status,
+                          onButtonClick: () {
+                            if (status == "confirmed") {
+                              setState(() {
+                                status = "started";
+                                cancelTime =
+                                    DateTime.now().millisecondsSinceEpoch;
+                              });
+
+                              //Save to firestore
+                              final updatedServiceRecord = model.ServiceRecord(
+                                rid: serviceRecord!.rid,
+                                uid: serviceRecord!.uid,
+                                pid: serviceRecord!.pid,
+                                sid: serviceRecord!.sid,
+                                bookingStartTime:
+                                    serviceRecord!.bookingStartTime,
+                                bookingEndTime: serviceRecord!.bookingEndTime,
+                                createdTime: serviceRecord!.createdTime,
+                                acceptedTime: serviceRecord!.acceptedTime,
+                                actualStartTime: cancelTime!,
+                                actualEndTime: serviceRecord!.actualEndTime,
+                                status: RecordStatus.started,
+                                score: serviceRecord!.score,
+                                review: serviceRecord!.review,
+                                price: serviceRecord!.price,
+                                appointmentNotes:
+                                    serviceRecord!.appointmentNotes,
+                              );
+
+                              // Now, update the ServiceRecord
+                              try {
+                                _firestoreService.updateServiceRecordById(
+                                    updatedServiceRecord);
+                              } catch (e) {
+                                debugPrint(e.toString());
+                              }
+                            } else if (status == "started") {
+                              setState(() {
+                                status = "completed";
+                                cancelTime =
+                                    DateTime.now().millisecondsSinceEpoch;
+                              });
+
+                              //Save to firestore
+                              final updatedServiceRecord = model.ServiceRecord(
+                                rid: serviceRecord!.rid,
+                                uid: serviceRecord!.uid,
+                                pid: serviceRecord!.pid,
+                                sid: serviceRecord!.sid,
+                                bookingStartTime:
+                                    serviceRecord!.bookingStartTime,
+                                bookingEndTime: serviceRecord!.bookingEndTime,
+                                createdTime: serviceRecord!.createdTime,
+                                acceptedTime: serviceRecord!.acceptedTime,
+                                actualStartTime: serviceRecord!.actualStartTime,
+                                actualEndTime: cancelTime!,
+                                status: RecordStatus.completed,
+                                score: serviceRecord!.score,
+                                review: serviceRecord!.review,
+                                price: serviceRecord!.price,
+                                appointmentNotes:
+                                    serviceRecord!.appointmentNotes,
+                              );
+
+                              // Now, update the ServiceRecord
+                              try {
+                                _firestoreService.updateServiceRecordById(
+                                    updatedServiceRecord);
+                              } catch (e) {
+                                debugPrint(e.toString());
+                              }
+                            } else {}
                           },
                         )
-                      : serviceRecord.status.toString().split('.').last ==
-                                  "confirmed" ||
-                              serviceRecord.status.toString().split('.').last ==
-                                  "started"
-                          ? JobDetailButton(
-                              serviceRecord: serviceRecord,
-                              onButtonClick: () {
-                                if (serviceRecord.status
-                                        .toString()
-                                        .split('.')
-                                        .last ==
-                                    "confirmed") {
-                                  // setState(() {
-                                  //   serviceRecord.status.toString().split('.').last
-                                  //       .toString()
-                                  //       .split('.')
-                                  //       .last = "started";
-                                  //   serviceRecord.actualStartTime = DateTime.now();
-                                  // });
-                                } else if (serviceRecord.status
-                                        .toString()
-                                        .split('.')
-                                        .last ==
-                                    "started") {
-                                  // setState(() {
-                                  //   serviceRecord.status.toString().split('.').last
-                                  //       .toString()
-                                  //       .split('.')
-                                  //       .last = "completed";
-                                  //   serviceRecord.actualEndTime = DateTime.now();
-                                  // });
-                                } else {}
-                              },
-                            )
-                          : null,
+                      : null,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -228,73 +385,70 @@ class _JobDetailState extends State<JobDetail> {
                           color: Colors.grey[600])),
                   JobStatus(
                     title: "Job Pending",
-                    subTitle: serviceRecord.createdTime != 0
-                        ? "Job created on ${getFormatTime(serviceRecord.createdTime)} "
-                        : "",
-                    active: serviceRecord.status.toString().split('.').last ==
-                        "pending",
+                    subTitle: getTimeByStatus("pending"),
+                    active: status == "pending",
                   ),
-                  if (serviceRecord.status.toString().split('.').last ==
-                      "rejected") //job rejected by provider
-                    JobStatus(
+                  // if (serviceRecord.status.toString().split('.').last ==
+                  //     "rejected") //job rejected by provider
+                  Visibility(
+                    visible: status == "rejected",
+                    child: JobStatus(
                       title: "Job Rejected",
-                      subTitle: serviceRecord.actualEndTime != 0
-                          ? "Job rejected on ${getFormatTime(serviceRecord.actualEndTime)}"
-                          : "",
-                      active: serviceRecord.status.toString().split('.').last ==
-                          "rejected",
+                      subTitle: getTimeByStatus("rejected"),
+                      active: true,
                     ),
-                  if (serviceRecord.status.toString().split('.').last ==
-                      "canceled") //job canceled by user
-                    JobStatus(
-                      title: "Job Canceled",
-                      subTitle: serviceRecord.actualEndTime != 0
-                          ? "Job canceled on ${getFormatTime(serviceRecord.actualEndTime)} }"
-                          : "",
-                      active: serviceRecord.status.toString().split('.').last ==
-                          "canceled",
+                  ),
+                  // if (serviceRecord.status.toString().split('.').last ==
+                  //     "cancelled") //job cancelled by user
+                  Visibility(
+                    visible: status == "cancelled",
+                    child: JobStatus(
+                      title: "Job cancelled",
+                      subTitle: getTimeByStatus("cancelled"),
+                      active: true,
                     ),
-                  if (serviceRecord.status.toString().split('.').last !=
-                          "canceled" &&
-                      serviceRecord.status.toString().split('.').last !=
-                          "rejected")
-                    JobStatus(
+                  ),
+                  // if (serviceRecord.status.toString().split('.').last !=
+                  //         "cancelled" &&
+                  //     serviceRecord.status.toString().split('.').last !=
+                  //         "rejected")
+                  Visibility(
+                    visible: status != "cancelled" && status != "rejected",
+                    child: JobStatus(
                       title: "Job Accepted",
-                      subTitle: serviceRecord.acceptedTime != 0
-                          ? "Job accepted on ${getFormatTime(serviceRecord.acceptedTime)}"
-                          : "",
-                      active: serviceRecord.status.toString().split('.').last ==
-                          "confirmed",
+                      subTitle: getTimeByStatus("confirmed"),
+                      active: status == "confirmed",
                     ),
-                  if (serviceRecord.status.toString().split('.').last !=
-                          "canceled" &&
-                      serviceRecord.status.toString().split('.').last !=
-                          "rejected")
-                    JobStatus(
+                  ),
+                  // if (serviceRecord.status.toString().split('.').last !=
+                  //         "cancelled" &&
+                  //     serviceRecord.status.toString().split('.').last !=
+                  //         "rejected")
+                  Visibility(
+                    visible: status != "cancelled" && status != "rejected",
+                    child: JobStatus(
                       title: "Job In Process",
-                      subTitle: serviceRecord.actualStartTime != 0
-                          ? "Job started on ${getFormatTime(serviceRecord.actualStartTime)}"
-                          : "",
-                      active: serviceRecord.status.toString().split('.').last ==
-                          "started",
+                      subTitle: getTimeByStatus("started"),
+                      active: status == "started",
                     ),
-                  if (serviceRecord.status.toString().split('.').last !=
-                          "canceled" &&
-                      serviceRecord.status.toString().split('.').last !=
-                          "rejected")
-                    JobStatus(
+                  ),
+                  // if (serviceRecord.status.toString().split('.').last !=
+                  //         "cancelled" &&
+                  //     serviceRecord.status.toString().split('.').last !=
+                  //         "rejected")
+                  Visibility(
+                    visible: status != "cancelled" && status != "rejected",
+                    child: JobStatus(
                       title: "Job Completed",
-                      subTitle: serviceRecord.actualEndTime != 0
-                          ? "Job started on ${getFormatTime(serviceRecord.actualEndTime)}"
-                          : "",
-                      active: serviceRecord.status.toString().split('.').last ==
-                          "completed",
+                      subTitle: getTimeByStatus("completed"),
+                      active: status == "completed",
                     ),
+                  ),
                 ],
               ),
             ),
-            if (serviceRecord.score > 0 &&
-                serviceRecord.status.toString().split('.').last == "completed")
+            if (serviceRecord?.score != null &&
+                serviceRecord?.status.toString().split('.').last == "completed")
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -314,7 +468,7 @@ class _JobDetailState extends State<JobDetail> {
                           Padding(
                             padding: const EdgeInsets.only(right: 5),
                             child: Text(
-                              serviceRecord.score!.toStringAsFixed(2),
+                              serviceRecord?.score.toStringAsFixed(2) ?? "",
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.normal),
                             ),
@@ -323,14 +477,14 @@ class _JobDetailState extends State<JobDetail> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               for (int i = 0;
-                                  i < serviceRecord.score!.floor();
+                                  i < (serviceRecord?.score.floor() ?? 0);
                                   i++)
                                 const Icon(
                                   Icons.star,
                                   color: Colors.green,
                                   size: 15,
                                 ),
-                              for (int i = serviceRecord.score!.floor();
+                              for (int i = (serviceRecord?.score.floor() ?? 0);
                                   i < 5;
                                   i++)
                                 const Icon(
@@ -346,9 +500,13 @@ class _JobDetailState extends State<JobDetail> {
                   ],
                 ),
               ),
-            if (serviceRecord.review != "" &&
-                serviceRecord.status.toString().split('.').last == "completed")
-              Padding(
+            // if (serviceRecord?.review != "" &&
+            //     serviceRecord?.status.toString().split('.').last == "completed")
+            Visibility(
+              visible: serviceRecord?.review != "" &&
+                  serviceRecord?.status.toString().split('.').last ==
+                      "completed",
+              child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                 child: Column(
@@ -361,11 +519,12 @@ class _JobDetailState extends State<JobDetail> {
                             color: Colors.grey[600])),
                     Padding(
                       padding: const EdgeInsets.only(left: 18, top: 9),
-                      child: Text(serviceRecord.review!),
+                      child: Text(serviceRecord?.review ?? ""),
                     ),
                   ],
                 ),
               ),
+            )
           ],
         ),
       ),
@@ -374,10 +533,15 @@ class _JobDetailState extends State<JobDetail> {
 }
 
 class JobDetailButton extends StatelessWidget {
-  JobDetailButton({super.key, required this.serviceRecord, this.onButtonClick});
+  JobDetailButton(
+      {super.key,
+      required this.serviceRecord,
+      this.status,
+      this.onButtonClick});
 
   model.ServiceRecord serviceRecord;
   final VoidCallback? onButtonClick;
+  final String? status;
 
   @override
   Widget build(BuildContext context) {
@@ -390,19 +554,18 @@ class JobDetailButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(serviceRecord.status.toString().split('.').last == "confirmed"
+            Icon(status == "confirmed"
                 ? Icons.build
-                : serviceRecord.status.toString().split('.').last == "started"
+                : status == "started"
                     ? Icons.thumb_up
                     : null),
             const SizedBox(
               width: 10,
             ),
             Text(
-                serviceRecord.status.toString().split('.').last == "confirmed"
+                status == "confirmed"
                     ? "Start Job"
-                    : serviceRecord.status.toString().split('.').last ==
-                            "started"
+                    : status == "started"
                         ? "Mark Job Complete"
                         : "",
                 style: const TextStyle(

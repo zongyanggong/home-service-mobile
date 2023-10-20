@@ -33,7 +33,7 @@ class JobCard extends StatelessWidget {
         case 1:
           return list!['completedRecords'][jobIndex];
         case 2:
-          return list!['canceledRecords'][jobIndex];
+          return list!['cancelledRecords'][jobIndex];
 
         default:
           return list!['upcomingRecords'][jobIndex];
@@ -65,7 +65,7 @@ class JobCard extends StatelessWidget {
           return getFormatTime(serviceRecord.actualStartTime);
         case "completed":
           return getFormatTime(serviceRecord.actualEndTime);
-        case "canceled":
+        case "cancelled":
           return getFormatTime(serviceRecord.actualEndTime);
         case "rejected":
           return getFormatTime(serviceRecord.actualEndTime);
@@ -74,6 +74,10 @@ class JobCard extends StatelessWidget {
         default:
           return getFormatTime(serviceRecord.createdTime); //pending
       }
+    }
+
+    getStatus(status) {
+      return status[0].toUpperCase() + status.substring(1);
     }
 
     return Container(
@@ -113,7 +117,7 @@ class JobCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 5),
               child: Text(
-                serviceRecord.status.toString().split('.').last,
+                getStatus(serviceRecord.status.toString().split('.').last),
                 style: const TextStyle(
                     color: Colors.blueAccent,
                     fontSize: 14,

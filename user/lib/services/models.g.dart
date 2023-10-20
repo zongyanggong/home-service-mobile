@@ -80,7 +80,7 @@ const _$RecordStatusEnumMap = {
   RecordStatus.completed: 'completed',
   RecordStatus.rejected: 'rejected',
   RecordStatus.reviewed: 'reviewed',
-  RecordStatus.canceled: 'canceled',
+  RecordStatus.cancelled: 'cancelled',
 };
 
 Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(

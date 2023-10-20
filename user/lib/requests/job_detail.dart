@@ -10,6 +10,8 @@ import 'package:user/share/label_field.dart';
 import 'package:provider/provider.dart';
 import '../services/models.dart' as model;
 import '../services/firestore.dart';
+import 'job_review.dart';
+import '../categories/provider_book.dart';
 
 final FirestoreService _firestoreService = FirestoreService();
 
@@ -17,132 +19,139 @@ class JobDetail extends StatefulWidget {
   JobDetail(
       {super.key,
       required this.selectedIndex,
-      required this.list,
+      // required this.list,
       required this.jobIndex});
   final int selectedIndex;
-  final Map<String, dynamic>? list;
+  // final Map<String, dynamic>? list;
   final int jobIndex;
   @override
   // ignore: library_private_types_in_public_api
-  _JobDetail createState() =>
-      _JobDetail(selectedIndex: selectedIndex, list: list, jobIndex: jobIndex);
+  _JobDetail createState() => _JobDetail();
+  // _JobDetail(selectedIndex: selectedIndex, list: list, jobIndex: jobIndex);
 }
 
 class _JobDetail extends State<JobDetail> {
-  _JobDetail(
-      {required this.selectedIndex, required this.list, required this.jobIndex})
-      : provider = model.Provider(),
-        service = model.Service(), // Initialize service
-        serviceRecord = model.ServiceRecord();
+  _JobDetail();
 
-  final int selectedIndex;
-  final Map<String, dynamic>? list;
-  final int jobIndex;
-
-  model.Provider provider;
-  model.Service service;
-  model.ServiceRecord serviceRecord;
-  var status;
+  late int selectedIndex;
+  late int jobIndex;
+  model.Provider? provider;
+  model.Service? service;
+  model.ServiceRecord? serviceRecord;
+  late var status;
+  int? cancelTime;
 
   @override
   void initState() {
     super.initState();
-    //get info for rendering
-    if (list == null) {
-      // return const Text("No requests");
-    } else {
-      serviceRecord = getServiceRecord();
+    _initializeData();
+  }
 
-      provider = list!['serviceProviders']
-          .firstWhere((e) => e.pid == serviceRecord.pid);
+  void _initializeData() async {
+    var info = Provider.of<Info>(context, listen: false);
+    selectedIndex = widget.selectedIndex;
+    jobIndex = widget.jobIndex;
 
-      service = list!['services'].firstWhere((e) => e.sid == serviceRecord.sid);
-      status = serviceRecord.status.toString().split('.').last;
+    serviceRecord = await _loadServiceRecord(info, selectedIndex, jobIndex);
+    provider = await _loadProvider(serviceRecord);
+    service = await _loadService(serviceRecord);
+    status = serviceRecord?.status.toString().split('.').last;
+
+    // Ensure the widget is rebuilt after data is loaded.
+    if (mounted) {
+      setState(() {});
     }
   }
 
-  bool isCanceled = false;
+  Future<model.Service> _loadService(serviceRecord) async {
+    //Get all services
+    List<model.Service> services = await _firestoreService.getService();
+    //Get current record's service
+    return services.firstWhere((e) => e.sid == serviceRecord.sid);
+  }
 
-  getServiceRecord() {
+  Future<model.Provider> _loadProvider(serviceRecord) async {
+    //Get all providers
+    List<model.Provider> providers = await _firestoreService.getProvider();
+    //Get current record's provider
+    return providers.firstWhere((e) => e.pid == serviceRecord.pid);
+  }
+
+  Future<model.ServiceRecord> _loadServiceRecord(
+      info, selectedIndex, jobIndex) async {
+    //Get all service records
+    List<model.ServiceRecord> serviceRecords =
+        await _firestoreService.getServiceRecord();
+    //Get current user's service records
+    serviceRecords =
+        serviceRecords.where((e) => e.uid == info.currentUser.uid).toList();
+    //Get service based on selectedIndex, which belongs to each tabs' records
     switch (selectedIndex) {
       case 1:
-        return list!['completedRecords'][jobIndex];
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "completed" ||
+                e.status.toString().split('.').last == "reviewed")
+            .toList();
       case 2:
-        return list!['canceledRecords'][jobIndex];
-
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "rejected" ||
+                e.status.toString().split('.').last == "cancelled")
+            .toList();
       default:
-        return list!['upcomingRecords'][jobIndex];
+        serviceRecords = serviceRecords
+            .where((e) =>
+                e.status.toString().split('.').last == "pending" ||
+                e.status.toString().split('.').last == "confirmed" ||
+                e.status.toString().split('.').last == "started")
+            .toList();
     }
+    return serviceRecords[jobIndex];
   }
 
   @override
   Widget build(BuildContext context) {
     var info = Provider.of<Info>(context, listen: false);
 
-    getFormatTime(int time1) {
-      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
+    //Wait for data to be loaded
+    if (serviceRecord == null ||
+        provider == null ||
+        service == null ||
+        status == null) {
+      return const CircularProgressIndicator(); // or any other loading indicator
     }
 
-    getTimeByStatus() {
-      var statusStr = serviceRecord.status.toString().split('.').last;
-      switch (statusStr) {
-        case "pending":
-          return getFormatTime(serviceRecord.createdTime);
-        case "confirmed":
-          return getFormatTime(serviceRecord.acceptedTime);
-          ;
-        case "started":
-          return getFormatTime(serviceRecord.actualStartTime);
-        case "completed":
-          return getFormatTime(serviceRecord.actualEndTime);
+    getFormatTime(int time1) {
+      if (time1 == 0) {
+        return "";
+      } else {
+        return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(time1))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(time1).hour, minute: DateTime.fromMillisecondsSinceEpoch(time1).minute))}";
+      }
+    }
 
-        case "canceled":
-          return getFormatTime(serviceRecord.actualEndTime);
+    getTimeByStatus(status) {
+      //var statusStr = serviceRecord?.status.toString().split('.').last;
+      switch (status) {
+        case "pending":
+          return "Job created at ${getFormatTime(serviceRecord?.createdTime ?? 0)}";
+        case "confirmed":
+          return "Job confirmed at ${getFormatTime(serviceRecord?.acceptedTime ?? 0)}";
+        case "started":
+          return "Job started at ${getFormatTime(serviceRecord?.actualStartTime ?? 0)}";
+        case "completed":
+          return "Job completed at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
+        case "cancelled":
+          return "Job cancelled at ${getFormatTime(cancelTime ?? serviceRecord?.actualEndTime ?? 0)}";
         case "rejected":
-          return getFormatTime(serviceRecord.actualEndTime);
+          return "Job rejected at ${getFormatTime(serviceRecord?.actualEndTime ?? 0)}";
         default:
           return "";
       }
     }
 
     getTimePeriod() {
-      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingStartTime).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord.bookingEndTime).minute))}";
-    }
-
-    TextEditingController jobCreatedSubTitle = TextEditingController();
-    jobCreatedSubTitle.text = serviceRecord.createdTime != 0
-        ? getFormatTime(serviceRecord.createdTime)
-        : "";
-
-    cancelServiceRecord() {
-      setState(() {
-        isCanceled = true;
-        status = "canceled";
-      });
-      print(status);
-
-      // if (serviceRecord.status.toString().split('.').last == "pending") {
-      //   // serviceRecord.status = RecordStatus.canceled;
-      //   return () {
-      //   //   _firestoreService.updateServiceRecordById(
-      //   //       serviceRecord.sid,
-      //   //       serviceRecord.pid,
-      //   //       serviceRecord.uid,
-      //   //       serviceRecord.bookingStartTime,
-      //   //       serviceRecord.bookingEndTime,
-      //   //       serviceRecord.createdTime,
-      //   //       serviceRecord.acceptedTime,
-      //   //       serviceRecord.actualStartTime,
-      //   //       serviceRecord.actualEndTime,
-      //   //       serviceRecord.status,
-      //   //       serviceRecord.score,
-      //   //       serviceRecord.review,
-      //   //       RecordStatus.canceled);
-      //   // };
-      // } else {
-      //   return null;
-      // }
-      // setState(() {});
+      return "${DateFormat.yMd().format(DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0))} ${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingStartTime ?? 0).minute))}-${format24HourTime(TimeOfDay(hour: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).hour, minute: DateTime.fromMillisecondsSinceEpoch(serviceRecord?.bookingEndTime ?? 0).minute))}";
     }
 
     return Scaffold(
@@ -166,7 +175,7 @@ class _JobDetail extends State<JobDetail> {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: NetworkImage(provider.imgPath),
+                          image: NetworkImage(provider?.imgPath ?? ""),
                         ),
                       ),
                     ),
@@ -177,7 +186,7 @@ class _JobDetail extends State<JobDetail> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              provider.name,
+                              provider?.name ?? "",
                               style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
@@ -185,12 +194,13 @@ class _JobDetail extends State<JobDetail> {
                               children: [
                                 Expanded(
                                     child: LabelField(
-                                        title: "Job", hint: service.name)),
+                                        title: "Job",
+                                        hint: service?.name ?? "")),
                                 Expanded(
                                     child: LabelField(
                                         title: "Job fees",
                                         hint:
-                                            "CAD \$ ${provider.price} /hour")),
+                                            "CAD \$ ${provider?.price} /hour")),
                               ],
                             ),
                             LabelField(
@@ -207,58 +217,142 @@ class _JobDetail extends State<JobDetail> {
                   ],
                 ),
               ),
-              if (serviceRecord.status == RecordStatus.pending)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.red),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  status = "canceled";
-                                });
-                                print("canceld button pressed ${status}");
-                              }, //cancelServiceRecord,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.close),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text("Cancel"),
-                                ],
-                              ))),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                          child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.green),
-                              ),
-                              onPressed: () {}, //cancelServiceRecord(),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.refresh),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text("Reschedule"),
-                                ],
-                              ))),
-                    ],
-                  ),
+              // if (serviceRecord?.status == RecordStatus.pending)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.red),
+                            ),
+                            onPressed: status == "pending"
+                                ? () {
+                                    setState(() {
+                                      //to do: update status
+                                      status = "cancelled";
+                                      cancelTime =
+                                          DateTime.now().millisecondsSinceEpoch;
+                                    });
+
+                                    //Save to firestore
+                                    final updatedServiceRecord =
+                                        model.ServiceRecord(
+                                      rid: serviceRecord!.rid,
+                                      uid: serviceRecord!.uid,
+                                      pid: serviceRecord!.pid,
+                                      sid: serviceRecord!.sid,
+                                      bookingStartTime:
+                                          serviceRecord!.bookingStartTime,
+                                      bookingEndTime:
+                                          serviceRecord!.bookingEndTime,
+                                      createdTime: serviceRecord!.createdTime,
+                                      acceptedTime: serviceRecord!.acceptedTime,
+                                      actualStartTime:
+                                          serviceRecord!.actualStartTime,
+                                      actualEndTime: cancelTime!,
+                                      status: RecordStatus.cancelled,
+                                      score: serviceRecord!.score,
+                                      review: serviceRecord!.review,
+                                      price: serviceRecord!.price,
+                                      appointmentNotes:
+                                          serviceRecord!.appointmentNotes,
+                                    );
+
+                                    // Now, update the ServiceRecord
+                                    try {
+                                      _firestoreService.updateServiceRecordById(
+                                          updatedServiceRecord);
+                                    } catch (e) {
+                                      debugPrint(e.toString());
+                                    }
+                                  }
+                                : null,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.close),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text("Cancel"),
+                              ],
+                            ))),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.green),
+                            ),
+                            onPressed: status == "pending"
+                                ? () {
+                                    //Cancel original job
+                                    setState(() {
+                                      //to do: update status
+                                      status = "cancelled";
+                                      cancelTime =
+                                          DateTime.now().millisecondsSinceEpoch;
+                                    });
+
+                                    //Save to firestore
+                                    final updatedServiceRecord =
+                                        model.ServiceRecord(
+                                      rid: serviceRecord!.rid,
+                                      uid: serviceRecord!.uid,
+                                      pid: serviceRecord!.pid,
+                                      sid: serviceRecord!.sid,
+                                      bookingStartTime:
+                                          serviceRecord!.bookingStartTime,
+                                      bookingEndTime:
+                                          serviceRecord!.bookingEndTime,
+                                      createdTime: serviceRecord!.createdTime,
+                                      acceptedTime: serviceRecord!.acceptedTime,
+                                      actualStartTime:
+                                          serviceRecord!.actualStartTime,
+                                      actualEndTime: cancelTime!,
+                                      status: RecordStatus.cancelled,
+                                      score: serviceRecord!.score,
+                                      review: serviceRecord!.review,
+                                      price: serviceRecord!.price,
+                                      appointmentNotes:
+                                          serviceRecord!.appointmentNotes,
+                                    );
+
+                                    // Now, update the ServiceRecord
+                                    try {
+                                      _firestoreService.updateServiceRecordById(
+                                          updatedServiceRecord);
+                                    } catch (e) {
+                                      debugPrint(e.toString());
+                                    }
+
+                                    //To Book page to book new job
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProviderBookScreen(
+                                                  serviceProvider: provider!,
+                                                )));
+                                  }
+                                : null,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.refresh),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text("Reschedule"),
+                              ],
+                            ))),
+                  ],
                 ),
+              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -271,70 +365,66 @@ class _JobDetail extends State<JobDetail> {
                             fontWeight: FontWeight.w600,
                             color: Colors.grey[600])),
                     JobStatus(
-                      title: "Job Created ${status}",
-                      subTitle:
-                          "Job created on ${getFormatTime(serviceRecord.createdTime)}",
-                      active: !isCanceled,
+                      title: "Job Created",
+                      subTitle: getTimeByStatus("pending"),
+                      active: status == "pending",
                     ),
-                    if (serviceRecord.status ==
-                        RecordStatus.rejected) //job rejected by provider
-                      JobStatus(
-                        title: "Job Rejected",
-                        subTitle: serviceRecord.actualEndTime != 0
-                            ? "Job rejected on ${getFormatTime(serviceRecord.actualEndTime)}"
-                            : "",
-                        active:
-                            serviceRecord.status.toString().split('.').last ==
-                                "rejected",
-                      ),
-                    //job canceled by user
+                    // if (serviceRecord?.status ==RecordStatus.rejected) //job rejected by provider
                     Visibility(
-                        visible: isCanceled,
-                        child: JobStatus(
-                          title: "Job Canceled",
-                          subTitle: serviceRecord.actualEndTime != 0
-                              ? "Job canceled on ${getFormatTime(serviceRecord.actualEndTime)}"
-                              : "",
-                          active: true,
-                        )),
-                    if (serviceRecord.status != RecordStatus.canceled &&
-                        serviceRecord.status != RecordStatus.rejected)
-                      JobStatus(
+                      visible: status == "rejected",
+                      child: JobStatus(
+                        title: "Job Rejected",
+                        subTitle: getTimeByStatus("rejected"),
+                        active: true,
+                      ),
+                    ),
+                    // if (serviceRecord?.status ==RecordStatus.cancelled) //job cancelled by user
+                    Visibility(
+                      visible: status == "cancelled",
+                      child: JobStatus(
+                        title: "Job cancelled",
+                        subTitle: getTimeByStatus("cancelled"),
+                        active: true,
+                      ),
+                    ),
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&serviceRecord?.status != RecordStatus.rejected)
+                    Visibility(
+                      visible: status != "cancelled" && status != "rejected",
+                      child: JobStatus(
                         title: "Job Accepted",
-                        subTitle: serviceRecord.acceptedTime != 0
-                            ? "Job accepted on ${getFormatTime(serviceRecord.acceptedTime)}"
-                            : "",
-                        active:
-                            serviceRecord.status.toString().split('.').last ==
-                                "confirmed",
+                        subTitle: getTimeByStatus("accepted"),
+                        active: status == "confirmed",
                       ),
-                    if (serviceRecord.status != RecordStatus.canceled &&
-                        serviceRecord.status != RecordStatus.rejected)
-                      JobStatus(
+                    ),
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&
+                    //     serviceRecord?.status != RecordStatus.rejected)
+                    Visibility(
+                      visible: status != "cancelled" && status != "rejected",
+                      child: JobStatus(
                         title: "Job In Process",
-                        subTitle: serviceRecord.actualStartTime != 0
-                            ? "Job started on ${getFormatTime(serviceRecord.actualStartTime)}"
+                        subTitle: status == "started"
+                            ? getTimeByStatus("started")
                             : "",
-                        active:
-                            serviceRecord.status.toString().split('.').last ==
-                                "started",
+                        active: status == "started",
                       ),
-                    if (serviceRecord.status != RecordStatus.canceled &&
-                        serviceRecord.status != RecordStatus.rejected)
-                      JobStatus(
+                    ),
+                    // if (serviceRecord?.status != RecordStatus.cancelled &&
+                    //     serviceRecord?.status != RecordStatus.rejected)
+                    Visibility(
+                      visible: status != "cancelled" && status != "rejected",
+                      child: JobStatus(
                         title: "Job Completed",
-                        subTitle: serviceRecord.actualEndTime != 0
-                            ? "Job completed on ${getFormatTime(serviceRecord.actualEndTime)}"
+                        subTitle: status == "completed"
+                            ? getTimeByStatus("completed")
                             : "",
-                        active:
-                            serviceRecord.status.toString().split('.').last ==
-                                "completed",
+                        active: status == "completed",
                       ),
+                    ),
                   ],
                 ),
               ),
-              if (serviceRecord.score != null &&
-                  serviceRecord.status == RecordStatus.completed)
+              if (serviceRecord?.score != null &&
+                  serviceRecord?.status == RecordStatus.completed)
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -354,7 +444,7 @@ class _JobDetail extends State<JobDetail> {
                             Padding(
                               padding: const EdgeInsets.only(right: 5),
                               child: Text(
-                                serviceRecord.score!.toStringAsFixed(2),
+                                serviceRecord?.score.toStringAsFixed(2) ?? "",
                                 style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.normal),
@@ -362,7 +452,7 @@ class _JobDetail extends State<JobDetail> {
                             ),
                             RatingBar.builder(
                                 ignoreGestures: true,
-                                initialRating: serviceRecord.score!,
+                                initialRating: serviceRecord?.score ?? 0,
                                 maxRating: 5,
                                 allowHalfRating: true,
                                 itemSize: 16,
@@ -377,8 +467,8 @@ class _JobDetail extends State<JobDetail> {
                     ],
                   ),
                 ),
-              if (serviceRecord.review != null &&
-                  serviceRecord.status == RecordStatus.completed)
+              if (serviceRecord?.review != null &&
+                  serviceRecord?.status == RecordStatus.completed)
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
@@ -392,26 +482,27 @@ class _JobDetail extends State<JobDetail> {
                               color: Colors.grey[600])),
                       Padding(
                         padding: const EdgeInsets.only(left: 18, top: 9),
-                        child: Text(serviceRecord.review!),
+                        child: Text(serviceRecord?.review ?? ""),
                       ),
                     ],
                   ),
                 ),
-              // if (serviceRecord.status == RecordStatus.completed &&
+              // if (status == completed &&
               //     serviceRecord.score == null)
-              //   Center(
-              //     child: SizedBox(
-              //       width: MediaQuery.of(context).size.width / 2,
-              //       child: ElevatedButton(
-              //         onPressed: () => {
-              //           Navigator.of(context).push(MaterialPageRoute(
-              //               builder: (context) =>
-              //                   JobViewScreen(serviceRecord: serviceRecord)))
-              //         },
-              //         child: const Text("Review now"),
-              //       ),
-              //     ),
-              //   ),
+              Visibility(
+                visible: status == "completed" && serviceRecord?.score == null,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: ElevatedButton(
+                    onPressed: () => {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              JobViewScreen(provider: provider!)))
+                    },
+                    child: const Text("Review now"),
+                  ),
+                ),
+              ),
             ],
           ),
         ));

@@ -16,7 +16,7 @@ Map<String, dynamic> statusMap = {
   'completed': 'Service completed',
   'rejected': 'Service rejected',
   'reviewed': 'Service reviewed',
-  'canceled': 'Service canceled',
+  'cancelled': 'Service cancelled',
 };
 
 class NotificationRecord {
@@ -24,17 +24,6 @@ class NotificationRecord {
   late String date;
   late String message;
 }
-
-// final List<NotifiscationRecord> notifcations = [
-//   NotifiscationRecord()
-//     ..title = "New Appointment"
-//     ..date = "20 Dec 2023"
-//     ..message = "You have received new appointment for service",
-//   NotifiscationRecord()
-//     ..title = "Service started"
-//     ..date = "22 Dec 2023"
-//     ..message = "The service is started",
-// ];
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -69,8 +58,8 @@ class NotificationsPage extends StatelessWidget {
         case 'reviewed':
           return "Your appointment with the ${serviceName} has been reviewed";
 
-        default: // 'canceled'
-          return "Your appointment with the ${serviceName} has been canceled";
+        default: // 'cancelled'
+          return "Your appointment with the ${serviceName} has been cancelled";
       }
     }
 
@@ -90,11 +79,11 @@ class NotificationsPage extends StatelessWidget {
         case 'completed':
           return getFormatTime(sr.actualEndTime);
         case 'rejected':
-          return getFormatTime(sr.acceptedTime);
-        case 'reviewed':
-          return getFormatTime(sr.bookingEndTime);
-        default: // 'canceled'
-          return getFormatTime(sr.acceptedTime);
+          return getFormatTime(sr.actualEndTime);
+        // case 'reviewed':
+        //   return getFormatTime(sr.bookingEndTime);
+        default: // 'cancelled'
+          return getFormatTime(sr.actualEndTime);
       }
     }
 
