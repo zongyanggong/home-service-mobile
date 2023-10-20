@@ -13,6 +13,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
       imgPath: json['imgPath'] as String? ?? "",
+      fcmToken: json['fcmToken'] as String? ?? "",
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -22,6 +23,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'address': instance.address,
       'phone': instance.phone,
       'imgPath': instance.imgPath,
+      'fcmToken': instance.fcmToken,
     };
 
 Service _$ServiceFromJson(Map<String, dynamic> json) => Service(
@@ -90,9 +92,10 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
       sid: json['sid'] as String? ?? "",
-      price: (json['price'] as num?)?.toDouble() ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       description: json['description'] as String? ?? "",
       imgPath: json['imgPath'] as String? ?? "",
+      fcmToken: json['fcmToken'] as String? ?? "",
     );
 
 Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
@@ -105,6 +108,7 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'price': instance.price,
       'description': instance.description,
       'imgPath': instance.imgPath,
+      'fcmToken': instance.fcmToken,
     };
 
 Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(

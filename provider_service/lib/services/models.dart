@@ -10,6 +10,7 @@ class User {
   String? address;
   String? phone;
   String? imgPath;
+  String? fcmToken;
 
   User({
     this.uid = "",
@@ -18,6 +19,7 @@ class User {
     this.address = "",
     this.phone = "",
     this.imgPath = "",
+    this.fcmToken = "",
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -90,6 +92,7 @@ class Provider {
   double? price;
   String? description;
   String? imgPath;
+  String? fcmToken;
 
   Provider({
     this.pid = "",
@@ -100,6 +103,7 @@ class Provider {
     this.price = 0,
     this.description = "",
     this.imgPath = "",
+    this.fcmToken = "",
   });
 
   factory Provider.fromJson(Map<String, dynamic> json) =>

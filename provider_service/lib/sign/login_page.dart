@@ -8,6 +8,7 @@ import '../services/info_state.dart';
 import 'package:provider/provider.dart';
 import '../services/models.dart' as model;
 import '../services/firestore.dart';
+import '../services/firebase_api.dart';
 
 class LoginPage extends StatelessWidget {
   final AuthService _auth = AuthService();
@@ -61,6 +62,9 @@ class LoginPage extends StatelessWidget {
                       model.Provider existProvider =
                           await _firestoreService.getProviderByPid(user!.uid);
 
+                      //Get FCM token for notification
+                      FirebaseApi instance = FirebaseApi();
+                      String? token = await instance.getFcmToken();
                       if (existProvider.pid == user.uid) {
                         //User already exist in firestore
                       } else {
@@ -71,13 +75,16 @@ class LoginPage extends StatelessWidget {
                             name: user.displayName,
                             email: user.email,
                             phone: '',
-                            sid: "",
+                            sid: "0",
                             price: 0.0,
                             description: "",
                             imgPath: user.photoURL,
+                            fcmToken: token,
                           ),
                         );
                       }
+
+                      //Send the user's FCM token to server
                       //   // User creation was successful, you can add your logic here
                     } catch (e) {
                       // Handle any errors that occurred during user creation

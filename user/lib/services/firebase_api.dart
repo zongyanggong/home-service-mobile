@@ -22,12 +22,17 @@ class FirebaseApi {
     //Request permission from user(will prompt user for permission if not already granted)
     await _fcm.requestPermission();
 
-    //fetch the FCM token for this device
-    String? token = await _fcm.getToken();
-    print('Token: $token'); //normally you would save this token to your server
-
     //initialize further settings for pushing notifications
     initPushNotifications();
+  }
+
+  //Get FCM token function
+  Future<String?> getFcmToken() async {
+    //fetch the FCM token for this device
+    String? token = await _fcm.getToken();
+    //send the FCM token to server
+    // sendTokenToServer(token);
+    return token;
   }
 
 //Function to handle received messages
@@ -74,7 +79,7 @@ class FirebaseApi {
     FirebaseMessaging.onMessage.listen((message) {
       print("onMessage: ${message.notification?.title}");
 
-      saveMessageToDatabase(message);
+      // saveMessageToDatabase(message);
       // handleMessage(message);
 
       // navigatorKey.currentState?.pushNamed(

@@ -27,6 +27,7 @@ class FirestoreService {
         address: '',
         phone: '',
         imgPath: "",
+        fcmToken: "",
       ));
     } else {
       return User.fromJson(data);
@@ -57,6 +58,8 @@ class FirestoreService {
       "email": user.email,
       "address": user.address,
       "phone": user.phone,
+      "imgPath": user.imgPath,
+      "fcmToken": user.fcmToken,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
@@ -226,6 +229,10 @@ class FirestoreService {
       "address": provider.address,
       "phone": provider.phone,
       "description": provider.description,
+      "imgPath": provider.imgPath,
+      "sid": provider.sid,
+      "price": provider.price,
+      "fcmToken": provider.fcmToken,
     };
     return reference.set(newData, SetOptions(merge: true));
   }
