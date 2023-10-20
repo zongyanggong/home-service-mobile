@@ -226,7 +226,6 @@ class FirestoreService {
     var newData = {
       "name": provider.name,
       "email": provider.email,
-      "address": provider.address,
       "phone": provider.phone,
       "description": provider.description,
       "imgPath": provider.imgPath,

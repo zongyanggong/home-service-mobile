@@ -87,7 +87,6 @@ class Provider {
   final String pid;
   final String name;
   final String email;
-  final String address;
   final String phone;
   final String sid; //service he can prodive, only one service for now
   final double price;
@@ -99,7 +98,6 @@ class Provider {
     this.pid = "",
     this.name = "",
     this.email = "",
-    this.address = "",
     this.phone = "",
     this.sid = "",
     this.price = 0.0,
@@ -119,12 +117,16 @@ class Notification {
   final String uid;
   final String pid;
   final String rid;
+  final String title;
+  final String message;
   final int timeStamp;
 
   Notification({
     this.uid = "",
     this.pid = "",
     this.rid = "",
+    this.title = "",
+    this.message = "",
     this.timeStamp = 0,
   });
 

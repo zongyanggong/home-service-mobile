@@ -89,7 +89,6 @@ Provider _$ProviderFromJson(Map<String, dynamic> json) => Provider(
       pid: json['pid'] as String? ?? "",
       name: json['name'] as String? ?? "",
       email: json['email'] as String? ?? "",
-      address: json['address'] as String? ?? "",
       phone: json['phone'] as String? ?? "",
       sid: json['sid'] as String? ?? "",
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
@@ -102,7 +101,6 @@ Map<String, dynamic> _$ProviderToJson(Provider instance) => <String, dynamic>{
       'pid': instance.pid,
       'name': instance.name,
       'email': instance.email,
-      'address': instance.address,
       'phone': instance.phone,
       'sid': instance.sid,
       'price': instance.price,
@@ -115,6 +113,8 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
       uid: json['uid'] as String? ?? "",
       pid: json['pid'] as String? ?? "",
       rid: json['rid'] as String? ?? "",
+      title: json['title'] as String? ?? "",
+      message: json['message'] as String? ?? "",
       timeStamp: json['timeStamp'] as int? ?? 0,
     );
 
@@ -123,5 +123,7 @@ Map<String, dynamic> _$NotificationToJson(Notification instance) =>
       'uid': instance.uid,
       'pid': instance.pid,
       'rid': instance.rid,
+      'title': instance.title,
+      'message': instance.message,
       'timeStamp': instance.timeStamp,
     };

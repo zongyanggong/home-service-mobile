@@ -53,6 +53,8 @@ class FirebaseApi {
       uid: message.data["uid"],
       pid: message.data["pid"],
       rid: message.data["rid"],
+      title: message.data["title"],
+      message: message.data["message"],
       timeStamp: int.parse(message.data["timeStamp"]),
     ));
     //navigate to new screen when message is recevied and user taps on notification

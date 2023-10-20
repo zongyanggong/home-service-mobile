@@ -36,6 +36,8 @@ function setupCollectionListeners() {
             uid: documentData.uid,
             pid: documentData.pid,
             rid: documentData.rid,
+            title: getTitle(documentData),
+            message: getMessage(documentData),
             timeStamp: Date.now(),
           })
           .then((docRef) => {
@@ -50,6 +52,44 @@ function setupCollectionListeners() {
       });
     });
   });
+}
+
+function getMessage(documentData) {
+  switch (documentData.status) {
+    case "cancelled":
+      return "Your appointment has been cancelled";
+    case "rejected":
+      return "Your appointment has been rejected";
+    case "confirmed":
+      return "Your appointment has been confirmed";
+    case "started":
+      return "Your appointment has been started";
+    case "completed":
+      return "Your appointment has been completed";
+    case "reviewed":
+      return "Your appointment has been reviewed";
+    default:
+      return "New appointment has been created"; //pending
+  }
+}
+
+function getTitle(documentData) {
+  switch (documentData.status) {
+    case "cancelled":
+      return "Service Cancelled";
+    case "rejected":
+      return "Service Rejected";
+    case "confirmed":
+      return "Service Confirmed";
+    case "started":
+      return "Service Started";
+    case "completed":
+      return "Service Completed";
+    case "reviewed":
+      return "Service Reviewed";
+    default:
+      return "New Appointment"; //pending
+  }
 }
 
 // Start tracking collections
@@ -101,8 +141,8 @@ function sendNotificationToToken(token, recordChanged) {
     token: token,
     // topic: "ServiceRecords",
     notification: {
-      title: "Data Changed",
-      body: "Data in the Firestore collection has been updated.",
+      title: "Home Servies",
+      body: "Your home service status has been updated.",
     },
     // data: {
     //   // You can include custom data in the notification
